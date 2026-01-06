@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Palette, MoveHorizontal, MoveVertical, Layers } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Palette, MoveHorizontal, MoveVertical, Layers, BarChart, Moon, Sun } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type GammaValue = '1.8' | '2.0' | '2.2' | '2.4' | '2.6';
 type Channel = 'gray' | 'red' | 'green' | 'blue';
@@ -258,22 +259,79 @@ const GammaTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Gamma Calibration"
-        description="Check if your monitor correctly translates digital values into light. Standard Gamma 2.2 ensures shadows aren't crushed and highlights aren't blown out."
-        onStart={startTest}
-      >
-        <InfoCard title="The Squint Test">
-          <p>
-            Sit back or squint your eyes. The solid inner circle should blend perfectly into the striped background. If the circle is darker, your gamma is too low. If brighter, your gamma is too high.
-          </p>
-        </InfoCard>
-        <InfoCard title="Color Balance">
-          <p>
-            Use the <strong>RGB Channels</strong>. It's common for monitors to have correct Gamma in Gray, but be misaligned in Blue (making dark scenes look cold) or Red (making skin tones look sunburnt).
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Gamma Calibration"
+          description="Check if your monitor correctly translates digital values into light. Standard Gamma 2.2 ensures shadows aren't crushed and highlights aren't blown out."
+          onStart={startTest}
+        >
+          <InfoCard title="The Squint Test">
+            <p>
+              Sit back or squint your eyes. The solid inner circle should blend perfectly into the striped background. If the circle is darker, your gamma is too low. If brighter, your gamma is too high.
+            </p>
+          </InfoCard>
+          <InfoCard title="Color Balance">
+            <p>
+              Use the <strong>RGB Channels</strong>. It's common for monitors to have correct Gamma in Gray, but be misaligned in Blue (making dark scenes look cold) or Red (making skin tones look sunburnt).
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep SEO Content */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <BarChart className="text-blue-500" /> What is Gamma?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Gamma Correction defines the relationship between a digital pixel value (0-255) and the actual light output (luminance) of the screen. Human vision is non-linear; we are more sensitive to changes in dark tones than bright tones. Gamma 2.2 mimics this sensitivity.
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Moon className="text-yellow-500" /> Black Crush vs. Washout
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Gamma Too High (e.g. 2.6):</strong> The image looks contrasty and "punchy", but details in the shadows are lost (crushed) into black.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm mt-2">
+                    <strong>Gamma Too Low (e.g. 1.8):</strong> The image looks flat and washed out. Shadows appear gray instead of black.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Sun className="text-purple-500" /> Recommended Settings
+              </h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2 text-sm">Gamma 2.2</strong>
+                    <span className="text-green-400 font-bold block mb-1">Standard</span>
+                    <span className="text-neutral-500">The default for Windows, sRGB, Games, and Web. Aim for this.</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2 text-sm">Gamma 1.8</strong>
+                    <span className="text-blue-400 font-bold block mb-1">Old Mac / Print</span>
+                    <span className="text-neutral-500">Historically used on CRT Macs. Makes details in shadows very easy to see.</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2 text-sm">Gamma 2.4 / BT.1886</strong>
+                    <span className="text-purple-400 font-bold block mb-1">Cinema</span>
+                    <span className="text-neutral-500">Used for movies in dark rooms. Provides richer contrast but requires a dim environment.</span>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/gamma" />
+        </div>
+      </div>
     </>
   );
 };
