@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Grid, Palette, Zap, ScanLine, BoxSelect, Maximize } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type PatternMode = 'smpte' | 'grid' | 'sharpness' | 'ramp' | 'focus';
 
@@ -324,22 +325,34 @@ const TestPatterns: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Test Patterns"
-      description="Reference patterns for setting up display color, brightness, contrast, and geometry. Includes industry-standard SMPTE bars and Multiburst charts."
-      onStart={startTest}
-    >
-      <InfoCard title="SMPTE & PLUGE">
-        <p>
-          We use a simulated SMPTE pattern with a <strong>PLUGE</strong> section (bottom right). Adjust your monitor's brightness so the left black bar vanishes, but the right gray bar remains barely visible.
-        </p>
-      </InfoCard>
-      <InfoCard title="Multiburst">
-        <p>
-          The <strong>Sharpness</strong> pattern features single-pixel lines. If these lines look gray or blurry, your monitor isn't displaying 1:1 pixels (likely due to scaling or overscan).
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Test Patterns - SMPTE, Sharpness & Geometry" 
+        description="Professional test patterns for display calibration. Includes SMPTE Color Bars (PLUGE), Multiburst Sharpness, Geometry Grid, and Grayscale Ramps."
+        canonical="/tests/test-patterns"
+        keywords={['monitor test patterns', 'smpte bars', 'pluge pattern', 'sharpness test pattern', 'display geometry test', 'calibration images']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Test Patterns', path: '/tests/test-patterns' }
+        ]}
+      />
+      <TestIntro
+        title="Test Patterns"
+        description="Reference patterns for setting up display color, brightness, contrast, and geometry. Includes industry-standard SMPTE bars and Multiburst charts."
+        onStart={startTest}
+      >
+        <InfoCard title="SMPTE & PLUGE">
+          <p>
+            We use a simulated SMPTE pattern with a <strong>PLUGE</strong> section (bottom right). Adjust your monitor's brightness so the left black bar vanishes, but the right gray bar remains barely visible.
+          </p>
+        </InfoCard>
+        <InfoCard title="Multiburst">
+          <p>
+            The <strong>Sharpness</strong> pattern features single-pixel lines. If these lines look gray or blurry, your monitor isn't displaying 1:1 pixels (likely due to scaling or overscan).
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

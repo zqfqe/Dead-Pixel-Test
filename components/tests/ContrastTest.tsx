@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Zap, LayoutTemplate, Palette, Type, AlignLeft } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type Pattern = 'steps' | 'colors' | 'gradient' | 'text';
 
@@ -303,22 +304,34 @@ const ContrastTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Contrast Calibration"
-      description="Calibrate your monitor's white saturation (Contrast). If set too high, bright details like clouds or snow will lose texture and become pure white blobs."
-      onStart={startTest}
-    >
-      <InfoCard title="The '254' Rule">
-        <p>
-          You should be able to distinguish level <strong>254</strong> (faint gray) from level <strong>255</strong> (pure white). If they look identical, lower your Contrast setting.
-        </p>
-      </InfoCard>
-      <InfoCard title="Color Bleaching">
-        <p>
-          Use the <strong>Color Clipping</strong> pattern. High contrast often forces very light colors (like light pink or mint green) to turn completely white. Ensure the last few blocks retain their tint.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Contrast Calibration Test - White Level Clipping" 
+        description="Calibrate your monitor's contrast (white level). Ensure bright whites don't clip detail. Check for color bleaching in pastels."
+        canonical="/tests/contrast"
+        keywords={['contrast test', 'white level test', 'monitor calibration', 'white clipping test', 'color bleaching test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Contrast Test', path: '/tests/contrast' }
+        ]}
+      />
+      <TestIntro
+        title="Contrast Calibration"
+        description="Calibrate your monitor's white saturation (Contrast). If set too high, bright details like clouds or snow will lose texture and become pure white blobs."
+        onStart={startTest}
+      >
+        <InfoCard title="The '254' Rule">
+          <p>
+            You should be able to distinguish level <strong>254</strong> (faint gray) from level <strong>255</strong> (pure white). If they look identical, lower your Contrast setting.
+          </p>
+        </InfoCard>
+        <InfoCard title="Color Bleaching">
+          <p>
+            Use the <strong>Color Clipping</strong> pattern. High contrast often forces very light colors (like light pink or mint green) to turn completely white. Ensure the last few blocks retain their tint.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Zap, Eye, LayoutTemplate, MonitorPlay, Ghost } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type Pattern = 'steps' | 'pluge' | 'logo';
 
@@ -75,7 +76,7 @@ const BrightnessTest: React.FC = () => {
                                       ...pulseStyle
                                   }}
                               >
-                                  {/* Video Legal Marker (16) */}
+                                  {/* Video Marker (16) */}
                                   {val === 16 && (
                                     <div className="absolute inset-0 border-2 border-blue-500/30 flex items-center justify-center">
                                        <span className="text-[10px] text-blue-500 font-bold bg-black/50 px-1">REF 16</span>
@@ -265,24 +266,36 @@ const BrightnessTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Brightness Calibration"
-      description="Calibrate your monitor's black levels using the 'Brightness' setting. Proper calibration ensures you see shadow details without making blacks look gray."
-      onStart={startTest}
-    >
-      <InfoCard title="The 'Pulse' Trick">
-        <p>
-          Can't tell if a square is visible? Enable the <strong>Flash / Pulse</strong> tool. Our eyes are much better at detecting motion. If you don't see the flashing, your black level is crushed.
-        </p>
-      </InfoCard>
-      <InfoCard title="PC vs. Video">
-        <p>
-          <strong>PC Users:</strong> Aim to see the faintest squares (1-5).
-          <br/>
-          <strong>Movie Watchers:</strong> It is acceptable if squares below 16 are invisible, as standard video content sets pure black at Level 16.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Monitor Brightness Calibration - Black Level Test" 
+        description="Calibrate your monitor's brightness (black level) setting. Ensure deep blacks without crushing shadow detail using our PLUGE pattern."
+        canonical="/tests/brightness"
+        keywords={['brightness test', 'black level test', 'monitor calibration', 'pluge pattern', 'shadow detail test', 'screen brightness']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Brightness Test', path: '/tests/brightness' }
+        ]}
+      />
+      <TestIntro
+        title="Brightness Calibration"
+        description="Calibrate your monitor's black levels using the 'Brightness' setting. Proper calibration ensures you see shadow details without making blacks look gray."
+        onStart={startTest}
+      >
+        <InfoCard title="The 'Pulse' Trick">
+          <p>
+            Can't tell if a square is visible? Enable the <strong>Flash / Pulse</strong> tool. Our eyes are much better at detecting motion. If you don't see the flashing, your black level is crushed.
+          </p>
+        </InfoCard>
+        <InfoCard title="PC vs. Video">
+          <p>
+            <strong>PC Users:</strong> Aim to see the faintest squares (1-5).
+            <br/>
+            <strong>Movie Watchers:</strong> It is acceptable if squares below 16 are invisible, as standard video content sets pure black at Level 16.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Type, MoveVertical, MoveHorizontal, Palette, Grid } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type FontType = 'sans' | 'serif' | 'mono';
 type ColorMode = 'standard' | 'chroma' | 'inverted';
@@ -290,22 +291,34 @@ const TextClarityTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Text Clarity Test"
-      description="Check for chroma subsampling artifacts (fuzzy colored text), over-sharpening halos, and readability. Essential for setting up TVs as PC monitors."
-      onStart={startTest}
-    >
-      <InfoCard title="The 'Chroma' Test">
-        <p>
-          If Red or Blue text on a black background looks jagged, broken, or unreadable compared to white text, your display might be running in <strong>YCbCr 4:2:0</strong> or <strong>4:2:2</strong> mode instead of full <strong>4:4:4 RGB</strong>.
-        </p>
-      </InfoCard>
-      <InfoCard title="Sharpening Halos">
-        <p>
-          Look at the faint lines next to the text. If you see white glowing edges (halos) around the text or lines, your monitor's <strong>Sharpness</strong> setting is too high. Lower it until the halos disappear.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Text Clarity & Chroma Subsampling Test" 
+        description="Check if your monitor displays clear text. Identify chroma subsampling (4:2:0) artifacts, over-sharpening halos, and readability issues on high-DPI screens."
+        canonical="/tests/text-clarity"
+        keywords={['text clarity test', 'chroma subsampling test', '4:4:4 test', 'monitor sharpness test', 'font readability test', 'ycbcr 420 test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Text Clarity', path: '/tests/text-clarity' }
+        ]}
+      />
+      <TestIntro
+        title="Text Clarity Test"
+        description="Check for chroma subsampling artifacts (fuzzy colored text), over-sharpening halos, and readability. Essential for setting up TVs as PC monitors."
+        onStart={startTest}
+      >
+        <InfoCard title="The 'Chroma' Test">
+          <p>
+            If Red or Blue text on a black background looks jagged, broken, or unreadable compared to white text, your display might be running in <strong>YCbCr 4:2:0</strong> or <strong>4:2:2</strong> mode instead of full <strong>4:4:4 RGB</strong>.
+          </p>
+        </InfoCard>
+        <InfoCard title="Sharpening Halos">
+          <p>
+            Look at the faint lines next to the text. If you see white glowing edges (halos) around the text or lines, your monitor's <strong>Sharpness</strong> setting is too high. Lower it until the halos disappear.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 
