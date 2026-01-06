@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type Direction = 'horizontal' | 'vertical';
 type Pattern = 'ufo' | 'text' | 'blocks';
@@ -408,22 +409,77 @@ const GhostingTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Response Time (Ghosting)"
-        description="Visualize pixel transitions and motion blur. Test for ghosting, black smearing (common on VA panels), and inverse ghosting (overshoot). Supports vertical scrolling for checking webpage clarity."
-        onStart={startTest}
-      >
-        <InfoCard title="Black Smear">
-          <p>
-            Select the <strong>Dark Mode</strong> preset and <strong>Vertical</strong> direction. If you see purple or brown trails behind the dark gray squares, your monitor (likely a VA panel) struggles with dark color transitions.
-          </p>
-        </InfoCard>
-        <InfoCard title="Overshoot (Coronas)">
-          <p>
-            Select the <strong>Light Mode</strong>. If you see a bright white halo trailing behind the moving object, your monitor's Overdrive setting is too high. Lower it in your monitor's OSD menu.
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Response Time (Ghosting)"
+          description="Visualize pixel transitions and motion blur. Test for ghosting, black smearing (common on VA panels), and inverse ghosting (overshoot). Supports vertical scrolling for checking webpage clarity."
+          onStart={startTest}
+        >
+          <InfoCard title="Black Smear">
+            <p>
+              Select the <strong>Dark Mode</strong> preset and <strong>Vertical</strong> direction. If you see purple or brown trails behind the dark gray squares, your monitor (likely a VA panel) struggles with dark color transitions.
+            </p>
+          </InfoCard>
+          <InfoCard title="Overshoot (Coronas)">
+            <p>
+              Select the <strong>Light Mode</strong>. If you see a bright white halo trailing behind the moving object, your monitor's Overdrive setting is too high. Lower it in your monitor's OSD menu.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep SEO Content */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <FastForward className="text-blue-500" /> What is Response Time?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Response time is how fast a pixel can change from one color to another (usually Gray-to-Gray or GtG). Slow pixels create a "trail" behind moving objects, known as <strong>Ghosting</strong>.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>MPRT (Moving Picture Response Time)</strong> measures how long a pixel stays visible. Lower MPRT reduces motion blur but often requires strobing backlight (BFI), which can lower brightness.
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Eye className="text-yellow-500" /> Pursuit Camera Tracking
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    Your eyes naturally track moving objects. This test works because it forces your eyes to move at the same speed as the UFO. If the pixels can't keep up with your eye movement, you perceive blur.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4">Troubleshooting: "Inverse Ghosting"</h3>
+              <p className="text-sm text-neutral-400 mb-6">
+                 Many gaming monitors use "Overdrive" to speed up pixel transitions. However, if Overdrive is too aggressive, the pixel shoots past its target color, creating a bright "halo" or negative image behind the object.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Weak Overdrive</strong>
+                    <span className="text-neutral-500">Long blurry trails. Classic ghosting. Image looks soft in motion.</span>
+                 </div>
+                 <div className="bg-black border border-green-500/30 p-4 rounded-lg">
+                    <strong className="text-green-400 block mb-2">Balanced</strong>
+                    <span className="text-neutral-500">Short, faint trail. Minimal blur. No bright halos. Ideal for gaming.</span>
+                 </div>
+                 <div className="bg-black border border-red-500/30 p-4 rounded-lg">
+                    <strong className="text-red-400 block mb-2">Strong Overdrive</strong>
+                    <span className="text-neutral-500">Bright white outlines (coronas). Artifacts are more distracting than the blur itself.</span>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/response-time" />
+        </div>
+      </div>
     </>
   );
 };

@@ -127,7 +127,7 @@ const ProductPage: React.FC = () => {
                 <a 
                   href={product.amazonLink} 
                   target="_blank" 
-                  rel="noopener noreferrer"
+                  rel="noopener noreferrer nofollow sponsored" // SEO Fix: Mark affiliate links
                   className="flex-1 inline-flex items-center justify-center gap-2 bg-[#FF9900] hover:bg-[#ffad33] text-black font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-orange-500/20 transform hover:-translate-y-1"
                 >
                   <ShoppingCart size={20} />

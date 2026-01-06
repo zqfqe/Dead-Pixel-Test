@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link } from 'react-router-dom';
+import { RelatedTools } from '../common/RelatedTools';
 
 type PatternType = 'solid' | 'checkerboard';
 type ColorType = 'white' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'black';
@@ -403,22 +404,75 @@ const UniformityTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Screen Uniformity Test"
-        description="Evaluate backlight bleeding, IPS glow, and dirty screen effect (DSE). Use the specific gray steps (5%, 10%) to reveal panel imperfections often hidden by bright content."
-        onStart={startTest}
-      >
-        <InfoCard title="The '5% Gray' Rule">
-          <p>
-            OLED and LED panels often struggle with very dark grays. Set the test to <strong>5%</strong> or <strong>10%</strong> Gray (White color, 5-10% brightness) to check for vertical banding and dark patches.
-          </p>
-        </InfoCard>
-        <InfoCard title="IPS Glow vs Bleed">
-          <p>
-            Not sure if it's defect? Check our guide on <Link to="/blog/ips-glow-vs-backlight-bleed-guide" className="text-blue-400 hover:underline">IPS Glow vs Backlight Bleed</Link> before returning your monitor.
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Screen Uniformity Test"
+          description="Evaluate backlight bleeding, IPS glow, and dirty screen effect (DSE). Use the specific gray steps (5%, 10%) to reveal panel imperfections often hidden by bright content."
+          onStart={startTest}
+        >
+          <InfoCard title="The '5% Gray' Rule">
+            <p>
+              OLED and LED panels often struggle with very dark grays. Set the test to <strong>5%</strong> or <strong>10%</strong> Gray (White color, 5-10% brightness) to check for vertical banding and dark patches.
+            </p>
+          </InfoCard>
+          <InfoCard title="IPS Glow vs Bleed">
+            <p>
+              Not sure if it's defect? Check our guide on <Link to="/blog/ips-glow-vs-backlight-bleed-guide" className="text-blue-400 hover:underline">IPS Glow vs Backlight Bleed</Link> before returning your monitor.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep Content Section for SEO */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Monitor className="text-blue-500" /> What is Screen Uniformity?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    Screen uniformity refers to the ability of a display to maintain the same brightness and color temperature across the entire panel. A perfect screen would look exactly the same in the corners as it does in the center. However, manufacturing tolerances often lead to "Clouding" (uneven brightness) or "Tinting" (color shifts).
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <HelpCircle className="text-yellow-500" /> Glow vs. Bleed
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-2">
+                    <strong>IPS Glow:</strong> A "shimmering" effect in the corners that changes when you move your head. This is normal technology behavior.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Backlight Bleed:</strong> Bright spots leaking from the edges that remain static regardless of viewing angle. This is a manufacturing defect.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4">How to Interpret Results</h3>
+              <div className="space-y-4">
+                 <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded bg-black border border-white/20 shrink-0"></div>
+                    <div>
+                       <h4 className="text-sm font-bold text-white">The Black Test</h4>
+                       <p className="text-xs text-neutral-400">Use in a dim room. Check for "spotlights" beaming from the bezel. A perfectly uniform black screen is rare on LCDs but standard on OLEDs.</p>
+                    </div>
+                 </div>
+                 <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded bg-neutral-500 border border-white/20 shrink-0"></div>
+                    <div>
+                       <h4 className="text-sm font-bold text-white">The 50% Gray Test</h4>
+                       <p className="text-xs text-neutral-400">The "Dirty Screen Effect" (DSE) is most visible here. Look for faint stationary shadows that look like a dirty window. This is common in large TVs.</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/uniformity" />
+        </div>
+      </div>
     </>
   );
 };
