@@ -36,19 +36,10 @@ const MousePollingTest: React.FC = () => {
       
       // We only process if we have valid history to compare diff
       if (lastTimeRef.current > 0) {
-         // Calculate rate based on the last event time
-         // However, with coalesced events, we might have multiple events in one frame.
-         // A more accurate way for visualization is to calculate instantaneous rate between events.
-         
          let lastT = lastTimeRef.current;
          const rates: number[] = [];
 
          events.forEach(ev => {
-             // For coalesced events, the timestamp might be high precision
-             // but sometimes browser implementation varies. 
-             // We use the event.timeStamp if strictly monotonic, else interpolate?
-             // Safest is to just count events per time window, but for "Instant Hz", we use delta.
-             
              const t = ev.timeStamp;
              if (t > lastT) {
                  const delta = t - lastT;
@@ -113,8 +104,6 @@ const MousePollingTest: React.FC = () => {
       if (history.length < 2) return '';
       const w = 100; // viewbox width
       const h = 50;  // viewbox height
-      const max = 2000; // Fixed scale for graph (2000hz) or dynamic?
-      // Let's use dynamic but clamped to at least 1000
       const scaleMax = Math.max(1000, maxRate * 1.1);
       
       const points = history.map((val, i) => {
@@ -137,6 +126,38 @@ const MousePollingTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Mouse Polling Rate', path: '/tools/mouse-polling' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Mouse Polling Rate Checker",
+              "url": "https://deadpixeltest.cc/tools/mouse-polling",
+              "description": "Test the report rate (Hz) of your computer mouse. Supports high-performance gaming mice up to 8000Hz.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Mouse Polling Rate?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Polling rate is how often your mouse reports its position to the computer. 1000Hz means 1000 reports per second (1ms delay)."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Is 1000Hz better than 500Hz?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, 1000Hz offers smoother movement and lower latency (1ms) compared to 500Hz (2ms), which is beneficial for competitive gaming."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
         <div className="text-center mb-12">

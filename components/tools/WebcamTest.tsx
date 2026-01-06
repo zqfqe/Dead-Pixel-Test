@@ -151,6 +151,16 @@ const WebcamTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Webcam Test', path: '/tools/webcam' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Webcam & Microphone Tester",
+          "url": "https://deadpixeltest.cc/tools/webcam",
+          "description": "Secure, browser-based webcam test tool to check video resolution and audio input.",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web Browser",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
         <div className="text-center mb-12">

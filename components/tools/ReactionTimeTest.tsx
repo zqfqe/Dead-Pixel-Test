@@ -3,6 +3,7 @@ import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Vol
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
 
+// ... (Keep existing Type definitions and GameState logic exactly the same)
 type GameState = 'idle' | 'waiting' | 'ready' | 'finished' | 'early';
 type Mode = 'visual' | 'audio';
 
@@ -117,7 +118,6 @@ const ReactionTimeTest: React.FC = () => {
   const best = history.length > 0 ? Math.min(...history) : 0;
   
   // Custom Rank logic for Audio (Audio is usually 40ms faster than visual)
-  // We can adjust threshold or just keep same for comparison
   const currentRank = RANKS.find(r => average <= r.threshold) || RANKS[RANKS.length - 1];
 
   // Distribution Data for Chart
@@ -190,6 +190,38 @@ const ReactionTimeTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Reaction Time', path: '/tools/reaction-time' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Reaction Time Test",
+              "url": "https://deadpixeltest.cc/tools/reaction-time",
+              "description": "A scientific tool to measure visual and auditory reaction times (reflexes) in milliseconds.",
+              "applicationCategory": "HealthApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is the average human reaction time?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The average visual reaction time is around 215-250ms. Auditory reaction time is typically faster, around 170ms."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Why is audio reaction faster?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms), allowing for a quicker reflex response."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in select-none">
         

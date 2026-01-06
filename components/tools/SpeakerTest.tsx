@@ -174,6 +174,16 @@ const SpeakerTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Speaker Test', path: '/tools/speaker-test' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Speaker & Headphone Test",
+          "url": "https://deadpixeltest.cc/tools/speaker-test",
+          "description": "Test left/right stereo channels, phase polarity, and frequency response range.",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web Browser",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
         {/* Header */}
