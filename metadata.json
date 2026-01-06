@@ -1,0 +1,5 @@
+{
+  "name": "部署DeadPixelTest.cc Clone",
+  "description": "A comprehensive suite of display testing tools including Dead Pixel, Uniformity, Ghosting, and Input tests.",
+  "requestFramePermissions": []
+}
