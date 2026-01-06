@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core Tests -->
+  <!-- Core High-Traffic Tests -->
   <url>
     <loc>https://deadpixeltest.cc/</loc>
-    <lastmod>2026-01-06</lastmod>
+    <lastmod>2026-01-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -15,20 +15,77 @@
   <url>
     <loc>https://deadpixeltest.cc/tests/uniformity</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://deadpixeltest.cc/tests/response-time</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://deadpixeltest.cc/tests/refresh-rate</loc>
     <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Technical Calibration Tests -->
+  <url>
+    <loc>https://deadpixeltest.cc/tests/gamma</loc>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  
-  <!-- Tools -->
+  <url>
+    <loc>https://deadpixeltest.cc/tests/color-gradient</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/color-distance</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/viewing-angle</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/brightness</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/contrast</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/text-clarity</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/test-patterns</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/local-dimming</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/matrix</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tests/audio-sync</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Input & Utility Tools -->
   <url>
     <loc>https://deadpixeltest.cc/tools/keyboard</loc>
     <changefreq>monthly</changefreq>
@@ -36,6 +93,16 @@
   </url>
   <url>
     <loc>https://deadpixeltest.cc/tools/controller</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tools/mouse-polling</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tools/touch</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -49,8 +116,23 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tools/speaker-test</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tools/webcam</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/tools/ruler</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
   
-  <!-- Blog -->
+  <!-- Blog & Resources -->
   <url>
     <loc>https://deadpixeltest.cc/blog</loc>
     <changefreq>daily</changefreq>
@@ -70,5 +152,27 @@
     <loc>https://deadpixeltest.cc/blog/monitor-calibration-guide-no-hardware</loc>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
+  </url>
+
+  <!-- Info Pages -->
+  <url>
+    <loc>https://deadpixeltest.cc/about</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/contact</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/privacy-policy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://deadpixeltest.cc/terms-of-service</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

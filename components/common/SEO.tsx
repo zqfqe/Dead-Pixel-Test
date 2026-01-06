@@ -15,6 +15,7 @@ interface SEOProps {
   keywords?: string[];
   jsonLd?: Record<string, any>; // Custom Structured Data
   breadcrumbs?: BreadcrumbItem[]; // New prop for breadcrumbs
+  noindex?: boolean; // New prop to prevent indexing
 }
 
 const DOMAIN = 'https://deadpixeltest.cc';
@@ -27,7 +28,8 @@ export const SEO: React.FC<SEOProps> = ({
   image = '/og-image.jpg', 
   keywords = [],
   jsonLd,
-  breadcrumbs
+  breadcrumbs,
+  noindex = false
 }) => {
   const siteTitle = 'DeadPixelTest.cc';
   const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
@@ -53,6 +55,9 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords.join(', ')} />
       <link rel="canonical" href={url} />
+      
+      {/* Robots Control */}
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />

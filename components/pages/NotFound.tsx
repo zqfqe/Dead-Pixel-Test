@@ -10,6 +10,7 @@ const NotFound: React.FC = () => {
         title="Page Not Found (404)" 
         description="The page you are looking for does not exist."
         keywords={[]}
+        noindex={true}
       />
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6 animate-fade-in">
         <div className="bg-neutral-900/50 p-8 rounded-full mb-8 border border-white/5">
