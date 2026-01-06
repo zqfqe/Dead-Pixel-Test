@@ -19,8 +19,10 @@ export const MENU_ITEMS: MenuItem[] = [
   
   { title: "INPUT & GAMING", path: "", isHeader: true },
   { title: "Reaction Time", path: "/tools/reaction-time" },
+  { title: "Mouse Polling Rate", path: "/tools/mouse-polling" },
   { title: "Keyboard Test", path: "/tools/keyboard" },
   { title: "Controller Test", path: "/tools/controller" },
+  { title: "Touch Screen Test", path: "/tools/touch" },
 
   { title: "CALCULATORS", path: "", isHeader: true },
   { title: "PPI Calculator", path: "/tools/ppi-calculator" },
