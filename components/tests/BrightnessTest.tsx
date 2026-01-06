@@ -276,6 +276,38 @@ const BrightnessTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Brightness Test', path: '/tests/brightness' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Black Level (Brightness) Tester",
+              "url": "https://deadpixeltest.cc/tests/brightness",
+              "description": "Adjust monitor brightness to ensure deep blacks without losing shadow detail (Black Crush). Features PLUGE patterns and pulsing shadow checks.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is the correct Brightness setting?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The correct brightness setting is where 'Black' (RGB 0) appears as dark as the monitor allows, but the very next shade (RGB 1, 2, or 3) is just barely visible."
+                }
+              }, {
+                "@type": "Question",
+                "name": "What is Black Crush?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Black crush occurs when the brightness is set too low, causing dark gray details to merge into pure black, resulting in a loss of detail in dark scenes."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Brightness Calibration"

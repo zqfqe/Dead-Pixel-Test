@@ -276,6 +276,38 @@ const ViewingAngleTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Viewing Angle', path: '/tests/viewing-angle' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Viewing Angle Test",
+              "url": "https://deadpixeltest.cc/tests/viewing-angle",
+              "description": "Interactive test to evaluate monitor color stability, gamma shift, and viewing angles for IPS, TN, and VA panels.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Gamma Shift?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Gamma Shift is a phenomenon where the brightness or color of pixels changes when viewed off-angle. It is most common in VA panels, causing the center of the screen to look darker (crushed blacks) than the edges."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Which panel has the best viewing angles?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "IPS (In-Plane Switching) and OLED panels offer the best viewing angles with minimal color distortion. TN panels have the worst vertical viewing angles."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Viewing Angle Test"

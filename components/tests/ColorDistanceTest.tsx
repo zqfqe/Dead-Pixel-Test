@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Palette, LayoutTemplate, BoxSelect, Type, Eye, EyeOff } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type BaseColor = 'gray' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'skin' | 'teal';
 type ShapeMode = 'split' | 'inset' | 'text';
@@ -239,22 +240,59 @@ const ColorDistanceTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Color Distance Test"
-      description="Test your eyes and your monitor's ability to distinguish subtle shade differences. Use the 'Inset' and 'Text' modes to simulate real-world UI scenarios."
-      onStart={startTest}
-    >
-      <InfoCard title="The 'Inset' Advantage">
-        <p>
-          The human eye is much better at detecting contrast when one color is surrounded by another. Use the <strong>Inset Mode</strong> to detect subtle differences that are invisible in Split mode.
-        </p>
-      </InfoCard>
-      <InfoCard title="Lighter vs. Darker">
-        <p>
-          Some monitors crush blacks (can't see dark gray on black) but handle whites fine. Switch between <strong>Lighter</strong> and <strong>Darker</strong> modes to test both ends of the spectrum.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Color Distance Test - Check Eye Sensitivity" 
+        description="Test your color vision sensitivity. Can you distinguish subtle shade differences? Compare colors against gray, skin tones, and pastels."
+        canonical="/tests/color-distance"
+        keywords={['color distance test', 'color sensitivity test', 'delta e test', 'monitor color accuracy', 'eye test color']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Color Distance', path: '/tests/color-distance' }
+        ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Color Sensitivity & Distance Test",
+              "url": "https://deadpixeltest.cc/tests/color-distance",
+              "description": "Interactive tool to test human eye sensitivity to subtle color differences (Delta E) and monitor color reproduction.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Delta E?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Delta E is a metric for understanding how the human eye perceives color difference. A Delta E of less than 2 is generally considered imperceptible to the standard observer."
+                }
+              }]
+            }
+          ]
+        }}
+      />
+      <TestIntro
+        title="Color Distance Test"
+        description="Test your eyes and your monitor's ability to distinguish subtle shade differences. Use the 'Inset' and 'Text' modes to simulate real-world UI scenarios."
+        onStart={startTest}
+      >
+        <InfoCard title="The 'Inset' Advantage">
+          <p>
+            The human eye is much better at detecting contrast when one color is surrounded by another. Use the <strong>Inset Mode</strong> to detect subtle differences that are invisible in Split mode.
+          </p>
+        </InfoCard>
+        <InfoCard title="Lighter vs. Darker">
+          <p>
+            Some monitors crush blacks (can't see dark gray on black) but handle whites fine. Switch between <strong>Lighter</strong> and <strong>Darker</strong> modes to test both ends of the spectrum.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

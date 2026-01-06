@@ -314,6 +314,38 @@ const ContrastTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Contrast Test', path: '/tests/contrast' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor White Level (Contrast) Tester",
+              "url": "https://deadpixeltest.cc/tests/contrast",
+              "description": "Test and calibrate monitor contrast to prevent white saturation (clipping). Ensures bright details like clouds remain visible.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What does the Contrast setting do?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The Contrast setting controls the 'White Level', or how bright the white parts of the screen are. Setting it too high causes bright details to merge into pure white (Clipping)."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to fix White Clipping?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Lower the Contrast setting until you can distinguish the difference between pure white (255) and the almost-white steps (253, 254)."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Contrast Calibration"

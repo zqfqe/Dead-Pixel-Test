@@ -307,6 +307,31 @@ const MatrixTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Matrix Rain', path: '/tests/matrix' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Matrix Rain OLED Test",
+              "url": "https://deadpixeltest.cc/tests/matrix",
+              "description": "Digital rain visualizer for testing OLED black levels and motion handling performance.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "How to test OLED True Black?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Run the Matrix Rain test. On a perfect OLED screen, the background between the falling characters should be completely black (pixels off), not dark gray."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Matrix Rain Effect"
