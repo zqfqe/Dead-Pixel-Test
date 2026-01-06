@@ -394,6 +394,16 @@ const GhostingTest: React.FC = () => {
                   "text": "Black smearing is common on VA panels. Try increasing the 'Black Stabilizer' or 'Dark Boost' setting in your monitor menu to lift dark shades, making them easier to transition."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Check for Monitor Ghosting",
+              "step": [
+                { "@type": "HowToStep", "text": "Set your monitor to its maximum refresh rate (e.g., 144Hz)." },
+                { "@type": "HowToStep", "text": "Start the UFO test and track the moving alien with your eyes." },
+                { "@type": "HowToStep", "text": "Look for a trail. A faint blurred trail is normal ghosting. A bright white trail is inverse ghosting (overshoot)." },
+                { "@type": "HowToStep", "text": "Adjust your monitor's 'Overdrive' or 'Response Time' setting until the trail is minimal without causing bright halos." }
+              ]
             }
           ]
         }}

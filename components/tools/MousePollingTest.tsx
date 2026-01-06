@@ -155,6 +155,15 @@ const MousePollingTest: React.FC = () => {
                   "text": "Yes, 1000Hz offers smoother movement and lower latency (1ms) compared to 500Hz (2ms), which is beneficial for competitive gaming."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Check Mouse Polling Rate",
+              "step": [
+                { "@type": "HowToStep", "text": "Close other intensive applications to ensure accurate readings." },
+                { "@type": "HowToStep", "text": "Move your mouse cursor rapidly in continuous circles within the testing area." },
+                { "@type": "HowToStep", "text": "Observe the 'Peak' and 'Average' Hz values. A 1000Hz mouse should average around 990-1000Hz during fast movement." }
+              ]
             }
           ]
         }}

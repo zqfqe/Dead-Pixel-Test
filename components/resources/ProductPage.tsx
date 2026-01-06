@@ -79,6 +79,8 @@ const ProductPage: React.FC = () => {
                 <img 
                   src={`https://images.unsplash.com/photo-1550003018-7253a5b81093?auto=format&fit=crop&q=80&w=800`} 
                   alt={product.name}
+                  width="800"
+                  height="600"
                   className="relative z-10 w-full h-full object-cover opacity-80 mix-blend-overlay"
                 />
                 <div className="absolute z-20 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10">

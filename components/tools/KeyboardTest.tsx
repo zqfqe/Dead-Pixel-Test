@@ -2,8 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Volume2, VolumeX, RotateCcw, Keyboard as KeyboardIcon, Activity, PaintBucket, Terminal, Settings, LayoutTemplate } from 'lucide-react';
 import { SEO } from '../common/SEO';
 
-// ... (Existing Imports and KeyDefs remain unchanged)
-// To save space in this response, I am omitting the large ROWS_MAIN, ROWS_FUNC, ROWS_NAV, ROWS_NUM arrays and the 'Key' component definition.
+// ... (Keep existing Imports and KeyDefs remain unchanged)
 // Assume they are here exactly as they were in the previous file.
 
 interface KeyDef {
@@ -257,6 +256,16 @@ const KeyboardTest: React.FC = () => {
                   "text": "Key Chatter (double typing) is often caused by dust in the switch. Try cleaning the switch with compressed air or isopropyl alcohol."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Test for Keyboard Ghosting",
+              "step": [
+                { "@type": "HowToStep", "text": "Open the Keyboard Tester tool." },
+                { "@type": "HowToStep", "text": "Press and hold both Shift keys simultaneously." },
+                { "@type": "HowToStep", "text": "While holding Shift, try to type a sentence. If keys are missing, your keyboard has ghosting issues." },
+                { "@type": "HowToStep", "text": "Check the 'Max Rollover' stat to see how many keys registered at once." }
+              ]
             }
           ]
         }}
