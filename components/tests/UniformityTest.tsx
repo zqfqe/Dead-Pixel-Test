@@ -326,7 +326,7 @@ const UniformityTest: React.FC = () => {
                         </button>
                         <button 
                           onClick={() => setShowCrosshair(!showCrosshair)}
-                          className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-all ${showCrosshair ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'}`}
+                          className={`flex-1 items-center justify-center gap-2 py-2.5 rounded-lg border transition-all ${showCrosshair ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'}`}
                         >
                            <Crosshair size={16} /> <span className="text-xs font-bold">Center</span>
                         </button>
@@ -370,6 +370,38 @@ const UniformityTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Uniformity Test', path: '/tests/uniformity' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Screen Uniformity Test",
+              "url": "https://deadpixeltest.cc/tests/uniformity",
+              "description": "Professional tool to test monitor uniformity, backlight bleed, and IPS glow.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is IPS Glow vs Backlight Bleed?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "IPS Glow changes intensity when you change your viewing angle. Backlight bleed remains static regardless of your viewing position."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to check for Dirty Screen Effect (DSE)?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use the 'Gray 5%' or 'Gray 10%' presets. DSE appears as faint vertical bands or patchy clouds on a uniform gray background."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Screen Uniformity Test"

@@ -101,6 +101,16 @@ const PPICalculator: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'PPI Calculator', path: '/tools/ppi-calculator' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "PPI & Retina Distance Calculator",
+          "url": "https://deadpixeltest.cc/tools/ppi-calculator",
+          "description": "Calculate Pixels Per Inch (PPI), Dot Pitch, and Retina Viewing Distance for any screen size and resolution.",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web Browser",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        }}
       />
       <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in font-sans">
         <div className="text-center mb-12">

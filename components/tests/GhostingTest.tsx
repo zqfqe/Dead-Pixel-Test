@@ -365,6 +365,38 @@ const GhostingTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Response Time', path: '/tests/response-time' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Ghosting Test",
+              "url": "https://deadpixeltest.cc/tests/response-time",
+              "description": "Visualize pixel transitions and motion blur. Test for ghosting, black smearing, and inverse ghosting.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Ghosting vs Inverse Ghosting?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Ghosting is a trail behind moving objects caused by slow pixel transitions. Inverse Ghosting (Overshoot) is a bright 'halo' or 'corona' caused by the monitor's Overdrive setting being too high."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to fix Black Smearing?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Black smearing is common on VA panels. Try increasing the 'Black Stabilizer' or 'Dark Boost' setting in your monitor menu to lift dark shades, making them easier to transition."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Response Time (Ghosting)"
