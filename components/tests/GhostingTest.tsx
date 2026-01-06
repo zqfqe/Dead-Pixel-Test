@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type Direction = 'horizontal' | 'vertical';
 type Pattern = 'ufo' | 'text' | 'blocks';
@@ -203,6 +204,7 @@ const GhostingTest: React.FC = () => {
     };
   }, [isActive, speed, direction, pattern, preset]);
 
+  // Render Fullscreen Tool
   if (isActive) {
     return (
       <div className="fixed inset-0 z-50 bg-neutral-900 overflow-hidden">
@@ -350,23 +352,37 @@ const GhostingTest: React.FC = () => {
     );
   }
 
+  // Main Page View with SEO
   return (
-    <TestIntro
-      title="Response Time (Ghosting)"
-      description="Visualize pixel transitions and motion blur. Test for ghosting, black smearing (common on VA panels), and inverse ghosting (overshoot). Supports vertical scrolling for checking webpage clarity."
-      onStart={startTest}
-    >
-      <InfoCard title="Black Smear">
-        <p>
-          Select the <strong>Dark Mode</strong> preset and <strong>Vertical</strong> direction. If you see purple or brown trails behind the dark gray squares, your monitor (likely a VA panel) struggles with dark color transitions.
-        </p>
-      </InfoCard>
-      <InfoCard title="Overshoot (Coronas)">
-        <p>
-          Select the <strong>Light Mode</strong>. If you see a bright white halo trailing behind the moving object, your monitor's Overdrive setting is too high. Lower it in your monitor's OSD menu.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="UFO Ghosting Test - Monitor Response Time"
+        description="Check your monitor for motion blur, ghosting, black smearing, and inverse ghosting (overshoot). Essential for 144Hz, 240Hz, and competitive gaming."
+        canonical="/tests/response-time"
+        keywords={['ghosting test', 'ufo test', 'monitor response time', 'motion blur test', 'black smear test', '144hz test']}
+        type="WebApplication"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Response Time', path: '/tests/response-time' }
+        ]}
+      />
+      <TestIntro
+        title="Response Time (Ghosting)"
+        description="Visualize pixel transitions and motion blur. Test for ghosting, black smearing (common on VA panels), and inverse ghosting (overshoot). Supports vertical scrolling for checking webpage clarity."
+        onStart={startTest}
+      >
+        <InfoCard title="Black Smear">
+          <p>
+            Select the <strong>Dark Mode</strong> preset and <strong>Vertical</strong> direction. If you see purple or brown trails behind the dark gray squares, your monitor (likely a VA panel) struggles with dark color transitions.
+          </p>
+        </InfoCard>
+        <InfoCard title="Overshoot (Coronas)">
+          <p>
+            Select the <strong>Light Mode</strong>. If you see a bright white halo trailing behind the moving object, your monitor's Overdrive setting is too high. Lower it in your monitor's OSD menu.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

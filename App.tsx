@@ -45,6 +45,7 @@ const About = lazy(() => import('./components/pages/About'));
 const Contact = lazy(() => import('./components/pages/Contact'));
 const Privacy = lazy(() => import('./components/pages/Privacy'));
 const Terms = lazy(() => import('./components/pages/Terms'));
+const NotFound = lazy(() => import('./components/pages/NotFound'));
 
 const PageLoader = () => (
   <div className="h-full w-full flex items-center justify-center min-h-[50vh]">
@@ -108,6 +109,9 @@ const App: React.FC = () => {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/privacy-policy" element={<Privacy />} />
                   <Route path="/terms-of-service" element={<Terms />} />
+                  
+                  {/* 404 */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
             </div>

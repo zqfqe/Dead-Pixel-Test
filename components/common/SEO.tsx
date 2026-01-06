@@ -1,14 +1,20 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
+interface BreadcrumbItem {
+  name: string;
+  path: string;
+}
+
 interface SEOProps {
   title: string;
   description: string;
   canonical?: string;
-  type?: 'website' | 'article';
+  type?: 'website' | 'article' | 'WebApplication';
   image?: string;
   keywords?: string[];
-  jsonLd?: Record<string, any>; // Structured Data
+  jsonLd?: Record<string, any>; // Custom Structured Data
+  breadcrumbs?: BreadcrumbItem[]; // New prop for breadcrumbs
 }
 
 const DOMAIN = 'https://deadpixeltest.cc';
@@ -18,14 +24,27 @@ export const SEO: React.FC<SEOProps> = ({
   description, 
   canonical, 
   type = 'website', 
-  image = '/og-image.jpg', // Ensure you have a default OG image in public folder
+  image = '/og-image.jpg', 
   keywords = [],
-  jsonLd
+  jsonLd,
+  breadcrumbs
 }) => {
   const siteTitle = 'DeadPixelTest.cc';
   const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
   const url = canonical ? `${DOMAIN}${canonical}` : DOMAIN;
   const fullImage = image.startsWith('http') ? image : `${DOMAIN}${image}`;
+
+  // Construct Breadcrumb Schema
+  const breadcrumbSchema = breadcrumbs ? {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": breadcrumbs.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": `${DOMAIN}${item.path}`
+    }))
+  } : null;
 
   return (
     <Helmet>
@@ -53,6 +72,13 @@ export const SEO: React.FC<SEOProps> = ({
       {jsonLd && (
         <script type="application/ld+json">
           {JSON.stringify(jsonLd)}
+        </script>
+      )}
+      
+      {/* Breadcrumb Schema */}
+      {breadcrumbSchema && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
         </script>
       )}
     </Helmet>
