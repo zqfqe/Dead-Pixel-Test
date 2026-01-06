@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye } from 'lucide-react';
+import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye, Zap, Brain } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 // ... (Keep existing Type definitions and GameState logic exactly the same)
 type GameState = 'idle' | 'waiting' | 'ready' | 'finished' | 'early';
@@ -339,18 +340,64 @@ const ReactionTimeTest: React.FC = () => {
           </div>
         )}
 
-        {/* --- Technical Note --- */}
-        <div className="mt-12 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 max-w-4xl mx-auto flex gap-4">
-          <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
-          <div className="space-y-2">
-            <p>
-              <strong className="text-blue-400">Science Fact:</strong> Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms). You should score 30-50ms faster in Audio Mode!
-            </p>
-            <ul className="list-disc pl-4 space-y-1 text-xs">
-              <li><strong>Monitor Lag:</strong> Visual mode includes input lag + display response time + refresh delay.</li>
-              <li><strong>Audio Latency:</strong> Audio mode relies on sound card latency, which is typically lower than total display chain latency on 60Hz screens.</li>
-            </ul>
-          </div>
+        {/* --- Deep Content Section for SEO --- */}
+        <section className="mt-24 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Brain className="text-blue-500" /> Human Benchmarks
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    The average human visual reaction time is approximately <strong>215 to 250 milliseconds (ms)</strong>. Professional e-sports athletes often achieve scores between 150-180ms.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Auditory Reflex:</strong> Sound reaches the brain faster than visual processing. Expect your Audio Test score to be 30-50ms faster (around 170ms average).
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Zap className="text-yellow-500" /> Hardware Latency (Input Lag)
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Your score includes your biological reaction + computer latency. A standard 60Hz monitor adds ~16ms of delay. A wireless mouse can add 10-20ms.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Tip:</strong> For the best score, use a wired mouse and a high refresh rate monitor (144Hz or higher).
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4">Age Factors</h3>
+              <p className="text-sm text-neutral-400 mb-6">
+                 Reaction time naturally declines with age. This decline typically starts around age 24.
+              </p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age 18-24</strong>
+                    <span className="text-green-400 font-bold">~210ms</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age 25-35</strong>
+                    <span className="text-blue-400 font-bold">~220ms</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age 35-45</strong>
+                    <span className="text-yellow-400 font-bold">~240ms</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age 45+</strong>
+                    <span className="text-red-400 font-bold">~270ms+</span>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tools/reaction-time" />
         </div>
 
       </div>

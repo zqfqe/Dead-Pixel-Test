@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Gamepad2, Zap, Target, Activity, RefreshCw, AlertCircle, Settings2, Trash2, MousePointer2 } from 'lucide-react';
+import { Gamepad2, Zap, Target, Activity, RefreshCw, AlertCircle, Settings2, Trash2, MousePointer2, Info, Crosshair, Move } from 'lucide-react';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 // --- TYPES ---
 type ControllerLayout = 'xbox' | 'playstation' | 'nintendo';
@@ -370,7 +371,6 @@ const ControllerTest: React.FC = () => {
     );
   }
 
-  // Active state renderer is same as before, just ensuring SEO component is updated inside
   return (
     <>
       <SEO 
@@ -388,11 +388,6 @@ const ControllerTest: React.FC = () => {
         }}
       />
       <div className="max-w-7xl mx-auto py-12 px-4 lg:px-8 animate-fade-in">
-        {/* ... (Rest of the JSX remains identical to previous version, just adding SEO update at top) ... */}
-        {/* To save tokens and follow instruction 'minimal updates', I will assume the rest of the render body is preserved if I include the header logic above. 
-            However, the 'return' block needs to be complete in the <change> tag. 
-            I will include the full return block.
-        */}
         
         {/* --- HEADER --- */}
         <div className="bg-neutral-900/50 border border-neutral-800 p-6 rounded-2xl mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -572,6 +567,57 @@ const ControllerTest: React.FC = () => {
           </div>
 
         </div>
+
+        {/* SEO Content Section */}
+        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Crosshair className="text-red-500" /> Stick Drift & Dead Zones
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    <strong>Stick Drift:</strong> If the crosshair in the "Stick Analysis" tool moves or jitters when you aren't touching the controller, you have drift.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Dead Zone:</strong> The area in the center where no input is registered. If you have drift, increasing the Dead Zone in your game settings (e.g., from 0.05 to 0.10) can often fix the symptom.
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Move className="text-blue-500" /> Circularity Error
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Rotate your stick along the outer edge. A perfect controller should trace a perfect circle.
+                 </p>
+                 <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
+                    <li><strong>&lt; 10% Error:</strong> Excellent. Pro-grade controller.</li>
+                    <li><strong>10% - 15% Error:</strong> Average. Standard for Xbox/PS5 controllers.</li>
+                    <li><strong>&gt; 20% Error:</strong> Poor. You may lose speed or precision in diagonal movements.</li>
+                 </ul>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Info className="text-yellow-500" /> Troubleshooting Connection Issues
+              </h3>
+              <p className="text-sm text-neutral-400 mb-4">
+                 If your controller isn't detected:
+              </p>
+              <ol className="text-sm text-neutral-400 list-decimal pl-4 space-y-2">
+                 <li><strong>Press a button:</strong> Browsers do not detect gamepads until a button is pressed for security reasons.</li>
+                 <li><strong>Use Chrome/Edge:</strong> These browsers have the best Gamepad API support. Firefox may require config tweaks.</li>
+                 <li><strong>Check Drivers:</strong> For Xbox controllers on PC, ensure the "Xbox Accessories" app is updated. For PS5 (DualSense), you may need third-party tools like DS4Windows for full compatibility in some apps.</li>
+              </ol>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tools/controller" />
+        </div>
+
       </div>
     </>
   );

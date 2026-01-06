@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { MousePointer2, Activity, Zap, Info, RotateCcw } from 'lucide-react';
+import { MousePointer2, Activity, Zap, Info, RotateCcw, Monitor, Gamepad2 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 // Configuration
 const GRAPH_POINTS = 100;
@@ -247,7 +248,7 @@ const MousePollingTest: React.FC = () => {
         </div>
 
         {/* Info Section */}
-        <div className="mt-16 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 flex gap-4 max-w-3xl mx-auto">
+        <div className="mt-16 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 flex gap-4 max-w-3xl mx-auto mb-16">
            <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
            <div className="space-y-2">
               <p>
@@ -259,6 +260,56 @@ const MousePollingTest: React.FC = () => {
                  Modern browsers (Chrome 75+) use <code>getCoalescedEvents()</code> to expose high-frequency mouse updates. If you are stuck at 60Hz/144Hz, ensure your browser has hardware acceleration enabled.
               </p>
            </div>
+        </div>
+
+        {/* SEO Content Section */}
+        <section className="mt-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Zap className="text-yellow-500" /> 125Hz vs 500Hz vs 1000Hz
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Polling rate measures how often your mouse reports its position to your computer.
+                 </p>
+                 <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
+                    <li><strong>125Hz:</strong> Standard office mice. Reports every 8ms. Can feel "floaty" in games.</li>
+                    <li><strong>500Hz:</strong> Gaming standard. Reports every 2ms. Smooth and stable.</li>
+                    <li><strong>1000Hz:</strong> Pro gaming standard. Reports every 1ms.</li>
+                 </ul>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Monitor className="text-blue-500" /> Why 4000Hz/8000Hz?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Newer mice (Razer HyperPolling, Logitech Superlight 2) support up to 8000Hz (0.125ms delay). 
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Is it worth it?</strong> Only if you have a 240Hz+ monitor. On 60Hz screens, the visual difference is negligible, and high polling rates can actually cause CPU stutter in some older games.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Gamepad2 className="text-purple-500" /> Troubleshooting Stutter
+              </h3>
+              <p className="text-sm text-neutral-400 mb-2">
+                 If your game stutters or drops FPS when you move your mouse:
+              </p>
+              <ol className="text-sm text-neutral-400 list-decimal pl-4 space-y-2">
+                 <li>Lower your polling rate from 1000Hz to 500Hz in your mouse software.</li>
+                 <li>Some older game engines cannot handle 1000 updates per second.</li>
+                 <li>Ensure your CPU is not maxing out at 100% usage.</li>
+              </ol>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tools/mouse-polling" />
         </div>
 
       </div>
