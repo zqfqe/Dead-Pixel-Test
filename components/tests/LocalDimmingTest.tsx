@@ -336,6 +336,38 @@ const LocalDimmingTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Local Dimming', path: '/tests/local-dimming' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Local Dimming Test",
+              "url": "https://deadpixeltest.cc/tests/local-dimming",
+              "description": "Test FALD and Mini-LED monitors for blooming, halo effects, and zone transition latency.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Blooming / Halo Effect?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Blooming creates a glow or halo around bright objects on dark backgrounds. It occurs when a backlight dimming zone is larger than the bright object it's illuminating, causing light to spill into adjacent dark areas."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to check for Local Dimming Zones?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use the 'Starfield' pattern or the 'Box' tool. Move a small white box across a black screen. If you see blocky squares lighting up behind the box as it moves, those are your dimming zones activating."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Local Dimming / Blooming"

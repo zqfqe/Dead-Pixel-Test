@@ -6,9 +6,6 @@ import { SEO } from '../common/SEO';
 // To save space in this response, I am omitting the large ROWS_MAIN, ROWS_FUNC, ROWS_NAV, ROWS_NUM arrays and the 'Key' component definition.
 // Assume they are here exactly as they were in the previous file.
 
-// --- RE-INSERT DATA & COMPONENTS HERE IF NEEDED, BUT FOR THIS CHANGE XML I WILL SKIP TO THE MAIN COMPONENT ---
-// Since I must output the FULL content, I will include them to ensure file integrity.
-
 interface KeyDef {
   code: string;
   label: string;
@@ -231,6 +228,38 @@ const KeyboardTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Keyboard Tester', path: '/tools/keyboard' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Online Keyboard Tester",
+              "url": "https://deadpixeltest.cc/tools/keyboard",
+              "description": "Test mechanical and laptop keyboards for dead keys, ghosting, and N-Key Rollover.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Keyboard Ghosting (NKRO)?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Ghosting occurs when a keyboard cannot register multiple keys pressed simultaneously. N-Key Rollover (NKRO) means the keyboard can register all keys at once."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to fix Key Chatter?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Key Chatter (double typing) is often caused by dust in the switch. Try cleaning the switch with compressed air or isopropyl alcohol."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <div className="max-w-[1600px] mx-auto py-12 px-4 lg:px-8 animate-fade-in font-sans">
         

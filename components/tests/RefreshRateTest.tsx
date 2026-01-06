@@ -148,6 +148,38 @@ const RefreshRateTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Refresh Rate Test', path: '/tests/refresh-rate' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Frame Skipping Test",
+              "url": "https://deadpixeltest.cc/tests/refresh-rate",
+              "description": "Verify your monitor's overclocked refresh rate (Hz) and check for dropped frames (skipping).",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "How to check for Frame Skipping?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Why is my 144Hz monitor showing 60Hz?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Check your Windows Display Settings > Advanced Display Settings to ensure the refresh rate is set correctly. Also, verify that your browser has 'Hardware Acceleration' enabled."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Refresh Rate & Frame Skipping"

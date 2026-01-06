@@ -435,6 +435,38 @@ const AudioSyncTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Audio Sync', path: '/tests/audio-sync' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Audio/Video Sync Tester",
+              "url": "https://deadpixeltest.cc/tests/audio-sync",
+              "description": "Measure and fix audio delay/latency (lip sync) issues between your display and speakers.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "How to fix Lip Sync Delay?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Most modern TVs and AV Receivers have an 'Audio Delay' or 'Lip Sync' setting. Use this tool to find the exact millisecond offset (e.g., +100ms) and enter that value in your device settings."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Is Bluetooth lag normal?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Standard Bluetooth audio typically introduces 100-200ms of latency, which is noticeable in gaming and movies. Use AptX Low Latency codecs or wired connections for better sync."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Audio/Video Sync Test"
