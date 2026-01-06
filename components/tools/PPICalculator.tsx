@@ -103,13 +103,42 @@ const PPICalculator: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "PPI & Retina Distance Calculator",
-          "url": "https://deadpixeltest.cc/tools/ppi-calculator",
-          "description": "Calculate Pixels Per Inch (PPI), Dot Pitch, and Retina Viewing Distance for any screen size and resolution.",
-          "applicationCategory": "UtilitiesApplication",
-          "operatingSystem": "Web Browser",
-          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "PPI & Retina Distance Calculator",
+              "url": "https://deadpixeltest.cc/tools/ppi-calculator",
+              "description": "Calculate Pixels Per Inch (PPI), Dot Pitch, and Retina Viewing Distance for any screen size and resolution.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is a good PPI for a monitor?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "For standard desktop use at arm's length (24-30 inches), 100-110 PPI is ideal (e.g., 24\" 1080p or 27\" 1440p). For laptops, aim for 140+ PPI. For phones, 300+ PPI is standard."
+                }
+              }, {
+                "@type": "Question",
+                "name": "What is Retina Distance?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Retina Distance is the minimum viewing distance where the human eye with 20/20 vision can no longer distinguish individual pixels. Sitting closer than this distance may result in a pixelated image."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Does higher PPI mean better quality?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Generally, yes. Higher PPI (Pixel Density) results in sharper text and smoother curves. However, extremely high PPI (like 4K on a 13-inch laptop) requires OS scaling to make text readable."
+                }
+              }]
+            }
+          ]
         }}
       />
       <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in font-sans">

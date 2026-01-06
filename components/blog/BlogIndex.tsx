@@ -16,6 +16,25 @@ const BlogIndex: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Blog', path: '/blog' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "DeadPixelTest Display Knowledge Base",
+          "description": "Expert guides on monitor calibration and screen technology.",
+          "url": "https://deadpixeltest.cc/blog",
+          "blogPost": BLOG_POSTS.map((post, index) => ({
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "description": post.excerpt,
+            "image": post.coverImage,
+            "datePublished": post.date,
+            "author": {
+              "@type": "Person",
+              "name": post.author
+            },
+            "url": `https://deadpixeltest.cc/blog/${post.slug}`
+          }))
+        }}
       />
       <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in">
         

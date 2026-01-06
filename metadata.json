@@ -1,5 +1,22 @@
 {
-  "name": "部署DeadPixelTest.cc Clone",
-  "description": "A comprehensive suite of display testing tools including Dead Pixel, Uniformity, Ghosting, and Input tests.",
+  "name": "DeadPixelTest - Display Tools",
+  "short_name": "DeadPixelTest",
+  "description": "Professional suite of display testing tools including Dead Pixel, Uniformity, Ghosting, and Input tests.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "requestFramePermissions": []
 }
