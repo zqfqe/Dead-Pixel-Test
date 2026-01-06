@@ -98,6 +98,8 @@ const TouchTest: React.FC = () => {
     // Update active touches list
     for (let i = 0; i < e.touches.length; i++) {
         const t = e.touches[i];
+        // Cast to any to access radiusX and force which are not standard in all TS definitions
+        const touchAny = t as any;
         const color = COLORS[t.identifier % COLORS.length];
         
         const x = t.clientX - rect.left;
@@ -107,8 +109,8 @@ const TouchTest: React.FC = () => {
             id: t.identifier,
             x,
             y,
-            radius: t.radiusX || 10,
-            force: t.force || 0.5, // 0-1
+            radius: touchAny.radiusX || 10,
+            force: touchAny.force || 0.5, // 0-1
             color
         });
 
