@@ -4,10 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
+    <meta name="description" content="The #1 Dead Pixel Test. Check your monitor for dead or stuck pixels. Free online screen test tools for uniformity, backlight bleed, ghosting, and motion blur." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <title>DeadPixelTest - Display Calibration</title>
+    <title>DeadPixelTest - Display Calibration & Monitor Test</title>
     <!-- Keeping Tailwind CDN for simplicity without setting up PostCSS build chain for CSS files -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
@@ -59,10 +60,17 @@
       }
     </script>
     <style>
-      body {
+      /* Critical CSS to prevent white flash before Tailwind loads */
+      html, body {
         background-color: #000000;
         color: #ffffff;
-        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+      
+      body {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         overflow-x: hidden;

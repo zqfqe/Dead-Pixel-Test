@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 // Standard pattern for pixel testing
 const COLORS = [
@@ -30,6 +30,8 @@ const COLORS = [
 const DeadPixelTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   
   // Test State
   const [colorIndex, setColorIndex] = useState(0);
@@ -468,12 +470,17 @@ const DeadPixelTest: React.FC = () => {
   }
 
   // --- Landing View ---
+  // SEO logic: If on homepage ('/'), use root canonical. If on '/tests/dead-pixel', use that.
   return (
     <>
       <SEO 
         title="Dead Pixel Test" 
         description="The #1 Dead Pixel Test. Check your monitor for dead or stuck pixels. Includes repair tools like RGB flashing and white noise."
-        canonical="/tests/dead-pixel"
+        canonical={isHome ? '/' : '/tests/dead-pixel'}
+        breadcrumbs={isHome ? [] : [
+          { name: 'Home', path: '/' },
+          { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }
+        ]}
         keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'white screen']}
         jsonLd={{
           "@context": "https://schema.org",
