@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, Monitor, Zap, Info, Camera } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 const RefreshRateTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
@@ -137,26 +138,38 @@ const RefreshRateTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Refresh Rate & Frame Skipping"
-      description="Validate your monitor's true refresh rate and check for dropped frames (common in overclocked monitors). Requires a smartphone camera for the Skipping Test."
-      onStart={startTest}
-    >
-      <InfoCard title="How to Check Frame Skipping">
-        <ol className="list-decimal pl-4 space-y-2 text-sm text-neutral-400 mt-2">
-            <li>Start the test. A white block will move across the grid.</li>
-            <li>Open your phone camera in <strong>Pro/Manual Mode</strong>.</li>
-            <li>Set Shutter Speed to roughly <strong>1/5s</strong> or <strong>1/10s</strong>.</li>
-            <li>Take a photo of the moving block.</li>
-            <li><strong>Result:</strong> If the trail of blocks is continuous, it's perfect. If there are black gaps between blocks, your monitor is skipping frames.</li>
-        </ol>
-      </InfoCard>
-      <InfoCard title="Hz vs FPS">
-        <p>
-          This tool measures <strong>Browser FPS</strong>. On a 144Hz monitor, this should read 144. If it's capped at 60, check your Windows Display Settings or Browser Hardware Acceleration settings.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Refresh Rate & Frame Skipping Test (Hz Check)" 
+        description="Check your monitor's real refresh rate (Hz) and detect frame skipping. Essential for overclocked monitors to ensure they aren't dropping frames."
+        canonical="/tests/refresh-rate"
+        keywords={['refresh rate test', 'hz test', 'frame skipping test', 'monitor overclock test', 'fps test', 'vsync test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Refresh Rate Test', path: '/tests/refresh-rate' }
+        ]}
+      />
+      <TestIntro
+        title="Refresh Rate & Frame Skipping"
+        description="Validate your monitor's true refresh rate and check for dropped frames (common in overclocked monitors). Requires a smartphone camera for the Skipping Test."
+        onStart={startTest}
+      >
+        <InfoCard title="How to Check Frame Skipping">
+          <ol className="list-decimal pl-4 space-y-2 text-sm text-neutral-400 mt-2">
+              <li>Start the test. A white block will move across the grid.</li>
+              <li>Open your phone camera in <strong>Pro/Manual Mode</strong>.</li>
+              <li>Set Shutter Speed to roughly <strong>1/5s</strong> or <strong>1/10s</strong>.</li>
+              <li>Take a photo of the moving block.</li>
+              <li><strong>Result:</strong> If the trail of blocks is continuous, it's perfect. If there are black gaps between blocks, your monitor is skipping frames.</li>
+          </ol>
+        </InfoCard>
+        <InfoCard title="Hz vs FPS">
+          <p>
+            This tool measures <strong>Browser FPS</strong>. On a 144Hz monitor, this should read 144. If it's capped at 60, check your Windows Display Settings or Browser Hardware Acceleration settings.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

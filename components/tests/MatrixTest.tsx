@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Zap, Droplets, Languages, Sparkles } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type MatrixColor = 'green' | 'blue' | 'red' | 'white' | 'gold';
 type Charset = 'katakana' | 'binary' | 'latin';
@@ -296,19 +297,31 @@ const MatrixTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Matrix Rain Effect"
-      description="A visual treat and a good test for OLED motion handling and black levels. Ensure the black background stays deep black while the green text pops."
-      startButtonText="Enter The Matrix"
-      onStart={startTest}
-    >
-       <InfoCard title="OLED Black Test">
-        <p>
-          On an OLED or Mini-LED display, the black background between the characters should be perfectly black (pixels off). 
-          On standard IPS/TN panels, you might see a grayish glow (backlight bleed).
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Matrix Rain Effect - OLED Black & Motion Test" 
+        description="A visual test featuring the iconic Matrix digital rain. Perfect for testing OLED true blacks, motion clarity, and display aesthetics."
+        canonical="/tests/matrix"
+        keywords={['matrix rain effect', 'matrix code screen', 'oled black test', 'motion clarity test', 'screen saver test', 'visualizer']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Matrix Rain', path: '/tests/matrix' }
+        ]}
+      />
+      <TestIntro
+        title="Matrix Rain Effect"
+        description="A visual treat and a good test for OLED motion handling and black levels. Ensure the black background stays deep black while the green text pops."
+        startButtonText="Enter The Matrix"
+        onStart={startTest}
+      >
+         <InfoCard title="OLED Black Test">
+          <p>
+            On an OLED or Mini-LED display, the black background between the characters should be perfectly black (pixels off). 
+            On standard IPS/TN panels, you might see a grayish glow (backlight bleed).
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

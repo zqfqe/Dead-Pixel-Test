@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, LayoutGrid, Type, Grip, Waves } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type Pattern = 'cards' | 'text' | 'gamma' | 'gradient';
 type BgMode = 'gray' | 'black' | 'white';
@@ -265,22 +266,34 @@ const ViewingAngleTest: React.FC = () => {
 
   // Fallback / Landing UI
   return (
-    <TestIntro
-      title="Viewing Angle Test"
-      description="Check color stability and gamma shift from different angles. Crucial for determining if your 'IPS' panel is actually a low-quality TN or VA panel."
-      onStart={startTest}
-    >
-      <InfoCard title="The 'Death from Below'">
-        <p>
-          TN panels have a characteristic flaw: when viewed from below, the image darkens and colors invert (like a photo negative). IPS panels remain stable.
-        </p>
-      </InfoCard>
-      <InfoCard title="Gamma Shift (VA)">
-        <p>
-          VA panels have deep blacks but suffer from 'Gamma Shift'. The center of the screen looks darker than the edges. This causes 'Black Crush' in the center of your vision.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Viewing Angle Test - IPS vs TN vs VA" 
+        description="Check your monitor's viewing angles. Detect gamma shift (VA panels), color inversion (TN panels), and color wash-out from off-center angles."
+        canonical="/tests/viewing-angle"
+        keywords={['viewing angle test', 'monitor gamma shift', 'ips glow test', 'tn panel inversion', 'va panel gamma shift', 'monitor color consistency']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Viewing Angle', path: '/tests/viewing-angle' }
+        ]}
+      />
+      <TestIntro
+        title="Viewing Angle Test"
+        description="Check color stability and gamma shift from different angles. Crucial for determining if your 'IPS' panel is actually a low-quality TN or VA panel."
+        onStart={startTest}
+      >
+        <InfoCard title="The 'Death from Below'">
+          <p>
+            TN panels have a characteristic flaw: when viewed from below, the image darkens and colors invert (like a photo negative). IPS panels remain stable.
+          </p>
+        </InfoCard>
+        <InfoCard title="Gamma Shift (VA)">
+          <p>
+            VA panels have deep blacks but suffer from 'Gamma Shift'. The center of the screen looks darker than the edges. This causes 'Black Crush' in the center of your vision.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

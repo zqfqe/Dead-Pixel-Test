@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, RotateCcw, Hand, Fingerprint, Maximize2 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 interface TouchPoint {
   id: number;
@@ -221,23 +222,35 @@ const TouchTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Touch Screen Test"
-      description="Test your digitizer for dead zones, phantom touches, and multi-touch capability. Supports pressure sensitivity on compatible devices (iPad/Surface)."
-      startButtonText="Start Touch Test"
-      onStart={startTest}
-    >
-      <InfoCard title="Multi-Touch Check">
-        <p>
-          Try placing 10 fingers on the screen at once. High-quality digitizers support 10+ points. Budget devices may ghost or merge points when more than 5 fingers are used.
-        </p>
-      </InfoCard>
-      <InfoCard title="Linearity Test">
-        <p>
-          Use a ruler (plastic, not metal) to draw a straight diagonal line slowly. If the line becomes wavy or jagged ("jitter"), the digitizer's grid resolution is low or noisy.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Touch Screen Test - Multi-Touch & Digitizer Check" 
+        description="Test your smartphone or tablet touch screen. Check for dead zones, ghost touches, and verify multi-touch support (up to 10 fingers)."
+        canonical="/tools/touch"
+        keywords={['touch screen test', 'multi touch test', 'digitizer test', 'android screen test', 'ipad screen test', 'dead zone test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Touch Test', path: '/tools/touch' }
+        ]}
+      />
+      <TestIntro
+        title="Touch Screen Test"
+        description="Test your digitizer for dead zones, phantom touches, and multi-touch capability. Supports pressure sensitivity on compatible devices (iPad/Surface)."
+        startButtonText="Start Touch Test"
+        onStart={startTest}
+      >
+        <InfoCard title="Multi-Touch Check">
+          <p>
+            Try placing 10 fingers on the screen at once. High-quality digitizers support 10+ points. Budget devices may ghost or merge points when more than 5 fingers are used.
+          </p>
+        </InfoCard>
+        <InfoCard title="Linearity Test">
+          <p>
+            Use a ruler (plastic, not metal) to draw a straight diagonal line slowly. If the line becomes wavy or jagged ("jitter"), the digitizer's grid resolution is low or noisy.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 
