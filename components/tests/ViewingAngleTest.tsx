@@ -134,7 +134,7 @@ const ViewingAngleTest: React.FC = () => {
            <div className="w-full h-full flex flex-col">
               <div className="flex-1 bg-gradient-to-b from-black via-gray-500 to-white relative">
                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-black/50 text-white px-3 py-1 rounded text-sm backdrop-blur">Vertical Luma (Black -> White)</span>
+                    <span className="bg-black/50 text-white px-3 py-1 rounded text-sm backdrop-blur">Vertical Luma (Black to White)</span>
                  </div>
               </div>
               <div className="flex-1 bg-gradient-to-r from-[#ff0000] via-[#00ff00] to-[#0000ff] relative">
@@ -261,26 +261,6 @@ const ViewingAngleTest: React.FC = () => {
         </div>
       </div>
     );
-  }
+  };
 
-  return (
-    <TestIntro
-      title="Viewing Angle Test"
-      description="Check for color shifting and gamma shifting when viewing the screen from an angle. This is particularly useful for assessing the quality of TN and VA panels versus IPS/OLED."
-      onStart={startTest}
-    >
-      <InfoCard title="Gamma Shift">
-        <p>
-          VA panels often suffer from <strong>Gamma Shift</strong>, where the center of the screen crushes blacks (looks darker) than the edges. Use the <strong>Gamma Shift</strong> pattern to visualize this effect clearly.
-        </p>
-      </InfoCard>
-      <InfoCard title="Color Inversion">
-        <p>
-          TN panels are notorious for vertical viewing angles. Use the <strong>Gradient</strong> test and look from below the monitor. If the colors invert (negative image), it's likely a TN panel.
-        </p>
-      </InfoCard>
-    </TestIntro>
-  );
-};
-
-export default ViewingAngleTest;
+  export default ViewingAngleTest;
