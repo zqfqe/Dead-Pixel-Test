@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Monitor, Maximize2, Scan } from 'lucide-react';
+import { Menu, X, ChevronDown, Monitor, Maximize2, Scan, Activity, Command } from 'lucide-react';
 import { MENU_ITEMS } from '../../data/menu';
 import { MenuItem } from '../../types';
 
@@ -41,6 +41,12 @@ const Header = () => {
   // Telemetry State
   const [windowSize, setWindowSize] = useState({ w: window.innerWidth, h: window.innerHeight });
   const [pixelRatio, setPixelRatio] = useState(window.devicePixelRatio);
+  const [fps, setFps] = useState(0);
+  
+  // FPS Logic
+  const requestRef = useRef<number>();
+  const prevTimeRef = useRef<number>();
+  const frameCountRef = useRef(0);
 
   useEffect(() => {
     setIsMobileOpen(false);
@@ -53,11 +59,30 @@ const Header = () => {
         setPixelRatio(window.devicePixelRatio);
     };
     
+    // FPS Loop
+    const animate = (time: number) => {
+        if (prevTimeRef.current !== undefined) {
+            frameCountRef.current++;
+            const delta = time - prevTimeRef.current;
+            if (delta >= 1000) {
+                setFps(Math.round((frameCountRef.current * 1000) / delta));
+                frameCountRef.current = 0;
+                prevTimeRef.current = time;
+            }
+        } else {
+            prevTimeRef.current = time;
+        }
+        requestRef.current = requestAnimationFrame(animate);
+    };
+    
+    requestRef.current = requestAnimationFrame(animate);
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
+    
     return () => {
         window.removeEventListener('scroll', handleScroll);
         window.removeEventListener('resize', handleResize);
+        if (requestRef.current) cancelAnimationFrame(requestRef.current);
     }
   }, []);
 
@@ -116,16 +141,25 @@ const Header = () => {
           </nav>
 
           {/* 3. Right: Telemetry & Mobile Toggle */}
-          <div className="flex items-center justify-end gap-4 z-20">
+          <div className="flex items-center justify-end gap-3 z-20">
+            {/* Quick Command Hint */}
+            <div className="hidden lg:flex items-center gap-1 text-[10px] font-mono text-neutral-600 border border-white/5 px-2 py-1 rounded bg-white/5 mr-2">
+                <Command size={10} /> + K
+            </div>
+
             {/* Telemetry (Desktop Only) */}
-            <div className="hidden md:flex items-center gap-3 text-[10px] font-mono text-neutral-600 uppercase tracking-wider">
-               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default">
+            <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-neutral-600 uppercase tracking-wider">
+               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Viewport Size">
                   <Monitor size={10} />
-                  <span>{windowSize.w} <span className="text-neutral-700">x</span> {windowSize.h}</span>
+                  <span>{windowSize.w}x{windowSize.h}</span>
                </div>
-               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default">
+               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Pixel Ratio">
                   <Maximize2 size={10} />
-                  <span>DPI: {pixelRatio.toFixed(1)}</span>
+                  <span>DPI:{pixelRatio.toFixed(1)}</span>
+               </div>
+               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border bg-white/5 transition-colors cursor-default ${fps < 30 ? 'text-red-500 border-red-900/30' : fps > 100 ? 'text-green-500 border-green-900/30' : 'text-blue-500 border-blue-900/30'}`} title="Real-time Refresh Rate">
+                  <Activity size={10} />
+                  <span>{fps} Hz</span>
                </div>
             </div>
 

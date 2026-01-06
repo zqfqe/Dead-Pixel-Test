@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
 
 // Lazy Load Pages - Phase 1
@@ -47,6 +48,7 @@ const App: React.FC = () => {
     <Router>
       <div className="min-h-screen font-sans bg-black text-white flex flex-col">
         <Header />
+        <CommandPalette />
         
         {/* Main Content Area */}
         <main className="w-full flex-1 pt-24 transition-all duration-300">

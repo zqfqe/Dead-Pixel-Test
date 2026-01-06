@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info } from 'lucide-react';
+import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye } from 'lucide-react';
 import { Button } from '../common/Button';
 
 type GameState = 'idle' | 'waiting' | 'ready' | 'finished' | 'early';
+type Mode = 'visual' | 'audio';
 
 const RANKS = [
   { threshold: 150, title: 'Godlike', color: 'text-purple-400' },
@@ -14,11 +15,41 @@ const RANKS = [
 
 const ReactionTimeTest: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>('idle');
+  const [mode, setMode] = useState<Mode>('visual');
   const [result, setResult] = useState<number>(0);
   const [history, setHistory] = useState<number[]>([]);
   
   const timerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // Initialize audio on first user interaction
+  const initAudio = () => {
+    if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume();
+    }
+  };
+
+  const playBeep = () => {
+    if (!audioContextRef.current) return;
+    const osc = audioContextRef.current.createOscillator();
+    const gain = audioContextRef.current.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioContextRef.current.destination);
+    
+    osc.frequency.value = 1000;
+    osc.type = 'square';
+    
+    gain.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.1);
+    
+    osc.start();
+    osc.stop(audioContextRef.current.currentTime + 0.1);
+  };
 
   // Keyboard support
   useEffect(() => {
@@ -30,16 +61,20 @@ const ReactionTimeTest: React.FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState]); // Re-bind isn't strictly necessary but keeps logic clean with closure if needed
+  }, [gameState, mode]);
 
   const startGame = () => {
+    initAudio();
     setGameState('waiting');
-    const randomDelay = Math.floor(Math.random() * 2500) + 1500; // 1.5s to 4.0s for unpredictability
+    const randomDelay = Math.floor(Math.random() * 2500) + 1500; // 1.5s to 4.0s
     
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
       setGameState('ready');
       startTimeRef.current = performance.now();
+      if (mode === 'audio') {
+          playBeep();
+      }
     }, randomDelay);
   };
 
@@ -54,9 +89,6 @@ const ReactionTimeTest: React.FC = () => {
       // Successful click
       const endTime = performance.now();
       const rawReactionTime = endTime - startTimeRef.current;
-      
-      // Anti-cheat / Biological limit check (< 80ms is usually prediction or luck)
-      // But we allow it, just maybe flag it in a real app.
       
       const reactionTime = Math.round(rawReactionTime);
       setResult(reactionTime);
@@ -74,16 +106,22 @@ const ReactionTimeTest: React.FC = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
   };
 
+  const switchMode = (newMode: Mode) => {
+      setMode(newMode);
+      resetHistory();
+  };
+
   // Stats Calculations
   const average = history.length > 0 ? Math.round(history.reduce((a, b) => a + b, 0) / history.length) : 0;
   const best = history.length > 0 ? Math.min(...history) : 0;
   
+  // Custom Rank logic for Audio (Audio is usually 40ms faster than visual)
+  // We can adjust threshold or just keep same for comparison
   const currentRank = RANKS.find(r => average <= r.threshold) || RANKS[RANKS.length - 1];
 
   // Distribution Data for Chart
   const distribution = useMemo(() => {
     if (history.length === 0) return [];
-    // Buckets: <150, 150-200, 200-250, 250-300, 300-400, >400
     const buckets = [0, 0, 0, 0, 0, 0];
     history.forEach(t => {
       if (t < 150) buckets[0]++;
@@ -103,21 +141,21 @@ const ReactionTimeTest: React.FC = () => {
   const config = {
     idle: {
       bg: 'bg-[#111111] hover:bg-[#1a1a1a]',
-      icon: <MousePointer2 size={48} className="text-blue-500" />,
-      title: 'Reaction Time Test',
-      sub: 'Click or Press SPACE to start.',
+      icon: mode === 'visual' ? <MousePointer2 size={48} className="text-blue-500" /> : <Volume2 size={48} className="text-blue-500" />,
+      title: mode === 'visual' ? 'Visual Reflex' : 'Audio Reflex',
+      sub: mode === 'visual' ? 'Click when screen turns GREEN.' : 'Click when you HEAR the beep.',
       textColor: 'text-white'
     },
     waiting: {
       bg: 'bg-red-600',
-      icon: <Timer size={48} className="text-white animate-pulse" />,
-      title: 'Wait for Green...',
-      sub: 'Do not click yet.',
+      icon: mode === 'visual' ? <Timer size={48} className="text-white animate-pulse" /> : <Volume2 size={48} className="text-white opacity-50" />,
+      title: mode === 'visual' ? 'Wait for Green...' : 'Listen...',
+      sub: mode === 'visual' ? 'Do not click yet.' : 'Wait for the sound.',
       textColor: 'text-white'
     },
     ready: {
-      bg: 'bg-[#22c55e]', // Standard Tailwind Green-500
-      icon: <MousePointer2 size={48} className="text-white" />,
+      bg: 'bg-[#22c55e]',
+      icon: mode === 'visual' ? <MousePointer2 size={48} className="text-white" /> : <Volume2 size={64} className="text-white animate-bounce" />,
       title: 'CLICK NOW!',
       sub: '',
       textColor: 'text-white'
@@ -133,7 +171,7 @@ const ReactionTimeTest: React.FC = () => {
       bg: 'bg-orange-500',
       icon: <RotateCcw size={48} className="text-white" />,
       title: 'Too Soon!',
-      sub: 'You clicked before green. Try again.',
+      sub: 'You clicked before the signal.',
       textColor: 'text-white'
     }
   };
@@ -143,6 +181,24 @@ const ReactionTimeTest: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in select-none">
       
+      {/* --- Mode Switcher --- */}
+      <div className="flex justify-center mb-8">
+         <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex gap-1">
+            <button 
+                onClick={() => switchMode('visual')}
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'visual' ? 'bg-blue-600 text-white shadow-lg' : 'text-neutral-500 hover:text-white'}`}
+            >
+                <Eye size={16} /> Visual
+            </button>
+            <button 
+                onClick={() => switchMode('audio')}
+                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'audio' ? 'bg-blue-600 text-white shadow-lg' : 'text-neutral-500 hover:text-white'}`}
+            >
+                <Volume2 size={16} /> Audio
+            </button>
+         </div>
+      </div>
+
       {/* --- Main Game Area --- */}
       <div 
         className={`
@@ -244,12 +300,11 @@ const ReactionTimeTest: React.FC = () => {
         <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
         <div className="space-y-2">
           <p>
-            <strong className="text-blue-400">Hardware Latency Warning:</strong> Your score is affected by your hardware.
+            <strong className="text-blue-400">Science Fact:</strong> Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms). You should score 30-50ms faster in Audio Mode!
           </p>
           <ul className="list-disc pl-4 space-y-1 text-xs">
-            <li><strong>Monitor Refresh Rate:</strong> A 60Hz monitor adds ~16.6ms of delay compared to reality. A 144Hz monitor adds only ~7ms.</li>
-            <li><strong>Input Device:</strong> A gaming mouse/keyboard (1000Hz polling) is faster than a standard office bluetooth mouse (125Hz polling).</li>
-            <li><strong>Browser V-Sync:</strong> Browsers enforce V-Sync, which can add input lag. For the absolute accurate result, use exclusive fullscreen mode.</li>
+            <li><strong>Monitor Lag:</strong> Visual mode includes input lag + display response time + refresh delay.</li>
+            <li><strong>Audio Latency:</strong> Audio mode relies on sound card latency, which is typically lower than total display chain latency on 60Hz screens.</li>
           </ul>
         </div>
       </div>
