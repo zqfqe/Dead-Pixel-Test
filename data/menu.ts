@@ -9,7 +9,6 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Color Gradient", path: "/tests/color-gradient" },
   { title: "Color Distance", path: "/tests/color-distance" },
   { title: "Response Time", path: "/tests/response-time" },
-  { title: "Audio/Video Sync", path: "/tests/audio-sync" },
   { title: "Gamma", path: "/tests/gamma" },
   { title: "Test Patterns", path: "/tests/test-patterns" },
   { title: "Viewing Angle", path: "/tests/viewing-angle" },
@@ -24,7 +23,10 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Controller Test", path: "/tools/controller" },
   { title: "Touch Screen Test", path: "/tools/touch" },
 
-  { title: "CALCULATORS", path: "", isHeader: true },
+  { title: "AUDIO & UTILS", path: "", isHeader: true },
+  { title: "Speaker / Headphone Test", path: "/tools/speaker-test" },
+  { title: "Audio/Video Sync", path: "/tests/audio-sync" },
+  { title: "Physical Ruler", path: "/tools/ruler" },
   { title: "PPI Calculator", path: "/tools/ppi-calculator" },
 
   { title: "BLOG", path: "", isHeader: true },
