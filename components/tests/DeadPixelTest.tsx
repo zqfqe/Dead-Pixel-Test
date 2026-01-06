@@ -11,6 +11,7 @@ import {
   Waves
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 // Standard pattern for pixel testing
 const COLORS = [
@@ -467,28 +468,49 @@ const DeadPixelTest: React.FC = () => {
 
   // --- Landing View ---
   return (
-    <TestIntro
-      title="Dead Pixel Test"
-      description="The industry standard diagnostic suite. Includes solid color tests, Flashlight inspection, and advanced Stuck Pixel Repair modes (Strobe & Noise)."
-      onStart={startTest}
-      footerText="Press F11 for Best Experience"
-    >
-      <InfoCard title="Pixel Defects">
-        <div className="space-y-3">
-          <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off. Hard to fix.</p>
-          <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools.</p>
-        </div>
-      </InfoCard>
+    <>
+      <SEO 
+        title="Dead Pixel Test" 
+        description="The #1 Dead Pixel Test. Check your monitor for dead or stuck pixels. Includes repair tools like RGB flashing and white noise."
+        canonical="/tests/dead-pixel"
+        keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'white screen']}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Dead Pixel Test & Fixer",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": "Dead Pixel Locator, Stuck Pixel Fixer, Screen Burn-in Check"
+        }}
+      />
+      <TestIntro
+        title="Dead Pixel Test"
+        description="The industry standard diagnostic suite. Includes solid color tests, Flashlight inspection, and advanced Stuck Pixel Repair modes (Strobe & Noise)."
+        onStart={startTest}
+        footerText="Press F11 for Best Experience"
+      >
+        <InfoCard title="Pixel Defects">
+          <div className="space-y-3">
+            <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off. Hard to fix.</p>
+            <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools.</p>
+          </div>
+        </InfoCard>
 
-      <InfoCard title="Pro Controls">
-        <ul className="space-y-2 text-sm text-neutral-400 font-mono">
-          <li><span className="text-white">SPACE</span> : Auto Cycle</li>
-          <li><span className="text-white">1 - 9</span> : Direct Color</li>
-          <li><span className="text-white">F / G</span> : Flashlight / Grid</li>
-          <li><span className="text-white">Swipe</span> : Next/Prev Color</li>
-        </ul>
-      </InfoCard>
-    </TestIntro>
+        <InfoCard title="Pro Controls">
+          <ul className="space-y-2 text-sm text-neutral-400 font-mono">
+            <li><span className="text-white">SPACE</span> : Auto Cycle</li>
+            <li><span className="text-white">1 - 9</span> : Direct Color</li>
+            <li><span className="text-white">F / G</span> : Flashlight / Grid</li>
+            <li><span className="text-white">Swipe</span> : Next/Prev Color</li>
+          </ul>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 
