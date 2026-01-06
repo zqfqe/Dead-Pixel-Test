@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { Link } from 'react-router-dom';
 
 // Standard pattern for pixel testing
 const COLORS = [
@@ -476,16 +477,48 @@ const DeadPixelTest: React.FC = () => {
         keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'white screen']}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "Dead Pixel Test & Fixer",
-          "applicationCategory": "UtilitiesApplication",
-          "operatingSystem": "Web",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-          },
-          "featureList": "Dead Pixel Locator, Stuck Pixel Fixer, Screen Burn-in Check"
+          "@graph": [
+            {
+              "@type": "SoftwareApplication",
+              "name": "Dead Pixel Test & Fixer",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "featureList": "Dead Pixel Locator, Stuck Pixel Fixer, Screen Burn-in Check"
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is the difference between a dead and stuck pixel?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "A dead pixel is permanently off (black), typically caused by a failed transistor. A stuck pixel is frozen on a specific color (Red, Green, or Blue) and can often be fixed with software."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How do I fix a stuck pixel?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use the 'Strobe' or 'White Noise' tool on this page. Run it over the stuck area for 10-60 minutes to stimulate the liquid crystals."
+                }
+              }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Check for Dead Pixels",
+              "step": [
+                { "@type": "HowToStep", "text": "Clean your screen with a microfiber cloth." },
+                { "@type": "HowToStep", "text": "Click 'Start Test' to enter fullscreen mode." },
+                { "@type": "HowToStep", "text": "Use the arrow keys or click to cycle through solid colors (Red, Green, Blue, White, Black)." },
+                { "@type": "HowToStep", "text": "Inspect the screen closely for any dots that do not match the background color." }
+              ]
+            }
+          ]
         }}
       />
       <TestIntro
@@ -498,6 +531,7 @@ const DeadPixelTest: React.FC = () => {
           <div className="space-y-3">
             <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off. Hard to fix.</p>
             <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools.</p>
+            <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our repair guide &rarr;</Link>
           </div>
         </InfoCard>
 

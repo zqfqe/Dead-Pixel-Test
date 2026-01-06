@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Palette, MoveHorizontal, MoveVertical, Layers } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type GammaValue = '1.8' | '2.0' | '2.2' | '2.4' | '2.6';
 type Channel = 'gray' | 'red' | 'green' | 'blue';
@@ -214,22 +215,34 @@ const GammaTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Gamma Calibration"
-      description="Check if your monitor correctly translates digital values into light. Standard Gamma 2.2 ensures shadows aren't crushed and highlights aren't blown out."
-      onStart={startTest}
-    >
-      <InfoCard title="The Squint Test">
-        <p>
-          Sit back or squint your eyes. The solid inner circle should blend perfectly into the striped background. If the circle is darker, your gamma is too low. If brighter, your gamma is too high.
-        </p>
-      </InfoCard>
-      <InfoCard title="Color Balance">
-        <p>
-          Use the <strong>RGB Channels</strong>. It's common for monitors to have correct Gamma in Gray, but be misaligned in Blue (making dark scenes look cold) or Red (making skin tones look sunburnt).
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Monitor Gamma Calibration Test - 1.8, 2.2, 2.4" 
+        description="Calibrate your monitor gamma without hardware. Match the solid color to the stripes to find your screen's true gamma value (Standard 2.2 for Windows/Web)."
+        canonical="/tests/gamma"
+        keywords={['gamma test', 'monitor calibration', 'gamma 2.2 test', 'screen color test', 'display gamma', 'lcd inversion test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Gamma Test', path: '/tests/gamma' }
+        ]}
+      />
+      <TestIntro
+        title="Gamma Calibration"
+        description="Check if your monitor correctly translates digital values into light. Standard Gamma 2.2 ensures shadows aren't crushed and highlights aren't blown out."
+        onStart={startTest}
+      >
+        <InfoCard title="The Squint Test">
+          <p>
+            Sit back or squint your eyes. The solid inner circle should blend perfectly into the striped background. If the circle is darker, your gamma is too low. If brighter, your gamma is too high.
+          </p>
+        </InfoCard>
+        <InfoCard title="Color Balance">
+          <p>
+            Use the <strong>RGB Channels</strong>. It's common for monitors to have correct Gamma in Gray, but be misaligned in Blue (making dark scenes look cold) or Red (making skin tones look sunburnt).
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

@@ -13,6 +13,7 @@ import {
   Play
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type TestShape = 'box' | 'circle' | 'text' | 'v-bar' | 'h-bar';
 type ControlMode = 'auto' | 'manual';
@@ -325,22 +326,34 @@ const LocalDimmingTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Local Dimming / Blooming"
-      description="Evaluate your Mini-LED or FALD monitor's zone transitions. Use the mouse to drag the test object into corners to check for edge blooming."
-      onStart={startTest}
-    >
-      <InfoCard title="Manual Testing">
-        <p>
-          Switch to <strong>Manual Mode</strong> to drag the white box into the black bars of a movie aspect ratio (top/bottom) to see if the backlight bleeds into the black bars.
-        </p>
-      </InfoCard>
-      <InfoCard title="Zone Counting">
-        <p>
-          Use the <strong>Sweep</strong> tools. As the line moves across the screen, a poor local dimming algorithm will show visible 'steps' or blocks lighting up ahead of the line.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Local Dimming Test - Bloom & Zone Check" 
+        description="Test your Mini-LED or FALD monitor for blooming (halo effect) and zone transition speed. Essential for checking HDR performance."
+        canonical="/tests/local-dimming"
+        keywords={['local dimming test', 'fald test', 'mini-led bloom test', 'monitor halo test', 'hdr test pattern', 'dimming zones check']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Local Dimming', path: '/tests/local-dimming' }
+        ]}
+      />
+      <TestIntro
+        title="Local Dimming / Blooming"
+        description="Evaluate your Mini-LED or FALD monitor's zone transitions. Use the mouse to drag the test object into corners to check for edge blooming."
+        onStart={startTest}
+      >
+        <InfoCard title="Manual Testing">
+          <p>
+            Switch to <strong>Manual Mode</strong> to drag the white box into the black bars of a movie aspect ratio (top/bottom) to see if the backlight bleeds into the black bars.
+          </p>
+        </InfoCard>
+        <InfoCard title="Zone Counting">
+          <p>
+            Use the <strong>Sweep</strong> tools. As the line moves across the screen, a poor local dimming algorithm will show visible 'steps' or blocks lighting up ahead of the line.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

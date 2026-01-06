@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { MousePointer2, Activity, Zap, Info, RotateCcw } from 'lucide-react';
 import { Button } from '../common/Button';
+import { SEO } from '../common/SEO';
 
 // Configuration
 const GRAPH_POINTS = 100;
@@ -126,100 +127,112 @@ const MousePollingTest: React.FC = () => {
   }, [history, maxRate]);
 
   return (
-    <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
-      <div className="text-center mb-12">
-         <div className="inline-flex items-center justify-center p-4 bg-green-500/10 text-green-500 rounded-2xl mb-4">
-            <Activity size={32} />
-         </div>
-         <h1 className="text-4xl font-bold text-white mb-4">Mouse Polling Rate</h1>
-         <p className="text-neutral-400 max-w-lg mx-auto">
-            Move your cursor quickly in circles to test the report rate (Hz) of your mouse.
-            <br/><span className="text-xs opacity-60">Supports 8000Hz+ via Coalesced Events API.</span>
-         </p>
+    <>
+      <SEO 
+        title="Mouse Polling Rate Checker - Test Hz (1000Hz, 8000Hz)" 
+        description="Check your mouse polling rate (Hz) in real-time. Verify if your gaming mouse is truly running at 1000Hz, 4000Hz, or 8000Hz."
+        canonical="/tools/mouse-polling"
+        keywords={['mouse polling rate test', 'mouse hz checker', 'polling rate test', '1000hz mouse test', 'gaming mouse test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Mouse Polling Rate', path: '/tools/mouse-polling' }
+        ]}
+      />
+      <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
+        <div className="text-center mb-12">
+           <div className="inline-flex items-center justify-center p-4 bg-green-500/10 text-green-500 rounded-2xl mb-4">
+              <Activity size={32} />
+           </div>
+           <h1 className="text-4xl font-bold text-white mb-4">Mouse Polling Rate</h1>
+           <p className="text-neutral-400 max-w-lg mx-auto">
+              Move your cursor quickly in circles to test the report rate (Hz) of your mouse.
+              <br/><span className="text-xs opacity-60">Supports 8000Hz+ via Coalesced Events API.</span>
+           </p>
+        </div>
+
+        {/* Main Dashboard */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+           
+           {/* Live Rate */}
+           <div className={`p-8 rounded-2xl border flex flex-col items-center justify-center transition-colors duration-200 ${isActive ? 'bg-green-900/10 border-green-500/30' : 'bg-neutral-900/30 border-white/10'}`}>
+              <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Live Rate</div>
+              <div className={`text-6xl font-mono font-bold tabular-nums ${isActive ? 'text-green-400' : 'text-neutral-600'}`}>
+                 {Math.round(currentRate)}
+              </div>
+              <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
+           </div>
+
+           {/* Average */}
+           <div className="p-8 rounded-2xl bg-neutral-900/30 border border-white/10 flex flex-col items-center justify-center">
+              <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Average</div>
+              <div className="text-6xl font-mono font-bold text-blue-400 tabular-nums">
+                 {avgRate}
+              </div>
+              <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
+           </div>
+
+           {/* Peak */}
+           <div className="p-8 rounded-2xl bg-neutral-900/30 border border-white/10 flex flex-col items-center justify-center">
+              <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Peak</div>
+              <div className="text-6xl font-mono font-bold text-purple-400 tabular-nums">
+                 {Math.round(maxRate)}
+              </div>
+              <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
+           </div>
+        </div>
+
+        {/* Graph Area */}
+        <div 
+          ref={containerRef}
+          className="w-full h-64 bg-black border border-white/10 rounded-2xl relative overflow-hidden flex items-center justify-center group cursor-crosshair"
+        >
+           {history.length > 2 ? (
+               <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full opacity-80">
+                  <defs>
+                     <linearGradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stopColor="#22c55e" stopOpacity="0.5" />
+                        <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+                     </linearGradient>
+                  </defs>
+                  <path d={graphPath} fill="none" stroke="#22c55e" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
+                  <path d={`${graphPath} V 50 H 0 Z`} fill="url(#lineGrad)" stroke="none" />
+               </svg>
+           ) : (
+               <div className="flex flex-col items-center text-neutral-600">
+                  <MousePointer2 size={48} className="mb-4 animate-bounce" />
+                  <span className="font-bold">Move Mouse Here</span>
+               </div>
+           )}
+           
+           {/* Stability Note */}
+           <div className="absolute top-4 right-4 text-xs font-mono text-neutral-500 bg-black/50 px-2 py-1 rounded">
+              Events Processed: {eventCount}
+           </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+           <Button onClick={reset} variant="secondary" icon={RotateCcw}>
+              Reset Statistics
+           </Button>
+        </div>
+
+        {/* Info Section */}
+        <div className="mt-16 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 flex gap-4 max-w-3xl mx-auto">
+           <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
+           <div className="space-y-2">
+              <p>
+                 <strong className="text-blue-400">Why doesn't it lock to 1000Hz?</strong><br/>
+                 Polling rate is dynamic. If you move the mouse slowly, it sends fewer updates to save power/bandwidth. To test the maximum rate, you must move the mouse <strong>as fast as possible</strong>.
+              </p>
+              <p>
+                 <strong className="text-blue-400">Browser Limitations:</strong><br/>
+                 Modern browsers (Chrome 75+) use <code>getCoalescedEvents()</code> to expose high-frequency mouse updates. If you are stuck at 60Hz/144Hz, ensure your browser has hardware acceleration enabled.
+              </p>
+           </div>
+        </div>
+
       </div>
-
-      {/* Main Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-         
-         {/* Live Rate */}
-         <div className={`p-8 rounded-2xl border flex flex-col items-center justify-center transition-colors duration-200 ${isActive ? 'bg-green-900/10 border-green-500/30' : 'bg-neutral-900/30 border-white/10'}`}>
-            <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Live Rate</div>
-            <div className={`text-6xl font-mono font-bold tabular-nums ${isActive ? 'text-green-400' : 'text-neutral-600'}`}>
-               {Math.round(currentRate)}
-            </div>
-            <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
-         </div>
-
-         {/* Average */}
-         <div className="p-8 rounded-2xl bg-neutral-900/30 border border-white/10 flex flex-col items-center justify-center">
-            <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Average</div>
-            <div className="text-6xl font-mono font-bold text-blue-400 tabular-nums">
-               {avgRate}
-            </div>
-            <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
-         </div>
-
-         {/* Peak */}
-         <div className="p-8 rounded-2xl bg-neutral-900/30 border border-white/10 flex flex-col items-center justify-center">
-            <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Peak</div>
-            <div className="text-6xl font-mono font-bold text-purple-400 tabular-nums">
-               {Math.round(maxRate)}
-            </div>
-            <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
-         </div>
-      </div>
-
-      {/* Graph Area */}
-      <div 
-        ref={containerRef}
-        className="w-full h-64 bg-black border border-white/10 rounded-2xl relative overflow-hidden flex items-center justify-center group cursor-crosshair"
-      >
-         {history.length > 2 ? (
-             <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full opacity-80">
-                <defs>
-                   <linearGradient id="lineGrad" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#22c55e" stopOpacity="0.5" />
-                      <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
-                   </linearGradient>
-                </defs>
-                <path d={graphPath} fill="none" stroke="#22c55e" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
-                <path d={`${graphPath} V 50 H 0 Z`} fill="url(#lineGrad)" stroke="none" />
-             </svg>
-         ) : (
-             <div className="flex flex-col items-center text-neutral-600">
-                <MousePointer2 size={48} className="mb-4 animate-bounce" />
-                <span className="font-bold">Move Mouse Here</span>
-             </div>
-         )}
-         
-         {/* Stability Note */}
-         <div className="absolute top-4 right-4 text-xs font-mono text-neutral-500 bg-black/50 px-2 py-1 rounded">
-            Events Processed: {eventCount}
-         </div>
-      </div>
-
-      <div className="mt-8 flex justify-center">
-         <Button onClick={reset} variant="secondary" icon={RotateCcw}>
-            Reset Statistics
-         </Button>
-      </div>
-
-      {/* Info Section */}
-      <div className="mt-16 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 flex gap-4 max-w-3xl mx-auto">
-         <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
-         <div className="space-y-2">
-            <p>
-               <strong className="text-blue-400">Why doesn't it lock to 1000Hz?</strong><br/>
-               Polling rate is dynamic. If you move the mouse slowly, it sends fewer updates to save power/bandwidth. To test the maximum rate, you must move the mouse <strong>as fast as possible</strong>.
-            </p>
-            <p>
-               <strong className="text-blue-400">Browser Limitations:</strong><br/>
-               Modern browsers (Chrome 75+) use <code>getCoalescedEvents()</code> to expose high-frequency mouse updates. If you are stuck at 60Hz/144Hz, ensure your browser has hardware acceleration enabled.
-            </p>
-         </div>
-      </div>
-
-    </div>
+    </>
   );
 };
 

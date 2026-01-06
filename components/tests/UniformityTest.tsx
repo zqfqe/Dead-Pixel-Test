@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
+import { Link } from 'react-router-dom';
 
 type PatternType = 'solid' | 'checkerboard';
 type ColorType = 'white' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'black';
@@ -358,22 +360,34 @@ const UniformityTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Screen Uniformity Test"
-      description="Evaluate backlight bleeding, IPS glow, and dirty screen effect (DSE). Use the specific gray steps (5%, 10%) to reveal panel imperfections often hidden by bright content."
-      onStart={startTest}
-    >
-      <InfoCard title="The '5% Gray' Rule">
-        <p>
-          OLED and LED panels often struggle with very dark grays. Set the test to <strong>5%</strong> or <strong>10%</strong> Gray (White color, 5-10% brightness) to check for vertical banding and dark patches.
-        </p>
-      </InfoCard>
-      <InfoCard title="Color Tinting">
-        <p>
-          Use the Full White (100%) pattern to check if your screen has a pink or green tint on one side compared to the other. This is common in high-refresh-rate IPS panels.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Monitor Uniformity Test - Backlight Bleed & IPS Glow" 
+        description="Check your screen for backlight bleed, clouding, IPS glow, and dirty screen effect (DSE). Use the 5% and 10% gray steps to reveal hidden panel defects."
+        canonical="/tests/uniformity"
+        keywords={['uniformity test', 'backlight bleed test', 'ips glow test', 'monitor clouding', 'dirty screen effect', 'oled banding test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Uniformity Test', path: '/tests/uniformity' }
+        ]}
+      />
+      <TestIntro
+        title="Screen Uniformity Test"
+        description="Evaluate backlight bleeding, IPS glow, and dirty screen effect (DSE). Use the specific gray steps (5%, 10%) to reveal panel imperfections often hidden by bright content."
+        onStart={startTest}
+      >
+        <InfoCard title="The '5% Gray' Rule">
+          <p>
+            OLED and LED panels often struggle with very dark grays. Set the test to <strong>5%</strong> or <strong>10%</strong> Gray (White color, 5-10% brightness) to check for vertical banding and dark patches.
+          </p>
+        </InfoCard>
+        <InfoCard title="IPS Glow vs Bleed">
+          <p>
+            Not sure if it's defect? Check our guide on <Link to="/blog/ips-glow-vs-backlight-bleed-guide" className="text-blue-400 hover:underline">IPS Glow vs Backlight Bleed</Link> before returning your monitor.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

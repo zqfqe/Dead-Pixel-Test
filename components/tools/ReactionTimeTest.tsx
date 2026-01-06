@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye } from 'lucide-react';
 import { Button } from '../common/Button';
+import { SEO } from '../common/SEO';
 
 type GameState = 'idle' | 'waiting' | 'ready' | 'finished' | 'early';
 type Mode = 'visual' | 'audio';
@@ -179,136 +180,149 @@ const ReactionTimeTest: React.FC = () => {
   const current = config[gameState];
 
   return (
-    <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in select-none">
-      
-      {/* --- Mode Switcher --- */}
-      <div className="flex justify-center mb-8">
-         <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex gap-1">
-            <button 
-                onClick={() => switchMode('visual')}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'visual' ? 'bg-blue-600 text-white shadow-lg' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Eye size={16} /> Visual
-            </button>
-            <button 
-                onClick={() => switchMode('audio')}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'audio' ? 'bg-blue-600 text-white shadow-lg' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Volume2 size={16} /> Audio
-            </button>
-         </div>
-      </div>
+    <>
+      <SEO 
+        title="Reaction Time Test - Human Benchmark (Visual & Audio)" 
+        description="Measure your reaction time in milliseconds. Compare your visual reflexes vs auditory reflexes. The average human visual reaction is ~215ms."
+        canonical="/tools/reaction-time"
+        keywords={['reaction time test', 'human benchmark', 'reflex test', 'click speed test', 'visual reaction time', 'audio reaction time']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Reaction Time', path: '/tools/reaction-time' }
+        ]}
+      />
+      <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in select-none">
+        
+        {/* --- Mode Switcher --- */}
+        <div className="flex justify-center mb-8">
+           <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex gap-1">
+              <button 
+                  onClick={() => switchMode('visual')}
+                  className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'visual' ? 'bg-blue-600 text-white shadow-lg' : 'text-neutral-500 hover:text-white'}`}
+              >
+                  <Eye size={16} /> Visual
+              </button>
+              <button 
+                  onClick={() => switchMode('audio')}
+                  className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${mode === 'audio' ? 'bg-blue-600 text-white shadow-lg' : 'text-neutral-500 hover:text-white'}`}
+              >
+                  <Volume2 size={16} /> Audio
+              </button>
+           </div>
+        </div>
 
-      {/* --- Main Game Area --- */}
-      <div 
-        className={`
-          w-full aspect-video md:aspect-[21/9] rounded-3xl shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-100 ease-linear
-          ${current.bg} ${current.textColor} relative overflow-hidden group
-        `}
-        onMouseDown={handleAction}
-      >
-        {/* Helper Hint */}
-        {gameState === 'idle' && (
-          <div className="absolute top-6 right-6 flex items-center gap-2 text-xs font-mono opacity-50 border border-white/20 px-3 py-1 rounded-full">
-            <Keyboard size={14} /> SPACEBAR Supported
+        {/* --- Main Game Area --- */}
+        <div 
+          className={`
+            w-full aspect-video md:aspect-[21/9] rounded-3xl shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-100 ease-linear
+            ${current.bg} ${current.textColor} relative overflow-hidden group
+          `}
+          onMouseDown={handleAction}
+        >
+          {/* Helper Hint */}
+          {gameState === 'idle' && (
+            <div className="absolute top-6 right-6 flex items-center gap-2 text-xs font-mono opacity-50 border border-white/20 px-3 py-1 rounded-full">
+              <Keyboard size={14} /> SPACEBAR Supported
+            </div>
+          )}
+
+          <div className="mb-6 opacity-90 transform group-hover:scale-110 transition-transform duration-200">{current.icon}</div>
+          <h1 className="text-5xl md:text-8xl font-bold mb-4 tracking-tighter tabular-nums">{current.title}</h1>
+          <p className="text-xl md:text-2xl font-medium opacity-80">{current.sub}</p>
+          
+          {/* Reset button only visible in result screens */}
+          {(gameState === 'finished' || gameState === 'early' || (gameState === 'idle' && history.length > 0)) && (
+            <button 
+               onClick={resetHistory}
+               className="absolute bottom-8 text-xs font-bold uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity flex items-center gap-2 px-4 py-2 bg-black/20 rounded-full"
+            >
+              <RotateCcw size={14} /> Reset Stats
+            </button>
+          )}
+        </div>
+
+        {/* --- Stats Dashboard --- */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* 1. Rank Card */}
+          <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+             <Trophy size={24} className={history.length > 0 ? currentRank.color : 'text-neutral-700'} />
+             <div className="mt-2 text-xs font-bold uppercase tracking-widest text-neutral-500">Current Rank</div>
+             <div className={`text-3xl font-bold mt-1 ${history.length > 0 ? currentRank.color : 'text-neutral-700'}`}>
+               {history.length > 0 ? currentRank.title : '-'}
+             </div>
+          </div>
+
+          {/* 2. Average & Best */}
+          <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex justify-between items-center px-8">
+             <div className="text-center">
+                <div className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">Average</div>
+                <div className="text-4xl font-mono font-bold text-white">{average}<span className="text-sm text-neutral-500 ml-1">ms</span></div>
+             </div>
+             <div className="w-px h-12 bg-white/10"></div>
+             <div className="text-center">
+                <div className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">Best</div>
+                <div className="text-4xl font-mono font-bold text-blue-400">{best}<span className="text-sm text-neutral-500 ml-1">ms</span></div>
+             </div>
+          </div>
+
+          {/* 3. Distribution Graph */}
+          <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex flex-col justify-end relative h-36">
+             {history.length === 0 && (
+               <div className="absolute inset-0 flex items-center justify-center text-xs text-neutral-700 italic">
+                 Play to see stats
+               </div>
+             )}
+             <div className="flex items-end justify-between h-20 gap-2">
+               {distribution.map((bar, i) => (
+                 <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+                   <div 
+                     className="w-full bg-blue-600/50 rounded-t-sm transition-all duration-500 relative hover:bg-blue-500" 
+                     style={{ height: `${Math.max(bar.height, 5)}%` }}
+                   >
+                     {/* Tooltip */}
+                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                       {bar.count} attempts
+                     </div>
+                   </div>
+                   <span className="text-[9px] text-neutral-500 font-mono">{bucketLabels[i]}</span>
+                 </div>
+               ))}
+             </div>
+             <div className="absolute top-4 left-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-500">
+               <BarChart3 size={14} /> Distribution
+             </div>
+          </div>
+        </div>
+
+        {/* --- Detailed History Strip --- */}
+        {history.length > 0 && (
+          <div className="mt-6 flex flex-wrap gap-2 justify-center opacity-50 hover:opacity-100 transition-opacity">
+             {history.slice().reverse().slice(0, 20).map((time, i) => (
+               <span key={i} className="bg-neutral-800 text-neutral-400 px-2 py-1 rounded-md font-mono text-xs border border-neutral-700">
+                 {time}
+               </span>
+             ))}
+             {history.length > 20 && <span className="text-xs text-neutral-600 py-1">...</span>}
           </div>
         )}
 
-        <div className="mb-6 opacity-90 transform group-hover:scale-110 transition-transform duration-200">{current.icon}</div>
-        <h1 className="text-5xl md:text-8xl font-bold mb-4 tracking-tighter tabular-nums">{current.title}</h1>
-        <p className="text-xl md:text-2xl font-medium opacity-80">{current.sub}</p>
-        
-        {/* Reset button only visible in result screens */}
-        {(gameState === 'finished' || gameState === 'early' || (gameState === 'idle' && history.length > 0)) && (
-          <button 
-             onClick={resetHistory}
-             className="absolute bottom-8 text-xs font-bold uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity flex items-center gap-2 px-4 py-2 bg-black/20 rounded-full"
-          >
-            <RotateCcw size={14} /> Reset Stats
-          </button>
-        )}
+        {/* --- Technical Note --- */}
+        <div className="mt-12 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 max-w-4xl mx-auto flex gap-4">
+          <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
+          <div className="space-y-2">
+            <p>
+              <strong className="text-blue-400">Science Fact:</strong> Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms). You should score 30-50ms faster in Audio Mode!
+            </p>
+            <ul className="list-disc pl-4 space-y-1 text-xs">
+              <li><strong>Monitor Lag:</strong> Visual mode includes input lag + display response time + refresh delay.</li>
+              <li><strong>Audio Latency:</strong> Audio mode relies on sound card latency, which is typically lower than total display chain latency on 60Hz screens.</li>
+            </ul>
+          </div>
+        </div>
+
       </div>
-
-      {/* --- Stats Dashboard --- */}
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* 1. Rank Card */}
-        <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
-           <Trophy size={24} className={history.length > 0 ? currentRank.color : 'text-neutral-700'} />
-           <div className="mt-2 text-xs font-bold uppercase tracking-widest text-neutral-500">Current Rank</div>
-           <div className={`text-3xl font-bold mt-1 ${history.length > 0 ? currentRank.color : 'text-neutral-700'}`}>
-             {history.length > 0 ? currentRank.title : '-'}
-           </div>
-        </div>
-
-        {/* 2. Average & Best */}
-        <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex justify-between items-center px-8">
-           <div className="text-center">
-              <div className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">Average</div>
-              <div className="text-4xl font-mono font-bold text-white">{average}<span className="text-sm text-neutral-500 ml-1">ms</span></div>
-           </div>
-           <div className="w-px h-12 bg-white/10"></div>
-           <div className="text-center">
-              <div className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-1">Best</div>
-              <div className="text-4xl font-mono font-bold text-blue-400">{best}<span className="text-sm text-neutral-500 ml-1">ms</span></div>
-           </div>
-        </div>
-
-        {/* 3. Distribution Graph */}
-        <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex flex-col justify-end relative h-36">
-           {history.length === 0 && (
-             <div className="absolute inset-0 flex items-center justify-center text-xs text-neutral-700 italic">
-               Play to see stats
-             </div>
-           )}
-           <div className="flex items-end justify-between h-20 gap-2">
-             {distribution.map((bar, i) => (
-               <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-                 <div 
-                   className="w-full bg-blue-600/50 rounded-t-sm transition-all duration-500 relative hover:bg-blue-500" 
-                   style={{ height: `${Math.max(bar.height, 5)}%` }}
-                 >
-                   {/* Tooltip */}
-                   <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                     {bar.count} attempts
-                   </div>
-                 </div>
-                 <span className="text-[9px] text-neutral-500 font-mono">{bucketLabels[i]}</span>
-               </div>
-             ))}
-           </div>
-           <div className="absolute top-4 left-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-500">
-             <BarChart3 size={14} /> Distribution
-           </div>
-        </div>
-      </div>
-
-      {/* --- Detailed History Strip --- */}
-      {history.length > 0 && (
-        <div className="mt-6 flex flex-wrap gap-2 justify-center opacity-50 hover:opacity-100 transition-opacity">
-           {history.slice().reverse().slice(0, 20).map((time, i) => (
-             <span key={i} className="bg-neutral-800 text-neutral-400 px-2 py-1 rounded-md font-mono text-xs border border-neutral-700">
-               {time}
-             </span>
-           ))}
-           {history.length > 20 && <span className="text-xs text-neutral-600 py-1">...</span>}
-        </div>
-      )}
-
-      {/* --- Technical Note --- */}
-      <div className="mt-12 bg-blue-900/10 border border-blue-500/20 rounded-xl p-6 text-sm text-neutral-400 max-w-4xl mx-auto flex gap-4">
-        <Info className="text-blue-500 shrink-0 mt-0.5" size={20} />
-        <div className="space-y-2">
-          <p>
-            <strong className="text-blue-400">Science Fact:</strong> Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms). You should score 30-50ms faster in Audio Mode!
-          </p>
-          <ul className="list-disc pl-4 space-y-1 text-xs">
-            <li><strong>Monitor Lag:</strong> Visual mode includes input lag + display response time + refresh delay.</li>
-            <li><strong>Audio Latency:</strong> Audio mode relies on sound card latency, which is typically lower than total display chain latency on 60Hz screens.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 

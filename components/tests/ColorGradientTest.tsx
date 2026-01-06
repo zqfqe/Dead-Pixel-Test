@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, MoveHorizontal, MoveVertical, Circle, Palette, Play, Pause, Layers } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type GradientType = 'linear' | 'radial';
 type ColorPreset = 'gray' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'sky' | 'sunset';
@@ -71,54 +72,7 @@ const ColorGradientTest: React.FC = () => {
       stops = `${start}, ${end}`;
     } else {
       // Hard stops for banding simulation
-      // e.g. "Black 0%, Black 10%, White 10%, White 20%..."
       const stopList = [];
-      
-      // Interpolation helper
-      const interpolateColor = (color1: string, color2: string, factor: number) => {
-         // Simple linear interpolation for hex/rgb is complex without a library.
-         // For the sake of this component without external deps, 
-         // we will rely on CSS `mix-blend-mode` logic or just sticking to RGBA logic if possible.
-         // However, standard CSS gradients don't support "calculated" stops easily without generating the string.
-         
-         // Let's use `color-mix` (modern CSS) or just assume browser interpolation between hard stops isn't what we want.
-         // actually, for "Banding" test, we want SOLID blocks.
-         // We can use the browser's own gradient engine to calculate intermediate colors 
-         // by creating A LOT of stops.
-         
-         // Limitation: Writing a full JS hex interpolator is verbose. 
-         // ALTERNATIVE: Use `rgba` logic for the primary colors, but `sunset` is hard.
-         // TRICK: We will stick to single channel colors mostly for the manual math, 
-         // or use `transparent` overlay on background color? No.
-
-         // Let's keep it simple: The visual banding effect is best achieved by telling CSS 
-         // to render specific blocks. But calculating the hex for "Step 5 of 64" is hard without a lib.
-         // 
-         // BETTER APPROACH FOR CSS: 
-         // Use a repeating-linear-gradient with a transparent overlay? No.
-         //
-         // Actually, if we want TRUE banding simulation for 'steps', we just need to let CSS 
-         // interpolate, but we use a specialized step function? No CSS doesn't have that.
-         
-         // Fallback: For the complex colors (sky/sunset), 'Stepped' mode might revert to a 
-         // simplified logic or we just stick to "Smooth" for them?
-         // No, users need to test banding.
-         
-         // Let's stick to the 3 main colors + Gray which we can math easily.
-         // For complex ones, we might accept a limitation or try a simple RGB lerp.
-         return null; 
-      };
-      
-      // Since we can't easily math mixed hex codes without a huge function, 
-      // let's create the gradient string using `color-mix` if supported, 
-      // OR just rely on the fact that `steps` implies visible bands.
-      //
-      // For now, let's implement the 'div' approach logic BUT inside a linear-gradient string 
-      // is impossible.
-      //
-      // REVERTING STRATEGY:
-      // We will use `linear-gradient` for smooth.
-      // For Stepped: We will use a JS function to generate RGB values.
       
       const parseHex = (hex: string) => {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -170,7 +124,6 @@ const ColorGradientTest: React.FC = () => {
            className={`flex-1 w-full h-full relative ${animate ? 'animate-scan' : ''}`}
            style={{ 
              background: gradientStyle,
-             // If creating a huge string, maybe optimization is needed, but for <256 steps it's fine.
            }} 
         />
         
@@ -343,22 +296,34 @@ const ColorGradientTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Color Gradient Test"
-      description="Test your display's bit depth and banding. 8-bit panels should display 256 steps smoothly. Use the 'Sky' and 'Sunset' presets to check for real-world banding artifacts."
-      onStart={startTest}
-    >
-      <InfoCard title="Color Banding">
-        <p>
-          Banding looks like distinct "steps" or lines in a gradient that should be smooth. It occurs when the monitor cannot display enough colors to bridge the gap between two shades.
-        </p>
-      </InfoCard>
-      <InfoCard title="Temporal Dithering (FRC)">
-        <p>
-          Enable <strong>Animate</strong> to check for Frame Rate Control. If you see flickering noise or "dancing ants" in the gradient as it moves, your monitor uses aggressive FRC to simulate colors it can't natively display.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Monitor Color Banding Test - Gradient & Bit Depth" 
+        description="Check if your monitor can display 8-bit or 10-bit color gradients smoothly without banding. Detect FRC (Frame Rate Control) artifacts."
+        canonical="/tests/color-gradient"
+        keywords={['banding test', 'color gradient test', '8bit vs 10bit', 'monitor bit depth', 'temporal dithering', 'frc test']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Color Gradient', path: '/tests/color-gradient' }
+        ]}
+      />
+      <TestIntro
+        title="Color Gradient Test"
+        description="Test your display's bit depth and banding. 8-bit panels should display 256 steps smoothly. Use the 'Sky' and 'Sunset' presets to check for real-world banding artifacts."
+        onStart={startTest}
+      >
+        <InfoCard title="Color Banding">
+          <p>
+            Banding looks like distinct "steps" or lines in a gradient that should be smooth. It occurs when the monitor cannot display enough colors to bridge the gap between two shades.
+          </p>
+        </InfoCard>
+        <InfoCard title="Temporal Dithering (FRC)">
+          <p>
+            Enable <strong>Animate</strong> to check for Frame Rate Control. If you see flickering noise or "dancing ants" in the gradient as it moves, your monitor uses aggressive FRC to simulate colors it can't natively display.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 

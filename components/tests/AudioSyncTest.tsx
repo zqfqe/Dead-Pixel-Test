@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Radar, Zap, MoveVertical, Sliders } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
+import { SEO } from '../common/SEO';
 
 type Pattern = 'bar' | 'radar' | 'flash';
 
@@ -424,30 +425,42 @@ const AudioSyncTest: React.FC = () => {
   }
 
   return (
-    <TestIntro
-      title="Audio/Video Sync Test"
-      description="Measure and calibrate the delay between your display and speakers. Essential for home theater lip-sync and competitive gaming."
-      onStart={startTest}
-    >
-      <InfoCard title="How to Calibrate">
-        <p>
-          1. Listen to the click and watch the visual marker.
-          <br/>
-          2. Use the <strong>Manual Compensation</strong> slider in the menu.
-          <br/>
-          3. Adjust until they feel perfectly synced. The final number (e.g., +100ms) is the delay you should enter in your TV or AV Receiver settings.
-        </p>
-      </InfoCard>
-      <InfoCard title="Patterns">
-        <p>
-          <strong>Bar:</strong> Best for checking vertical sync.
-          <br/>
-          <strong>Radar:</strong> Easier to spot angular errors.
-          <br/>
-          <strong>Flash:</strong> High-speed photography reference.
-        </p>
-      </InfoCard>
-    </TestIntro>
+    <>
+      <SEO 
+        title="Audio Video Sync Test - Lip Sync Latency" 
+        description="Fix audio delay issues. Measure the exact latency (ms) between your screen and speakers to correct lip-sync problems in movies and games."
+        canonical="/tests/audio-sync"
+        keywords={['audio sync test', 'lip sync test', 'audio latency test', 'audio video delay', 'av sync calibration']}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Audio Sync', path: '/tests/audio-sync' }
+        ]}
+      />
+      <TestIntro
+        title="Audio/Video Sync Test"
+        description="Measure and calibrate the delay between your display and speakers. Essential for home theater lip-sync and competitive gaming."
+        onStart={startTest}
+      >
+        <InfoCard title="How to Calibrate">
+          <p>
+            1. Listen to the click and watch the visual marker.
+            <br/>
+            2. Use the <strong>Manual Compensation</strong> slider in the menu.
+            <br/>
+            3. Adjust until they feel perfectly synced. The final number (e.g., +100ms) is the delay you should enter in your TV or AV Receiver settings.
+          </p>
+        </InfoCard>
+        <InfoCard title="Patterns">
+          <p>
+            <strong>Bar:</strong> Best for checking vertical sync.
+            <br/>
+            <strong>Radar:</strong> Easier to spot angular errors.
+            <br/>
+            <strong>Flash:</strong> High-speed photography reference.
+          </p>
+        </InfoCard>
+      </TestIntro>
+    </>
   );
 };
 
