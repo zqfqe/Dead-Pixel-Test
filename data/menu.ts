@@ -9,6 +9,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Color Gradient", path: "/tests/color-gradient" },
   { title: "Color Distance", path: "/tests/color-distance" },
   { title: "Response Time", path: "/tests/response-time" },
+  { title: "Refresh Rate / Skipping", path: "/tests/refresh-rate" },
   { title: "Gamma", path: "/tests/gamma" },
   { title: "Test Patterns", path: "/tests/test-patterns" },
   { title: "Viewing Angle", path: "/tests/viewing-angle" },
@@ -24,6 +25,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Touch Screen Test", path: "/tools/touch" },
 
   { title: "AUDIO & UTILS", path: "", isHeader: true },
+  { title: "Webcam & Mic", path: "/tools/webcam" },
   { title: "Speaker / Headphone Test", path: "/tools/speaker-test" },
   { title: "Audio/Video Sync", path: "/tests/audio-sync" },
   { title: "Physical Ruler", path: "/tools/ruler" },

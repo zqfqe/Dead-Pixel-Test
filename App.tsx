@@ -34,6 +34,8 @@ const TouchTest = lazy(() => import('./components/tools/TouchTest'));
 // Lazy Load Pages - Phase 4 (Audio & Utils)
 const SpeakerTest = lazy(() => import('./components/tools/SpeakerTest'));
 const PhysicalRuler = lazy(() => import('./components/tools/PhysicalRuler'));
+const WebcamTest = lazy(() => import('./components/tools/WebcamTest'));
+const RefreshRateTest = lazy(() => import('./components/tests/RefreshRateTest'));
 
 const ProductPage = lazy(() => import('./components/resources/ProductPage'));
 const BlogIndex = lazy(() => import('./components/blog/BlogIndex'));
@@ -81,6 +83,7 @@ const App: React.FC = () => {
                 {/* Phase 2 Tests */}
                 <Route path="/tests/local-dimming" element={<LocalDimmingTest />} />
                 <Route path="/tests/audio-sync" element={<AudioSyncTest />} />
+                <Route path="/tests/refresh-rate" element={<RefreshRateTest />} />
                 
                 {/* Tools */}
                 <Route path="/tools/keyboard" element={<KeyboardTest />} />
@@ -91,6 +94,7 @@ const App: React.FC = () => {
                 <Route path="/tools/touch" element={<TouchTest />} />
                 <Route path="/tools/speaker-test" element={<SpeakerTest />} />
                 <Route path="/tools/ruler" element={<PhysicalRuler />} />
+                <Route path="/tools/webcam" element={<WebcamTest />} />
 
                 {/* Blog & Resources */}
                 <Route path="/blog" element={<BlogIndex />} />
