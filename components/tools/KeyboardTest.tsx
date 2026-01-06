@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Volume2, VolumeX, RotateCcw, Keyboard as KeyboardIcon, Activity } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, Keyboard as KeyboardIcon, Activity, PaintBucket, Terminal, Settings, LayoutTemplate } from 'lucide-react';
 
 // --- DATA: Keyboard Layout Definition ---
 
@@ -10,6 +10,7 @@ interface KeyDef {
   type?: 'empty'; // spacing
 }
 
+// Standard ANSI Layout Data
 const ROWS_MAIN: KeyDef[][] = [
   [
     { code: 'Backquote', label: '`' }, { code: 'Digit1', label: '1' }, { code: 'Digit2', label: '2' }, { code: 'Digit3', label: '3' },
@@ -61,33 +62,56 @@ const ROWS_NAV: KeyDef[][] = [
 
 const ROWS_NUM: KeyDef[][] = [
   [ { code: 'NumLock', label: 'Num' }, { code: 'NumpadDivide', label: '/' }, { code: 'NumpadMultiply', label: '*' }, { code: 'NumpadSubtract', label: '-' } ],
-  [ { code: 'Numpad7', label: '7' }, { code: 'Numpad8', label: '8' }, { code: 'Numpad9', label: '9' }, { code: 'NumpadAdd', label: '+' } ], // + is usually tall
-  [ { code: 'Numpad4', label: '4' }, { code: 'Numpad5', label: '5' }, { code: 'Numpad6', label: '6' }, { code: 'empty', label: '' } ], // + spans 2 rows visually in some logic, simplified here
+  [ { code: 'Numpad7', label: '7' }, { code: 'Numpad8', label: '8' }, { code: 'Numpad9', label: '9' }, { code: 'NumpadAdd', label: '+' } ],
+  [ { code: 'Numpad4', label: '4' }, { code: 'Numpad5', label: '5' }, { code: 'Numpad6', label: '6' }, { code: 'empty', label: '' } ],
   [ { code: 'Numpad1', label: '1' }, { code: 'Numpad2', label: '2' }, { code: 'Numpad3', label: '3' }, { code: 'NumpadEnter', label: 'Ent' } ],
   [ { code: 'Numpad0', label: '0', w: 2 }, { code: 'NumpadDecimal', label: '.' }, { code: 'empty', label: '' } ]
 ];
 
-// --- Render Key Cap Component ---
-const Key: React.FC<{ def: KeyDef; h?: number; isActive: boolean; isTested: boolean }> = ({ def, h = 12, isActive, isTested }) => {
+type LayoutType = 'full' | 'tkl' | '60';
+type SoundProfile = 'off' | 'mechanical' | 'thock' | 'beep';
+
+// --- Components ---
+
+const Key: React.FC<{ 
+  def: KeyDef; 
+  h?: number; 
+  isActive: boolean; 
+  isTested: boolean;
+  latchMode: boolean;
+}> = ({ def, h = 12, isActive, isTested, latchMode }) => {
   if (def.code === 'empty') return <div style={{ width: `${(def.w || 1) * 3.5}rem` }}></div>;
 
-  // Numpad Enter and Plus usually span 2 rows vertically.
-  // Simplifying layout by letting Flexbox handle heights or specific classes.
   const isTall = def.code === 'NumpadAdd' || def.code === 'NumpadEnter';
   
-  let stateClass = "bg-neutral-800 border-neutral-700 text-neutral-500"; // Default
+  // Visual Logic:
+  // Active (Held down) -> Blue
+  // Tested (Released but recorded) -> Green (if Latch Mode is ON or OFF? Latch mode usually implies distinct visual for "checked")
+  // Let's say: Active overrides everything.
+  // If not active, but isTested: 
+  //    - If Latch Mode is ON: Show Green.
+  //    - If Latch Mode is OFF: Show faint gray/green history or revert to normal.
+  
+  let bgClass = "bg-[#1a1a1a] border-neutral-800 text-neutral-500 shadow-[0_4px_0_#0a0a0a]"; // Default 3D look
+  let transformClass = "translate-y-0";
+
   if (isActive) {
-      stateClass = "bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(37,99,235,0.6)] translate-y-0.5 scale-95 z-10";
+      bgClass = "bg-blue-600 border-blue-700 text-white shadow-[0_1px_0_#1e3a8a]";
+      transformClass = "translate-y-1";
   } else if (isTested) {
-      stateClass = "bg-green-900/40 border-green-700/50 text-green-400";
+      bgClass = "bg-[#112211] border-green-900/50 text-green-500 shadow-[0_4px_0_#051105]";
+      // If latch mode is strictly "Paint", we might want a brighter green
+      if (latchMode) {
+         bgClass = "bg-green-600 border-green-700 text-white shadow-[0_4px_0_#14532d]";
+      }
   }
 
   return (
     <div 
       className={`
-          relative flex items-center justify-center rounded-lg border-b-4 text-xs font-bold transition-all duration-75 select-none
-          ${stateClass}
-          ${isTall ? 'h-[6.5rem]' : `h-${h}`}
+          relative flex items-center justify-center rounded-md border-2 text-xs font-bold transition-all duration-75 select-none
+          ${bgClass} ${transformClass}
+          ${isTall ? 'h-[7rem]' : `h-14`}
       `}
       style={{ 
           width: `${(def.w || 1) * 3.5}rem`,
@@ -95,8 +119,6 @@ const Key: React.FC<{ def: KeyDef; h?: number; isActive: boolean; isTested: bool
       }}
     >
       {def.label}
-      {/* Shine effect for active */}
-      {isActive && <div className="absolute inset-0 bg-white/20 rounded-lg animate-pulse" />}
     </div>
   );
 };
@@ -104,17 +126,22 @@ const Key: React.FC<{ def: KeyDef; h?: number; isActive: boolean; isTested: bool
 const KeyboardTest: React.FC = () => {
   const [activeKeys, setActiveKeys] = useState<Set<string>>(new Set());
   const [testedKeys, setTestedKeys] = useState<Set<string>>(new Set());
-  const [history, setHistory] = useState<string[]>([]);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  
+  // Settings
+  const [latchMode, setLatchMode] = useState(true); // Default to Paint mode as it's more useful
+  const [layoutType, setLayoutType] = useState<LayoutType>('full');
+  const [soundProfile, setSoundProfile] = useState<SoundProfile>('mechanical');
+  
+  // Stats
   const [maxCombo, setMaxCombo] = useState(0);
+  const [lastEvent, setLastEvent] = useState<KeyboardEvent | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // --- Sound Logic ---
-  const playClick = useCallback(() => {
-    if (!soundEnabled) return;
+  // --- Sound Engine ---
+  const playSound = useCallback(() => {
+    if (soundProfile === 'off') return;
     
-    // Init Audio Context on first user interaction if needed
     if (!audioContextRef.current) {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
@@ -122,36 +149,52 @@ const KeyboardTest: React.FC = () => {
     if (ctx && ctx.state === 'suspended') ctx.resume();
     if (!ctx) return;
 
-    // Create a "Thock" sound using filtered noise + oscillator
     const t = ctx.currentTime;
-    
-    // 1. High-frequency click (Switch mechanism)
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(800, t);
-    osc.frequency.exponentialRampToValueAtTime(100, t + 0.05);
-    gain.gain.setValueAtTime(0.3, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+    
+    // Profiles
+    if (soundProfile === 'mechanical') {
+        // High pitch click (Blue switch)
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1200, t);
+        osc.frequency.exponentialRampToValueAtTime(600, t + 0.05);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+    } else if (soundProfile === 'thock') {
+        // Low pitch thud (Lubed linear)
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, t);
+        osc.frequency.exponentialRampToValueAtTime(50, t + 0.1);
+        gain.gain.setValueAtTime(0.5, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+    } else {
+        // Standard Beep
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, t);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+    }
+
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start(t);
-    osc.stop(t + 0.05);
+    osc.stop(t + 0.1);
 
-  }, [soundEnabled]);
+  }, [soundProfile]);
 
-  // --- Keyboard Events ---
+  // --- Event Listeners ---
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
       e.preventDefault();
+      setLastEvent(e);
       
       const code = e.code;
-      if (!activeKeys.has(code)) playClick();
+      if (!activeKeys.has(code)) playSound();
 
       setActiveKeys(prev => {
         const next = new Set(prev);
         next.add(code);
-        // NKRO tracking
         if (next.size > maxCombo) setMaxCombo(next.size);
         return next;
       });
@@ -161,8 +204,6 @@ const KeyboardTest: React.FC = () => {
         next.add(code);
         return next;
       });
-
-      setHistory(prev => [code, ...prev].slice(0, 15));
     };
 
     const handleUp = (e: KeyboardEvent) => {
@@ -180,139 +221,185 @@ const KeyboardTest: React.FC = () => {
       window.removeEventListener('keydown', handleDown);
       window.removeEventListener('keyup', handleUp);
     };
-  }, [maxCombo, playClick, activeKeys]); 
+  }, [maxCombo, playSound, activeKeys]); 
 
   const reset = () => {
     setActiveKeys(new Set());
     setTestedKeys(new Set());
-    setHistory([]);
     setMaxCombo(0);
+    setLastEvent(null);
   };
 
   return (
     <div className="max-w-[1600px] mx-auto py-12 px-4 lg:px-8 animate-fade-in font-sans">
       
-      {/* Header & Stats */}
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-8">
+      {/* Header Area */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-8 gap-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20 text-white">
                 <KeyboardIcon size={24} />
             </div>
-            <h1 className="text-3xl font-bold text-white">Keyboard Ghosting Test</h1>
+            <h1 className="text-3xl font-bold text-white">Keyboard Tester</h1>
           </div>
-          <p className="text-neutral-400 max-w-lg">
-            Test for dead keys, key chatter, and N-Key Rollover (NKRO). 
-            Press as many keys as you can simultaneously to test ghosting limits.
+          <p className="text-neutral-400 max-w-lg text-sm">
+            Check for ghosting, key chatter, and dead switches. Supports N-Key Rollover testing.
           </p>
         </div>
 
-        <div className="flex gap-4 items-center">
-             {/* Stats Box */}
-             <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl flex gap-8">
-                <div className="text-center">
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-1">Current</div>
-                    <div className="text-3xl font-bold text-blue-500 font-mono leading-none">{activeKeys.size}</div>
-                </div>
-                <div className="w-px bg-neutral-800"></div>
-                <div className="text-center">
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-1">Max Combo</div>
-                    <div className={`text-3xl font-bold font-mono leading-none ${maxCombo > 6 ? 'text-green-500' : 'text-neutral-300'}`}>{maxCombo}</div>
-                </div>
-                <div className="w-px bg-neutral-800"></div>
-                <div className="text-center">
-                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-1">Tested</div>
-                    <div className="text-3xl font-bold text-neutral-300 font-mono leading-none">{testedKeys.size}</div>
-                </div>
+        {/* Controls Toolbar */}
+        <div className="flex flex-wrap gap-3 items-center">
+             
+             {/* Layout Switcher */}
+             <div className="flex bg-neutral-900 p-1 rounded-lg border border-neutral-800">
+                <button onClick={() => setLayoutType('full')} className={`px-3 py-1.5 text-xs font-bold rounded ${layoutType === 'full' ? 'bg-neutral-700 text-white' : 'text-neutral-500 hover:text-white'}`}>Full</button>
+                <button onClick={() => setLayoutType('tkl')} className={`px-3 py-1.5 text-xs font-bold rounded ${layoutType === 'tkl' ? 'bg-neutral-700 text-white' : 'text-neutral-500 hover:text-white'}`}>TKL</button>
+                <button onClick={() => setLayoutType('60')} className={`px-3 py-1.5 text-xs font-bold rounded ${layoutType === '60' ? 'bg-neutral-700 text-white' : 'text-neutral-500 hover:text-white'}`}>60%</button>
              </div>
 
+             <div className="w-px h-8 bg-white/10 mx-2"></div>
+
+             {/* Sound Toggle */}
              <button 
-               onClick={() => setSoundEnabled(!soundEnabled)}
-               className={`p-4 rounded-xl border transition-all ${soundEnabled ? 'bg-neutral-800 text-green-400 border-green-900/50' : 'bg-neutral-900 text-neutral-600 border-neutral-800'}`}
-               title="Toggle Mechanical Sound"
+               onClick={() => setSoundProfile(prev => prev === 'off' ? 'mechanical' : prev === 'mechanical' ? 'thock' : 'off')}
+               className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-bold transition-all ${soundProfile !== 'off' ? 'bg-blue-900/30 border-blue-500/50 text-blue-400' : 'bg-neutral-900 border-neutral-800 text-neutral-500'}`}
              >
-               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+               {soundProfile === 'off' ? <VolumeX size={16} /> : <Volume2 size={16} />}
+               <span className="uppercase">{soundProfile}</span>
              </button>
 
+             {/* Latch Mode */}
+             <button 
+               onClick={() => setLatchMode(!latchMode)}
+               className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-bold transition-all ${latchMode ? 'bg-green-900/30 border-green-500/50 text-green-400' : 'bg-neutral-900 border-neutral-800 text-neutral-500'}`}
+               title="Keys stay green after pressing"
+             >
+               <PaintBucket size={16} />
+               <span>PAINT: {latchMode ? 'ON' : 'OFF'}</span>
+             </button>
+
+             {/* Reset */}
              <button 
                onClick={reset} 
-               className="p-4 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 rounded-xl text-neutral-400 hover:text-white transition-all"
-               title="Reset Test"
+               className="p-2 bg-neutral-900 hover:bg-red-900/20 border border-neutral-800 hover:border-red-500/50 rounded-lg text-neutral-400 hover:text-red-400 transition-all"
+               title="Reset All"
              >
-               <RotateCcw size={20} />
+               <RotateCcw size={18} />
              </button>
         </div>
       </div>
       
-      {/* --- KEYBOARD VISUALIZER --- */}
-      {/* Scaling container for smaller screens */}
+      {/* --- VISUALIZER CONTAINER --- */}
       <div className="overflow-x-auto pb-8 custom-scrollbar">
-         <div className="min-w-[1200px] bg-[#111] p-8 rounded-2xl border border-white/5 shadow-2xl relative">
+         <div className="min-w-[1250px] bg-[#050505] p-8 rounded-2xl border border-white/10 shadow-2xl relative">
             
-            {/* Top Function Row */}
-            <div className="flex gap-4 mb-8">
-               {ROWS_FUNC.map((key, i) => <Key key={i} def={key} h={10} isActive={activeKeys.has(key.code)} isTested={testedKeys.has(key.code)} />)}
-            </div>
+            {/* Top Function Row (Hidden in 60%) */}
+            {layoutType !== '60' && (
+              <div className="flex gap-3 mb-6">
+                 {ROWS_FUNC.map((key, i) => <Key key={i} def={key} h={10} isActive={activeKeys.has(key.code)} isTested={testedKeys.has(key.code)} latchMode={latchMode} />)}
+              </div>
+            )}
 
-            {/* Main Area */}
+            {/* Main Board Layout */}
             <div className="flex gap-6">
                
-               {/* 60% Block */}
+               {/* 60% Core Block */}
                <div className="flex flex-col gap-2">
                   {ROWS_MAIN.map((row, rIdx) => (
                     <div key={rIdx} className="flex gap-2">
-                        {row.map((key, kIdx) => <Key key={kIdx} def={key} isActive={activeKeys.has(key.code)} isTested={testedKeys.has(key.code)} />)}
+                        {row.map((key, kIdx) => <Key key={kIdx} def={key} isActive={activeKeys.has(key.code)} isTested={testedKeys.has(key.code)} latchMode={latchMode} />)}
                     </div>
                   ))}
                </div>
 
-               {/* Navigation Cluster */}
-               <div className="flex flex-col gap-2">
-                  {ROWS_NAV.map((row, rIdx) => (
-                    <div key={rIdx} className={`flex gap-2 ${rIdx === 3 ? 'mt-8' : ''}`}> {/* Spacer for arrows */}
-                        {row.map((key, kIdx) => <Key key={kIdx} def={key} isActive={activeKeys.has(key.code)} isTested={testedKeys.has(key.code)} />)}
-                    </div>
-                  ))}
-               </div>
+               {/* Navigation Cluster (Hidden in 60%) */}
+               {layoutType !== '60' && (
+                 <div className="flex flex-col gap-2">
+                    {ROWS_NAV.map((row, rIdx) => (
+                      <div key={rIdx} className={`flex gap-2 ${rIdx === 3 ? 'mt-10' : ''}`}> 
+                          {row.map((key, kIdx) => <Key key={kIdx} def={key} isActive={activeKeys.has(key.code)} isTested={testedKeys.has(key.code)} latchMode={latchMode} />)}
+                      </div>
+                    ))}
+                 </div>
+               )}
 
-               {/* Numpad */}
-               <div className="flex flex-col gap-2 ml-4">
-                   <div className="flex gap-2">
-                      {ROWS_NUM[0].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} />)}
-                   </div>
-                   <div className="flex gap-2 h-full">
-                       {/* Numpad Main Grid */}
-                       <div className="flex flex-col gap-2">
-                           <div className="flex gap-2">{ROWS_NUM[1].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} />)}</div>
-                           <div className="flex gap-2">{ROWS_NUM[2].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} />)}</div>
-                           <div className="flex gap-2">{ROWS_NUM[3].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} />)}</div>
-                           <div className="flex gap-2">{ROWS_NUM[4].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} />)}</div>
-                       </div>
-                       {/* Numpad Right Column (Tall Keys handled via absolute or special logic, simplified here by grid structure in data) */}
-                   </div>
-               </div>
+               {/* Numpad (Hidden in TKL and 60%) */}
+               {layoutType === 'full' && (
+                 <div className="flex flex-col gap-2 ml-4 pl-6 border-l border-white/5">
+                     <div className="flex gap-2">
+                        {ROWS_NUM[0].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} latchMode={latchMode} />)}
+                     </div>
+                     <div className="flex gap-2 h-full">
+                         <div className="flex flex-col gap-2">
+                             <div className="flex gap-2">{ROWS_NUM[1].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} latchMode={latchMode} />)}</div>
+                             <div className="flex gap-2">{ROWS_NUM[2].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} latchMode={latchMode} />)}</div>
+                             <div className="flex gap-2">{ROWS_NUM[3].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} latchMode={latchMode} />)}</div>
+                             <div className="flex gap-2">{ROWS_NUM[4].map((k, i) => <Key key={i} def={k} isActive={activeKeys.has(k.code)} isTested={testedKeys.has(k.code)} latchMode={latchMode} />)}</div>
+                         </div>
+                     </div>
+                 </div>
+               )}
 
             </div>
-
-            {/* Brand / Logo Area */}
-            <div className="absolute top-8 right-12 opacity-20 pointer-events-none">
-               <div className="flex items-center gap-2">
-                  <Activity size={24} />
-                  <span className="font-bold font-mono tracking-widest text-lg">NKRO TESTER</span>
-               </div>
-            </div>
-
          </div>
       </div>
 
-      {/* --- Log Stream --- */}
-      <div className="mt-8 flex gap-2 overflow-hidden mask-fade-right h-12 items-center opacity-70">
-         <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mr-4 shrink-0">Recent Activity:</span>
-         {history.map((code, i) => (
-             <div key={i} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded text-xs font-mono text-blue-400 whitespace-nowrap animate-in slide-in-from-left-2 fade-in">
-                {code}
+      {/* --- INFO PANELS --- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+         
+         {/* 1. Technical Inspector */}
+         <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 font-mono text-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
+                <Terminal size={48} />
+            </div>
+            <h3 className="text-neutral-500 font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Activity size={16} /> Event Inspector
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-y-2 gap-x-8 text-neutral-300">
+               <div className="flex justify-between border-b border-white/5 pb-1">
+                  <span className="text-neutral-500">e.key</span>
+                  <span className="font-bold text-white">{lastEvent ? lastEvent.key : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-white/5 pb-1">
+                  <span className="text-neutral-500">e.code</span>
+                  <span className="font-bold text-blue-400">{lastEvent ? lastEvent.code : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-white/5 pb-1">
+                  <span className="text-neutral-500">e.which</span>
+                  <span className="font-bold">{lastEvent ? lastEvent.which : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-white/5 pb-1">
+                  <span className="text-neutral-500">Location</span>
+                  <span className="font-bold">{lastEvent ? lastEvent.location : '-'}</span>
+               </div>
+               <div className="flex justify-between border-b border-white/5 pb-1">
+                  <span className="text-neutral-500">Shift Key</span>
+                  <span className={lastEvent?.shiftKey ? "text-green-500" : "text-neutral-600"}>{lastEvent?.shiftKey ? 'TRUE' : 'FALSE'}</span>
+               </div>
+               <div className="flex justify-between border-b border-white/5 pb-1">
+                  <span className="text-neutral-500">Ctrl Key</span>
+                  <span className={lastEvent?.ctrlKey ? "text-green-500" : "text-neutral-600"}>{lastEvent?.ctrlKey ? 'TRUE' : 'FALSE'}</span>
+               </div>
+            </div>
+         </div>
+
+         {/* 2. NKRO Stats */}
+         <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 flex items-center justify-around relative">
+             <div className="text-center">
+                <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-2">Current Press</div>
+                <div className="text-5xl font-mono text-white font-bold">{activeKeys.size}</div>
              </div>
-         ))}
+             <div className="w-px h-16 bg-neutral-800"></div>
+             <div className="text-center">
+                <div className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-2">Max Rollover</div>
+                <div className={`text-5xl font-mono font-bold ${maxCombo > 6 ? 'text-green-500' : 'text-blue-500'}`}>
+                   {maxCombo}
+                   <span className="text-lg text-neutral-600 ml-1">KRO</span>
+                </div>
+             </div>
+         </div>
+
       </div>
 
     </div>
