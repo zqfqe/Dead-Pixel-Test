@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Calculator, Monitor, Ruler, Info, Smartphone, Tablet, Laptop, Grid, Box } from 'lucide-react';
+import { Calculator, Monitor, Ruler, Info, Smartphone, Tablet, Laptop, Grid, Box, ScanLine, Eye } from 'lucide-react';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 const DEVICE_PRESETS = {
   monitors: [
@@ -322,6 +323,70 @@ const PPICalculator: React.FC = () => {
               </div>
           )}
         </div>
+
+        {/* SEO Deep Content */}
+        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <ScanLine className="text-blue-500" /> What is PPI?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    PPI (Pixels Per Inch) measures the density of pixels on a screen. Higher PPI means the image looks sharper and smoother because the individual pixels are smaller and packed closer together.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Dot Pitch</strong> is simply the inverse of PPI (converted to millimeters), representing the physical distance between two pixels.
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Eye className="text-yellow-500" /> The "Retina" Concept
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Popularized by Apple, a "Retina Display" is a screen with a high enough PPI that the human eye cannot distinguish individual pixels at a normal viewing distance.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    This means a TV can have a low PPI (e.g. 50) but still be "Retina" because you sit 10 feet away, whereas a phone needs 300+ PPI because you hold it 12 inches away.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Monitor className="text-purple-500" /> Standard Desktop PPI Targets
+              </h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">24" 1080p</strong>
+                    <span className="text-blue-400 font-bold">~92 PPI</span>
+                    <span className="block mt-1 text-neutral-600">Standard Office</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">27" 1440p</strong>
+                    <span className="text-green-400 font-bold">~109 PPI</span>
+                    <span className="block mt-1 text-neutral-600">Gaming Sweetspot</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">32" 4K</strong>
+                    <span className="text-purple-400 font-bold">~138 PPI</span>
+                    <span className="block mt-1 text-neutral-600">Productivity High-Res</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">27" 4K</strong>
+                    <span className="text-yellow-400 font-bold">~163 PPI</span>
+                    <span className="block mt-1 text-neutral-600">Retina (Needs Scaling)</span>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tools/ppi-calculator" />
+        </div>
+
       </div>
     </>
   );

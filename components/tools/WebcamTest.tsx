@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, Mic, Video, VideoOff, MicOff, RefreshCw, Grid, Download, FlipHorizontal } from 'lucide-react';
+import { Camera, Mic, Video, VideoOff, MicOff, RefreshCw, Grid, Download, FlipHorizontal, Lock, Settings, Aperture } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 const WebcamTest: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -14,6 +15,7 @@ const WebcamTest: React.FC = () => {
   const [isMirrored, setIsMirrored] = useState(true);
   const [showGrid, setShowGrid] = useState(false);
   const [resolution, setResolution] = useState<{w: number, h: number} | null>(null);
+  const [frameRate, setFrameRate] = useState<number>(0);
   
   // Audio
   const [audioLevel, setAudioLevel] = useState(0);
@@ -21,6 +23,10 @@ const WebcamTest: React.FC = () => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const animationRef = useRef<number>();
+
+  // FPS Calculation
+  const lastFrameTime = useRef<number>(0);
+  const frameCount = useRef<number>(0);
 
   // Initialize Devices
   useEffect(() => {
@@ -69,7 +75,7 @@ const WebcamTest: React.FC = () => {
       analyserRef.current = analyser;
       sourceRef.current = source;
 
-      updateAudioLevel();
+      updateLoop();
 
     } catch (err: any) {
       setError(err.message || 'Could not access camera/microphone. Please allow permissions.');
@@ -88,22 +94,33 @@ const WebcamTest: React.FC = () => {
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
     setAudioLevel(0);
     setResolution(null);
+    setFrameRate(0);
   };
 
-  const updateAudioLevel = () => {
-      if (!analyserRef.current) return;
-      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-      analyserRef.current.getByteFrequencyData(dataArray);
-      
-      // Average volume
-      let sum = 0;
-      for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
+  const updateLoop = () => {
+      // 1. Audio Level
+      if (analyserRef.current) {
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        analyserRef.current.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+            sum += dataArray[i];
+        }
+        setAudioLevel(sum / dataArray.length);
       }
-      const average = sum / dataArray.length;
-      setAudioLevel(average); // 0-255 range usually
 
-      animationRef.current = requestAnimationFrame(updateAudioLevel);
+      // 2. FPS Counter (Approx)
+      const now = performance.now();
+      frameCount.current++;
+      if (now - lastFrameTime.current >= 1000) {
+          if (videoRef.current && !videoRef.current.paused) {
+             setFrameRate(frameCount.current);
+          }
+          frameCount.current = 0;
+          lastFrameTime.current = now;
+      }
+
+      animationRef.current = requestAnimationFrame(updateLoop);
   };
 
   // Handle Video Metadata loaded
@@ -170,7 +187,7 @@ const WebcamTest: React.FC = () => {
            <h1 className="text-4xl font-bold text-white mb-4">Webcam & Mic Test</h1>
            <p className="text-neutral-400 max-w-lg mx-auto">
               Check your video resolution, framing, and microphone levels before your next call.
-              <br/><span className="text-xs opacity-60">Runs locally. No data is sent to server.</span>
+              <br/><span className="text-xs opacity-60 flex items-center justify-center gap-1 mt-2"><Lock size={10} /> Secure: Runs locally. No server upload.</span>
            </p>
         </div>
 
@@ -206,8 +223,10 @@ const WebcamTest: React.FC = () => {
 
                          {/* Resolution Badge */}
                          {resolution && (
-                             <div className="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-xs font-mono text-white border border-white/10">
-                                 {resolution.w} × {resolution.h}
+                             <div className="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-xs font-mono text-white border border-white/10 flex items-center gap-3">
+                                 <span>{resolution.w} × {resolution.h}</span>
+                                 <span className="text-neutral-500">|</span>
+                                 <span className={frameRate < 20 ? 'text-yellow-500' : 'text-green-500'}>{frameRate} FPS</span>
                              </div>
                          )}
                       </>
@@ -304,6 +323,69 @@ const WebcamTest: React.FC = () => {
            </div>
 
         </div>
+
+        {/* SEO Deep Content */}
+        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Settings className="text-blue-500" /> Troubleshooting: Black Screen?
+                 </h2>
+                 <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
+                    <li><strong>Permissions:</strong> Ensure your browser has permission to access the camera (check the lock icon in the address bar).</li>
+                    <li><strong>Another App:</strong> Close Zoom, Teams, or Skype. Cameras can usually only be used by one app at a time.</li>
+                    <li><strong>Privacy Cover:</strong> Check if your laptop has a physical slider covering the lens.</li>
+                 </ul>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <FlipHorizontal className="text-yellow-500" /> Why is my video mirrored?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Webcams mirror the preview by default so it feels like looking in a mirror (moving right moves your image right). 
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    <strong>Note:</strong> Most meeting apps (Zoom/Teams) only mirror <em>your</em> preview. The other people on the call see you correctly (un-mirrored), so text on your shirt is readable to them.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Aperture className="text-purple-500" /> Common Resolutions
+              </h3>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">720p (HD)</strong>
+                    <span className="text-neutral-500 font-mono">1280 x 720</span>
+                    <span className="block mt-1 text-neutral-600">Laptop Standard</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">1080p (FHD)</strong>
+                    <span className="text-neutral-500 font-mono">1920 x 1080</span>
+                    <span className="block mt-1 text-neutral-600">External Webcams</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">4K (UHD)</strong>
+                    <span className="text-neutral-500 font-mono">3840 x 2160</span>
+                    <span className="block mt-1 text-neutral-600">Premium / DSLR</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Aspect Ratio</strong>
+                    <span className="text-neutral-500 font-mono">16:9</span>
+                    <span className="block mt-1 text-neutral-600">Widescreen Standard</span>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tools/webcam" />
+        </div>
+
       </div>
     </>
   );

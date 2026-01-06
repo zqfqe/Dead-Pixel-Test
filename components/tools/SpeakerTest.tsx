@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, Play, Pause, Headphones, Radio, Mic2, AlertTriangle, Speaker, Waves } from 'lucide-react';
+import { Volume2, Play, Pause, Headphones, Radio, Mic2, AlertTriangle, Speaker, Waves, Info, Music, Activity } from 'lucide-react';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type TestMode = 'stereo' | 'phase' | 'sweep';
 
@@ -176,13 +177,35 @@ const SpeakerTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "Speaker & Headphone Test",
-          "url": "https://deadpixeltest.cc/tools/speaker-test",
-          "description": "Test left/right stereo channels, phase polarity, and frequency response range.",
-          "applicationCategory": "UtilitiesApplication",
-          "operatingSystem": "Web Browser",
-          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Speaker & Headphone Test",
+              "url": "https://deadpixeltest.cc/tools/speaker-test",
+              "description": "Test left/right stereo channels, phase polarity, and frequency response range.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "How to test Left and Right speakers?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Click the 'LEFT' and 'RIGHT' buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings."
+                }
+              }, {
+                "@type": "Question",
+                "name": "What is Speaker Phase (Polarity)?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Speakers are 'In Phase' when their cones move in and out together. If one is wired backwards (+ to -), they move oppositely, causing bass frequencies to cancel out. The 'Out of Phase' test sound will feel hollow and hard to locate."
+                }
+              }]
+            }
+          ]
         }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
@@ -333,6 +356,69 @@ const SpeakerTest: React.FC = () => {
            )}
 
         </div>
+
+        {/* SEO Deep Content */}
+        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Radio className="text-blue-500" /> Stereo Imaging & Phantom Center
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    In a properly set up stereo system, sounds played equally in both speakers should sound like they are coming from a "Phantom Center" directly in front of you, not from the two speakers independently.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    If the center image is vague or drifts to one side, check your speaker placement symmetry and room reflections.
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Music className="text-yellow-500" /> Audio Phase Explained
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                    Speakers are engines that push air. When wired "In Phase" (+ to +, - to -), both speakers push out at the same time.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed text-sm">
+                    If wired "Out of Phase", one pushes while the other pulls. This causes sound waves to cancel each other out, especially in low frequencies (bass), resulting in a thin, hollow sound.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Activity className="text-purple-500" /> Frequency Response Limits
+              </h3>
+              <p className="text-sm text-neutral-400 mb-6">
+                 Human hearing theoretically ranges from 20Hz to 20kHz, but this upper limit drops significantly with age.
+              </p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age &lt; 20</strong>
+                    <span className="text-green-400 font-bold">~19 kHz</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age 30-40</strong>
+                    <span className="text-blue-400 font-bold">~15-16 kHz</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Age 50+</strong>
+                    <span className="text-yellow-400 font-bold">~12-14 kHz</span>
+                 </div>
+                 <div className="bg-black border border-white/10 p-4 rounded-lg">
+                    <strong className="text-white block mb-2">Subwoofer</strong>
+                    <span className="text-neutral-500">20 - 80 Hz</span>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tools/speaker-test" />
+        </div>
+
       </div>
     </>
   );
