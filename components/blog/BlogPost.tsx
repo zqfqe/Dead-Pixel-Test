@@ -154,14 +154,17 @@ const BlogPost: React.FC = () => {
             {post.title}
           </h1>
 
-          <div className="w-full h-[300px] md:h-[500px] rounded-2xl overflow-hidden border border-white/10 relative shadow-2xl">
+          <div className="w-full h-auto aspect-video rounded-2xl overflow-hidden border border-white/10 relative shadow-2xl bg-neutral-900">
             {/* LCP Optimization: Load this image eagerly as it is the largest content paint */}
+            {/* Explicit width/height prevents Layout Shift (CLS) */}
             <img 
               src={post.coverImage} 
               alt={post.title} 
               className="w-full h-full object-cover"
               loading="eager"
               fetchPriority="high"
+              width="1200"
+              height="675"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
           </div>

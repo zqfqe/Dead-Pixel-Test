@@ -8,11 +8,15 @@ import {
   Zap, 
   Palette,
   Grid3X3,
-  Waves
+  Waves,
+  Info,
+  ShieldCheck,
+  AlertTriangle
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link, useLocation } from 'react-router-dom';
+import { RelatedTools } from '../common/RelatedTools';
 
 // Standard pattern for pixel testing
 const COLORS = [
@@ -469,8 +473,7 @@ const DeadPixelTest: React.FC = () => {
     );
   }
 
-  // --- Landing View ---
-  // SEO logic: If on homepage ('/'), use root canonical. If on '/tests/dead-pixel', use that.
+  // --- Landing View with SEO Content ---
   return (
     <>
       <SEO 
@@ -481,7 +484,7 @@ const DeadPixelTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }
         ]}
-        keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'white screen']}
+        keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'white screen', 'pixel repair']}
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
@@ -490,11 +493,7 @@ const DeadPixelTest: React.FC = () => {
               "name": "Dead Pixel Test & Fixer",
               "applicationCategory": "UtilitiesApplication",
               "operatingSystem": "Web",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              },
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
               "featureList": "Dead Pixel Locator, Stuck Pixel Fixer, Screen Burn-in Check"
             },
             {
@@ -502,55 +501,129 @@ const DeadPixelTest: React.FC = () => {
               "mainEntity": [{
                 "@type": "Question",
                 "name": "What is the difference between a dead and stuck pixel?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "A dead pixel is permanently off (black), typically caused by a failed transistor. A stuck pixel is frozen on a specific color (Red, Green, or Blue) and can often be fixed with software."
-                }
+                "acceptedAnswer": { "@type": "Answer", "text": "A dead pixel is permanently off (black), typically caused by a failed transistor. A stuck pixel is frozen on a specific color (Red, Green, or Blue) and can often be fixed with software." }
               }, {
                 "@type": "Question",
                 "name": "How do I fix a stuck pixel?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Use the 'Strobe' or 'White Noise' tool on this page. Run it over the stuck area for 10-60 minutes to stimulate the liquid crystals."
-                }
+                "acceptedAnswer": { "@type": "Answer", "text": "Use the 'Strobe' or 'White Noise' tool on this page. Run it over the stuck area for 10-60 minutes to stimulate the liquid crystals." }
               }]
-            },
-            {
-              "@type": "HowTo",
-              "name": "How to Check for Dead Pixels",
-              "step": [
-                { "@type": "HowToStep", "text": "Clean your screen with a microfiber cloth." },
-                { "@type": "HowToStep", "text": "Click 'Start Test' to enter fullscreen mode." },
-                { "@type": "HowToStep", "text": "Use the arrow keys or click to cycle through solid colors (Red, Green, Blue, White, Black)." },
-                { "@type": "HowToStep", "text": "Inspect the screen closely for any dots that do not match the background color." }
-              ]
             }
           ]
         }}
       />
-      <TestIntro
-        title="Dead Pixel Test"
-        description="The industry standard diagnostic suite. Includes solid color tests, Flashlight inspection, and advanced Stuck Pixel Repair modes (Strobe & Noise)."
-        onStart={startTest}
-        footerText="Press F11 for Best Experience"
-      >
-        <InfoCard title="Pixel Defects">
-          <div className="space-y-3">
-            <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off. Hard to fix.</p>
-            <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools.</p>
-            <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our repair guide &rarr;</Link>
-          </div>
-        </InfoCard>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Dead Pixel Test"
+          description="The industry standard diagnostic suite. Includes solid color tests, Flashlight inspection, and advanced Stuck Pixel Repair modes (Strobe & Noise)."
+          onStart={startTest}
+          footerText="Press F11 for Best Experience"
+        >
+          <InfoCard title="Pixel Defects">
+            <div className="space-y-3">
+              <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off. Hard to fix.</p>
+              <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools.</p>
+              <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our repair guide &rarr;</Link>
+            </div>
+          </InfoCard>
 
-        <InfoCard title="Pro Controls">
-          <ul className="space-y-2 text-sm text-neutral-400 font-mono">
-            <li><span className="text-white">SPACE</span> : Auto Cycle</li>
-            <li><span className="text-white">1 - 9</span> : Direct Color</li>
-            <li><span className="text-white">F / G</span> : Flashlight / Grid</li>
-            <li><span className="text-white">Swipe</span> : Next/Prev Color</li>
-          </ul>
-        </InfoCard>
-      </TestIntro>
+          <InfoCard title="Pro Controls">
+            <ul className="space-y-2 text-sm text-neutral-400 font-mono">
+              <li><span className="text-white">SPACE</span> : Auto Cycle</li>
+              <li><span className="text-white">1 - 9</span> : Direct Color</li>
+              <li><span className="text-white">F / G</span> : Flashlight / Grid</li>
+              <li><span className="text-white">Swipe</span> : Next/Prev Color</li>
+            </ul>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep SEO Content Section */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Info className="text-blue-500" /> What is a Dead Pixel?
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed mb-4">
+                    A dead pixel occurs when a transistor in your monitor's panel fails to supply power, causing the pixel to remain permanently black. This is most noticeable on white backgrounds.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed">
+                    Unlike stuck pixels, dead pixels are rarely fixable via software. However, dust trapped behind the glass can often look like a dead pixel. Use our <strong>Flashlight Mode</strong> to check if the spot casts a shadow (indicating dust).
+                 </p>
+              </div>
+              <div>
+                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Zap className="text-yellow-500" /> How to Fix Stuck Pixels
+                 </h2>
+                 <p className="text-neutral-400 leading-relaxed mb-4">
+                    Stuck pixels are frozen in an "on" state (Red, Green, or Blue). This means the liquid crystal is jammed but the transistor is working.
+                 </p>
+                 <p className="text-neutral-400 leading-relaxed">
+                    <strong>The Fix:</strong> Launch the test and select the <span className="text-white font-bold">Strobe</span> or <span className="text-white font-bold">Noise</span> tool. Drag the flashing box over the stuck pixel and leave it for 10-20 minutes. The rapid voltage changes can often unstick the crystal.
+                 </p>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <ShieldCheck className="text-green-500" /> ISO 9241-307 Warranty Standard
+              </h2>
+              <p className="text-neutral-400 mb-6">
+                 Most manufacturers follow the ISO 9241-307 standard (formerly ISO 13406-2) to determine if a monitor is eligible for return.
+              </p>
+              
+              <div className="overflow-x-auto">
+                 <table className="w-full text-left text-sm text-neutral-400">
+                    <thead className="bg-white/5 text-white uppercase font-bold text-xs tracking-wider">
+                       <tr>
+                          <th className="p-4 rounded-tl-lg">Class</th>
+                          <th className="p-4">Description</th>
+                          <th className="p-4 rounded-tr-lg">Defects Allowed (per million pixels)</th>
+                       </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                       <tr>
+                          <td className="p-4 font-bold text-white">Class 0</td>
+                          <td className="p-4">Medical / Military Grade</td>
+                          <td className="p-4">0 Defects</td>
+                       </tr>
+                       <tr>
+                          <td className="p-4 font-bold text-white">Class 1</td>
+                          <td className="p-4">Premium Consumer</td>
+                          <td className="p-4">1 Bright / 1 Dark</td>
+                       </tr>
+                       <tr className="bg-white/5">
+                          <td className="p-4 font-bold text-white">Class 2</td>
+                          <td className="p-4">Standard (Most Monitors)</td>
+                          <td className="p-4">2 Bright / 5 Dark</td>
+                       </tr>
+                       <tr>
+                          <td className="p-4 font-bold text-white">Class 3</td>
+                          <td className="p-4">Economy / Industrial</td>
+                          <td className="p-4">5 Bright / 15 Dark</td>
+                       </tr>
+                    </tbody>
+                 </table>
+              </div>
+              <p className="text-xs text-neutral-500 mt-4">
+                 *Always check your specific manufacturer's "Zero Bright Dot" guarantee, which often supersedes this standard for premium models.
+              </p>
+           </div>
+
+           {/* Epilepsy Warning */}
+           <div className="flex gap-4 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
+              <AlertTriangle className="text-red-500 shrink-0" />
+              <p className="text-xs text-red-200/80 leading-relaxed">
+                 <strong>Health Warning:</strong> The Strobe and Noise repair tools create rapidly flashing lights. Do not use these modes if you or anyone in the room suffers from photosensitive epilepsy.
+              </p>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/dead-pixel" />
+        </div>
+      </div>
     </>
   );
 };
