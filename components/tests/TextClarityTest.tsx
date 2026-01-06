@@ -301,6 +301,31 @@ const TextClarityTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Text Clarity', path: '/tests/text-clarity' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Text Clarity Checker",
+              "url": "https://deadpixeltest.cc/tests/text-clarity",
+              "description": "Evaluate font rendering and text sharpness. Detect 4:2:0 chroma subsampling on TVs used as PC monitors.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "Why does red text look blurry?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "If red or blue text looks blurry on a black background, your display is likely using 'Chroma Subsampling' (YCbCr 4:2:0 or 4:2:2) to save bandwidth, rather than full RGB 4:4:4."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Text Clarity Test"

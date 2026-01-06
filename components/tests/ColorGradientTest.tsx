@@ -306,6 +306,38 @@ const ColorGradientTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Color Gradient', path: '/tests/color-gradient' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Bit-Depth & Banding Test",
+              "url": "https://deadpixeltest.cc/tests/color-gradient",
+              "description": "Test for color banding, posterization, and verify if your monitor is true 8-bit, 10-bit, or using FRC.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is Color Banding?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Color banding looks like distinct steps or lines in a gradient that should be smooth. It happens when a display lacks the bit-depth to show the intermediate colors."
+                }
+              }, {
+                "@type": "Question",
+                "name": "What is FRC (Frame Rate Control)?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "FRC is a technique where a monitor rapidly flashes two colors to simulate a third color it cannot natively display. Use the 'Animate' feature to check for FRC flickering artifacts."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Color Gradient Test"

@@ -335,6 +335,38 @@ const TestPatterns: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Test Patterns', path: '/tests/test-patterns' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Test Patterns Suite",
+              "url": "https://deadpixeltest.cc/tests/test-patterns",
+              "description": "Professional calibration images including SMPTE Color Bars, PLUGE for black levels, Multiburst for sharpness, and Geometry Grids.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What are SMPTE Color Bars used for?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "SMPTE bars are used to calibrate NTSC video monitors. The 'PLUGE' section in the bottom right helps set the correct Brightness (Black Level) so shadow details aren't crushed."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to check Monitor Overscan?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Use the 'Geometry Grid' pattern. If the outer white box or the percentage labels are cut off by your screen's bezel, your TV is overscanning (zooming in). Set your TV to 'Just Scan' or '1:1 Pixel Mapping'."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Test Patterns"

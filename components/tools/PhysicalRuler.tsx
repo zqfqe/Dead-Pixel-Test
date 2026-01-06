@@ -69,14 +69,37 @@ const PhysicalRuler: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Online Screen Ruler - Actual Size Scale" 
-        description="Turn your screen into a physical ruler (1:1 scale). Calibrate using a credit card or ID to measure real-world objects in inches or centimeters."
+        title="Online Screen Ruler - Actual Size Scale (1:1)" 
+        description="Turn your phone or monitor into a real physical ruler. Calibrate quickly with a credit card to measure objects in centimeters (cm) and inches."
         canonical="/tools/ruler"
-        keywords={['online ruler', 'screen ruler', 'actual size ruler', 'phone screen ruler', 'centimeter ruler online']}
+        keywords={['online ruler', 'screen ruler', 'actual size ruler', 'phone ruler', 'mm ruler online', '1:1 scale ruler']}
         breadcrumbs={[
           { name: 'Home', path: '/' },
           { name: 'Physical Ruler', path: '/tools/ruler' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Online 1:1 Screen Ruler",
+              "url": "https://deadpixeltest.cc/tools/ruler",
+              "description": "A browser-based ruler that calibrates to your screen's PPI for accurate physical measurements.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Calibrate an Online Ruler",
+              "step": [
+                { "@type": "HowToStep", "text": "Place a standard credit card or ID card on the screen." },
+                { "@type": "HowToStep", "text": "Use the slider to resize the blue box until it matches the card's width perfectly." },
+                { "@type": "HowToStep", "text": "Click 'Calibrate' to lock in the scale and view the ruler." }
+              ]
+            }
+          ]
+        }}
       />
       <div className="min-h-screen bg-black text-white flex flex-col font-sans">
         

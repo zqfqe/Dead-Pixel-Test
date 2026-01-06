@@ -232,6 +232,38 @@ const TouchTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Touch Test', path: '/tools/touch' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Multi-Touch Screen Tester",
+              "url": "https://deadpixeltest.cc/tools/touch",
+              "description": "Visualize touch inputs to detect dead zones, ghost touches, and test multi-touch capabilities (up to 10 points).",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "How to check for Ghost Touches?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Open the test and leave your hands off the screen. If you see circles appearing or lines drawing themselves, your digitizer is registering 'ghost touches'."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to check for Dead Zones?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Drag your finger across the entire screen, painting a grid. If there are areas where the line breaks or doesn't draw, you have found a dead zone."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Touch Screen Test"

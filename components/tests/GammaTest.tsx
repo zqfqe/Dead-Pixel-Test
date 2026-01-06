@@ -225,6 +225,38 @@ const GammaTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Gamma Test', path: '/tests/gamma' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Monitor Gamma Checker",
+              "url": "https://deadpixeltest.cc/tests/gamma",
+              "description": "Visual gamma calibration tool. Determines if your monitor is crushing blacks (Gamma too high) or washing out colors (Gamma too low) relative to the 2.2 standard.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "What is the correct Gamma for PC?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Gamma 2.2 is the industry standard for Windows, sRGB, and the Web. Gamma 1.8 was historically used on older Macs."
+                }
+              }, {
+                "@type": "Question",
+                "name": "How to use this Gamma Test?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sit back and squint your eyes. The solid inner circle should blend perfectly into the striped background. If the circle is darker, your gamma is too low. If brighter, your gamma is too high."
+                }
+              }]
+            }
+          ]
+        }}
       />
       <TestIntro
         title="Gamma Calibration"
