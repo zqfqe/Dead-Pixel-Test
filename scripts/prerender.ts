@@ -30,6 +30,9 @@ BLOG_POSTS.forEach(post => {
 // Static Pages
 routesToPrerender.push('/about', '/contact', '/privacy-policy', '/terms-of-service');
 
+// Add specific 404 route for generation
+routesToPrerender.push('/404');
+
 // Deduplicate
 const uniqueRoutes = [...new Set(routesToPrerender)];
 
@@ -62,17 +65,26 @@ const uniqueRoutes = [...new Set(routesToPrerender)];
       }
 
       // Determine File Path
-      // e.g. / -> index.html
-      // /about -> about/index.html
-      const filePath = `dist/static${url === '/' ? '/index.html' : `${url}/index.html`}`;
-      const dir = path.dirname(filePath);
+      let filePath;
+      
+      if (url === '/404') {
+        // Special handling for 404: Save as 404.html in root
+        // This allows Cloudflare/Netlify/Vercel to serve it as the actual 404 page
+        filePath = 'dist/static/404.html';
+      } else {
+        // Standard handling: e.g. /about -> about/index.html
+        filePath = `dist/static${url === '/' ? '/index.html' : `${url}/index.html`}`;
+      }
+
+      const absoluteFilePath = toAbsolute(filePath);
+      const dir = path.dirname(absoluteFilePath);
       
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
       
-      fs.writeFileSync(toAbsolute(filePath), html);
-      console.log(`✨ Generated: ${url}`);
+      fs.writeFileSync(absoluteFilePath, html);
+      console.log(`✨ Generated: ${url} -> ${filePath}`);
     } catch (e) {
       console.error(`❌ Error generating ${url}:`, e);
     }
