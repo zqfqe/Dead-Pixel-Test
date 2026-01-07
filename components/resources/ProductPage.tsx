@@ -81,6 +81,8 @@ const ProductPage: React.FC = () => {
                   alt={product.name}
                   width="800"
                   height="600"
+                  loading="eager"
+                  fetchPriority="high" // Critical for LCP
                   className="relative z-10 w-full h-full object-cover opacity-80 mix-blend-overlay"
                 />
                 <div className="absolute z-20 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10">

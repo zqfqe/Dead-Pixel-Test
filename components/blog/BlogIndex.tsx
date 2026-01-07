@@ -59,13 +59,14 @@ const BlogIndex: React.FC = () => {
               to={`/blog/${post.slug}`}
               className="group flex flex-col bg-neutral-900/50 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 transform hover:-translate-y-1"
             >
-              {/* Image Container */}
-              <div className="relative h-48 overflow-hidden bg-neutral-800">
+              {/* Image Container - Using aspect-video (16:9) to match image dims and prevent CLS */}
+              <div className="relative w-full aspect-video bg-neutral-800 overflow-hidden">
                  {/* LCP Optimization: Priority load first image, lazy load others */}
                  <img 
                    src={post.coverImage} 
                    alt={post.title}
                    loading={index === 0 ? "eager" : "lazy"}
+                   decoding={index === 0 ? "auto" : "async"}
                    width="800"
                    height="450"
                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
