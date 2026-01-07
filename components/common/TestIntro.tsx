@@ -21,35 +21,27 @@ export const TestIntro: React.FC<TestIntroProps> = ({
 }) => {
   return (
     <div className="relative w-full overflow-hidden">
-      {/* --- Dynamic Tech Background --- */}
+      {/* --- Optimized Background --- */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        {/* 1. Grid Pattern */}
+        {/* 1. Static Grid (CSS Pattern is cheap) */}
         <div 
           className="absolute inset-0 opacity-[0.03]" 
           style={{ 
-            backgroundImage: `
-              linear-gradient(to right, #ffffff 1px, transparent 1px),
-              linear-gradient(to bottom, #ffffff 1px, transparent 1px)
-            `,
+            backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
             backgroundSize: '40px 40px',
             maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
             WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
           }}
         ></div>
 
-        {/* 2. Scanning Beam Animation */}
-        <div className="absolute top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-blue-500/0 via-blue-500/5 to-blue-500/0 animate-scan-slow pointer-events-none"></div>
-        
-        {/* 3. Glow Spots */}
-        <div className="absolute top-[-10%] left-[20%] w-[30vw] h-[30vw] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
-        <div className="absolute bottom-[-10%] right-[20%] w-[25vw] h-[25vw] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
+        {/* 2. Simplified Scan Animation (Hardware Accelerated) */}
+        <div className="absolute top-0 left-0 right-0 h-[30vh] bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-scan-slow pointer-events-none will-change-transform"></div>
       </div>
 
       <style>{`
         @keyframes scan-slow {
-          0% { transform: translateY(-100%); opacity: 0; }
-          50% { opacity: 1; }
-          100% { transform: translateY(100vh); opacity: 0; }
+          0% { transform: translate3d(0, -100%, 0); }
+          100% { transform: translate3d(0, 100vh, 0); }
         }
         .animate-scan-slow {
           animation: scan-slow 8s linear infinite;
@@ -89,7 +81,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
           </div>
         </div>
 
-        {/* Info Grid with enhanced glassmorphism */}
+        {/* Info Grid */}
         <div className="grid md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           {children}
         </div>
@@ -100,12 +92,12 @@ export const TestIntro: React.FC<TestIntroProps> = ({
 
 export const InfoCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="group relative p-8 rounded-2xl bg-[#0a0a0a]/80 border border-white/5 overflow-hidden transition-all duration-300 hover:border-white/10 hover:bg-[#0f0f0f]/90 backdrop-blur-xl hover:shadow-2xl hover:shadow-blue-900/5">
-    {/* Hover highlight line */}
+    {/* Simple hover border instead of expensive blur effects */}
     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
     
     <div className="relative z-10">
       <h2 className="text-base font-bold text-white mb-4 tracking-wide flex items-center gap-3">
-        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/5 border border-white/5 text-blue-400 group-hover:text-white group-hover:bg-blue-600 group-hover:border-blue-500 transition-all duration-300 shadow-inner">
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/5 border border-white/5 text-blue-400 group-hover:text-white group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors shadow-inner">
            <div className="w-1.5 h-1.5 bg-current rounded-full" />
         </span>
         {title}

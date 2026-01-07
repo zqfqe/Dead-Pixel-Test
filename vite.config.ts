@@ -6,23 +6,16 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: false,
-    target: 'esnext',
+    sourcemap: false, // Save bandwidth
+    target: 'esnext', // Modern browsers, smaller code
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // 1. Vendor Chunk: React and core libraries
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-          // 2. Common UI Chunk: Group small shared components to reduce request chains
-          if (id.includes('components/common')) {
-            return 'common-ui';
-          }
-          // 3. Layout Chunk: Sidebar, Header, Footer
-          if (id.includes('components/layout')) {
-            return 'layout';
-          }
+        manualChunks: {
+          // Keep React separate as it rarely changes (better for browser cache)
+          'react-vendor': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
+          // CRITICAL: Do NOT manually chunk lucide-react. 
+          // Letting Vite handle it automatically enables Tree-Shaking to remove unused icons.
         }
       }
     }
