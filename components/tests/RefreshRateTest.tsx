@@ -11,7 +11,7 @@ const RefreshRateTest: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [fps, setFps] = useState(0);
   
-  const requestRef = useRef<number>(0);
+  const requestRef = useRef<number>();
   const frameCountRef = useRef(0);
   const lastTimeRef = useRef(0);
 

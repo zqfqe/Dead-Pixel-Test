@@ -141,7 +141,7 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ isOpen, onClos
                     <span className="text-xs text-neutral-500 font-mono">{score}% Health</span>
                  </div>
               </div>
-              <p className="text-neutral-300 text-sm mt-4 text-center max-w-sm">
+              <p className="text-neutral-400 text-sm mt-4 text-center max-w-sm">
                 {score === 100 ? "Perfect! Your display shows no obvious defects based on the tests run." : "Some defects were reported. Check details below."}
               </p>
            </div>

@@ -22,7 +22,7 @@ const WebcamTest: React.FC = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const animationRef = useRef<number>(0);
+  const animationRef = useRef<number>();
 
   // FPS Calculation
   const lastFrameTime = useRef<number>(0);

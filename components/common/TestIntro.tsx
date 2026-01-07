@@ -21,23 +21,40 @@ export const TestIntro: React.FC<TestIntroProps> = ({
 }) => {
   return (
     <div className="relative w-full overflow-hidden">
-      {/* --- Optimized Background --- */}
+      {/* --- Dynamic Tech Background --- */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        {/* 1. Static Grid (CSS Pattern is cheap) */}
+        {/* 1. Grid Pattern */}
         <div 
           className="absolute inset-0 opacity-[0.03]" 
           style={{ 
-            backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+            backgroundImage: `
+              linear-gradient(to right, #ffffff 1px, transparent 1px),
+              linear-gradient(to bottom, #ffffff 1px, transparent 1px)
+            `,
             backgroundSize: '40px 40px',
-            // Simple radial mask is performant
             maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
             WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
           }}
         ></div>
 
-        {/* 2. Simplified Scan Animation (Hardware Accelerated via Tailwind) */}
-        <div className="absolute top-0 left-0 right-0 h-[30vh] bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-scan-slow pointer-events-none will-change-transform"></div>
+        {/* 2. Scanning Beam Animation */}
+        <div className="absolute top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-blue-500/0 via-blue-500/5 to-blue-500/0 animate-scan-slow pointer-events-none"></div>
+        
+        {/* 3. Glow Spots */}
+        <div className="absolute top-[-10%] left-[20%] w-[30vw] h-[30vw] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
+        <div className="absolute bottom-[-10%] right-[20%] w-[25vw] h-[25vw] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
       </div>
+
+      <style>{`
+        @keyframes scan-slow {
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+        .animate-scan-slow {
+          animation: scan-slow 8s linear infinite;
+        }
+      `}</style>
 
       {/* --- Main Content --- */}
       <div className="max-w-[1200px] mx-auto py-16 px-6 lg:py-24 relative z-10 animate-fade-in">
@@ -47,7 +64,6 @@ export const TestIntro: React.FC<TestIntroProps> = ({
 
         {/* Hero Section */}
         <div className="text-center mb-20 max-w-3xl mx-auto">
-          {/* LCP Element: This badge and H1 are usually LCP. Ensure no heavy styles delay paint. */}
           <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono uppercase tracking-widest text-blue-300 mb-8 backdrop-blur-md shadow-lg shadow-blue-900/10">
             <ScanLine size={12} /> Display Diagnostic Suite
           </div>
@@ -56,7 +72,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
             {title}
           </h1>
           
-          <p className="text-lg md:text-xl text-neutral-300 mb-10 leading-relaxed font-light max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed font-light max-w-2xl mx-auto">
             {description}
           </p>
           
@@ -67,13 +83,13 @@ export const TestIntro: React.FC<TestIntroProps> = ({
             >
               {startButtonText}
             </Button>
-            <span className="text-[10px] text-neutral-400 font-mono tracking-widest uppercase opacity-70">
+            <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase opacity-70">
               {footerText}
             </span>
           </div>
         </div>
 
-        {/* Info Grid */}
+        {/* Info Grid with enhanced glassmorphism */}
         <div className="grid md:grid-cols-2 gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           {children}
         </div>
@@ -84,17 +100,17 @@ export const TestIntro: React.FC<TestIntroProps> = ({
 
 export const InfoCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="group relative p-8 rounded-2xl bg-[#0a0a0a]/80 border border-white/5 overflow-hidden transition-all duration-300 hover:border-white/10 hover:bg-[#0f0f0f]/90 backdrop-blur-xl hover:shadow-2xl hover:shadow-blue-900/5">
-    {/* Simple hover border instead of expensive blur effects */}
+    {/* Hover highlight line */}
     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
     
     <div className="relative z-10">
       <h2 className="text-base font-bold text-white mb-4 tracking-wide flex items-center gap-3">
-        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/5 border border-white/5 text-blue-400 group-hover:text-white group-hover:bg-blue-600 group-hover:border-blue-500 transition-colors shadow-inner">
+        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white/5 border border-white/5 text-blue-400 group-hover:text-white group-hover:bg-blue-600 group-hover:border-blue-500 transition-all duration-300 shadow-inner">
            <div className="w-1.5 h-1.5 bg-current rounded-full" />
         </span>
         {title}
       </h2>
-      <div className="text-neutral-300 leading-relaxed text-sm font-light pl-9">
+      <div className="text-neutral-400 leading-relaxed text-sm font-light pl-9">
         {children}
       </div>
     </div>
