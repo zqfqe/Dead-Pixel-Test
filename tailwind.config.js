@@ -27,6 +27,7 @@ export default {
         'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'scan': 'scan 4s linear infinite',
+        'scan-slow': 'scanSlow 8s linear infinite', // Added for TestIntro
         'scroll-vertical': 'scrollVertical 20s linear infinite',
         'scroll-horizontal': 'scrollHorizontal 20s linear infinite',
       },
@@ -42,6 +43,10 @@ export default {
         scan: {
           '0%': { transform: 'translateY(-100%)' },
           '100%': { transform: 'translateY(100vh)' },
+        },
+        scanSlow: {
+          '0%': { transform: 'translate3d(0, -100%, 0)' },
+          '100%': { transform: 'translate3d(0, 100vh, 0)' },
         },
         scrollVertical: {
           '0%': { transform: 'translateY(50%)' },
