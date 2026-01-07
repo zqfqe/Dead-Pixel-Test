@@ -43,11 +43,8 @@ const Header = () => {
   const { results } = useTestReport();
 
   // Telemetry State
-  const [windowSize, setWindowSize] = useState({ 
-    w: typeof window !== 'undefined' ? window.innerWidth : 1920, 
-    h: typeof window !== 'undefined' ? window.innerHeight : 1080 
-  });
-  const [pixelRatio, setPixelRatio] = useState(typeof window !== 'undefined' ? window.devicePixelRatio : 1);
+  const [windowSize, setWindowSize] = useState({ w: window.innerWidth, h: window.innerHeight });
+  const [pixelRatio, setPixelRatio] = useState(window.devicePixelRatio);
   const [fps, setFps] = useState(0);
   
   // FPS Logic

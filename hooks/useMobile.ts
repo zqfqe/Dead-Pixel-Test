@@ -5,7 +5,6 @@ export const useMobile = () => {
 
   useEffect(() => {
     const checkMobile = () => {
-      if (typeof window === 'undefined') return;
       // Check for touch capability and screen width
       const hasTouch = (window.matchMedia("(pointer: coarse)").matches);
       const isSmallScreen = window.innerWidth < 1024;

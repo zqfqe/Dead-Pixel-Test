@@ -5,10 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:client": "tsc && vite build --outDir dist/static",
-    "build:server": "vite build --ssr entry-server.tsx --outDir dist/server",
-    "generate": "tsx scripts/prerender.ts",
-    "build": "npm run build:client && npm run build:server && npm run generate && npm run sitemap",
+    "build": "tsc && vite build && npm run sitemap",
     "preview": "vite preview",
     "sitemap": "tsx scripts/generate-sitemap.ts"
   },
