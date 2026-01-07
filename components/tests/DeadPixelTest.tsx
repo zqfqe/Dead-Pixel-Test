@@ -481,8 +481,8 @@ const DeadPixelTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title={isHome ? "Dead Pixel Test - Check & Fix Stuck Pixels (Free)" : "Dead Pixel Test & Fixer"}
-        description="The #1 Dead Pixel Test. Check your monitor, TV, or phone for dead or stuck pixels instantly. Includes repair tools for stuck pixels and a full display health check."
+        title={isHome ? "Dead Pixel Test - Free Screen Check & Monitor Calibration" : "Dead Pixel Test & Fixer"}
+        description="Instantly check your screen for dead pixels, backlight bleed, and ghosting. The best free online monitor test tool for PC & Mobile. No download needed."
         canonical={isHome ? '/' : '/tests/dead-pixel'}
         breadcrumbs={isHome ? [] : [
           { name: 'Home', path: '/' },
