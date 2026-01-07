@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronUp, RotateCcw, Palette, MoveHorizontal, MoveVertica
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
+import { RelatedArticles } from '../common/RelatedArticles';
 
 type GammaValue = '1.8' | '2.0' | '2.2' | '2.4' | '2.6';
 type Channel = 'gray' | 'red' | 'green' | 'blue';
@@ -336,6 +337,8 @@ const GammaTest: React.FC = () => {
               </div>
            </div>
 
+           {/* Internal Linking */}
+           <RelatedArticles currentPath="/tests/gamma" />
         </section>
 
         <div className="max-w-7xl mx-auto px-6 w-full">

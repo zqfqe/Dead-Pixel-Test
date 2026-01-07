@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowD
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
+import { RelatedArticles } from '../common/RelatedArticles';
 
 type Direction = 'horizontal' | 'vertical';
 type Pattern = 'ufo' | 'text' | 'blocks';
@@ -507,11 +508,16 @@ const GhostingTest: React.FC = () => {
               <p className="text-neutral-400 leading-relaxed">
                  VA (Vertical Alignment) panels are known for high contrast ratios (deep blacks). However, pixels take much longer to transition from <strong>Black to Gray</strong> than from White to Gray. This causes dark objects moving on dark backgrounds to leave a long purple or brown smear. Use the <strong>"Dark Mode"</strong> preset in this tool to test for it.
               </p>
+
+              {/* Long-tail: High Refresh Rate */}
+              <h3 className="text-xl font-bold text-white mt-12 mb-4 flex items-center gap-2"><Zap size={24} /> 144Hz vs 240Hz Ghosting</h3>
+              <p className="text-neutral-400 leading-relaxed">
+                 At higher refresh rates (144Hz, 240Hz, 360Hz), the frame time is shorter (6.9ms at 144Hz vs 4.1ms at 240Hz). This means pixels have <em>less time</em> to change color before the next frame. Ghosting that is invisible at 60Hz can become obvious at 144Hz if the pixel response time cannot keep up with the refresh rate.
+              </p>
            </article>
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
               <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
               </h2>
@@ -531,6 +537,8 @@ const GhostingTest: React.FC = () => {
               </div>
            </div>
 
+           {/* Internal Linking */}
+           <RelatedArticles currentPath="/tests/response-time" />
         </section>
 
         <div className="max-w-7xl mx-auto px-6 w-full">

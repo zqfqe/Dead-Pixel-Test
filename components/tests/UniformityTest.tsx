@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers, Laptop } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link } from 'react-router-dom';
 import { RelatedTools } from '../common/RelatedTools';
+import { RelatedArticles } from '../common/RelatedArticles';
 
 type PatternType = 'solid' | 'checkerboard';
 type ColorType = 'white' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'black';
@@ -502,11 +503,32 @@ const UniformityTest: React.FC = () => {
                     </div>
                  </div>
               </div>
+
+              {/* Long-tail: Curved & Laptop */}
+              <h2 className="text-2xl font-bold text-white mb-6 mt-16 flex items-center gap-2">
+                 <Laptop className="text-blue-500" /> Curved Monitors & Laptops
+              </h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                 <div>
+                    <h3 className="text-lg font-bold text-white mb-2">Curved Monitor Issues</h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed">
+                       Curved monitors (1500R/1000R) are under immense physical stress. This often causes <strong>"Bat-Signal" bleed</strong> at the top and bottom edges.
+                    </p>
+                    <p className="text-neutral-400 text-sm mt-2 leading-relaxed">
+                       Some bleed is inevitable on aggressive curves. If it does not encroach into the center 50% of the screen, it is usually considered acceptable by manufacturers.
+                    </p>
+                 </div>
+                 <div>
+                    <h3 className="text-lg font-bold text-white mb-2">Laptop Screen Clouding</h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed">
+                       Thin laptop lids are prone to pressure spots. If you see white blotches in the center of your screen, check if your laptop lid is being pressed by books in a backpack.
+                    </p>
+                 </div>
+              </div>
            </article>
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
               <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
               </h2>
@@ -526,6 +548,8 @@ const UniformityTest: React.FC = () => {
               </div>
            </div>
 
+           {/* Internal Linking */}
+           <RelatedArticles currentPath="/tests/uniformity" />
         </section>
 
         <div className="max-w-7xl mx-auto px-6 w-full">

@@ -15,12 +15,15 @@ import {
   ShieldCheck,
   Monitor,
   Hand,
-  CheckCircle2
+  CheckCircle2,
+  Smartphone,
+  Tv
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link, useLocation } from 'react-router-dom';
 import { RelatedTools } from '../common/RelatedTools';
+import { RelatedArticles } from '../common/RelatedArticles';
 import { useTestReport } from '../../contexts/TestReportContext';
 import { TestGuideOverlay, ReportDialog } from '../common/TestGuideOverlay';
 import { FullscreenControls } from '../common/FullscreenControls';
@@ -671,27 +674,38 @@ const DeadPixelTest: React.FC = () => {
                     <strong>Health Warning:</strong> The Strobe and Noise repair tools create rapidly flashing lights. Do not use if you have a history of photosensitive epilepsy.
                  </p>
               </div>
+
+              {/* Long-tail SEO: Device Specifics */}
+              <h2 className="text-2xl font-bold text-white mb-6 mt-16 flex items-center gap-2">
+                 <Smartphone className="text-purple-500" /> Mobile & TV Pixel Checking
+              </h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                 <div>
+                    <h3 className="text-lg font-bold text-white mb-2">Checking iPhone/Android Screens</h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed">
+                       Mobile screens have extremely high pixel density (PPI). A single dead pixel on an iPhone Retina display is almost invisible to the naked eye unless you use a magnifying glass. To test a phone:
+                    </p>
+                    <ul className="list-disc pl-5 mt-2 text-sm text-neutral-400">
+                       <li>Clean the screen perfectly (dust looks like pixels).</li>
+                       <li>Set brightness to 100%.</li>
+                       <li>Use the <strong className="text-white">Swipe</strong> gestures in this tool to cycle colors.</li>
+                       <li>Look for defects on the Green and White screens primarily.</li>
+                    </ul>
+                 </div>
+                 <div>
+                    <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2"><Tv size={18}/> Smart TV Testing</h3>
+                    <p className="text-neutral-400 text-sm leading-relaxed">
+                       For 4K TVs, dead pixels are most noticeable from your couch if they are clustered.
+                    </p>
+                    <p className="text-neutral-400 text-sm mt-2 leading-relaxed">
+                       Open the browser on your Samsung, LG, or Sony TV and navigate to <strong className="text-white">DeadPixelTest.cc</strong>. Use the remote to enter fullscreen. Stand close to the TV (1-2 feet) to scan, as 4K pixels are too small to see from a distance.
+                    </p>
+                 </div>
+              </div>
            </article>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <BookOpen className="text-blue-400" /> Learn More
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4 text-sm">
-                 <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="block p-4 bg-black/40 rounded-lg hover:bg-white/5 hover:text-blue-400 transition-colors">
-                    <span className="font-bold block mb-1">Dead vs Stuck Pixels: The Ultimate Guide</span>
-                    <span className="text-neutral-500 text-xs">Deep dive into panel technology and repairs.</span>
-                 </Link>
-                 <Link to="/blog/ips-glow-vs-backlight-bleed-guide" className="block p-4 bg-black/40 rounded-lg hover:bg-white/5 hover:text-blue-400 transition-colors">
-                    <span className="font-bold block mb-1">Backlight Bleed vs IPS Glow</span>
-                    <span className="text-neutral-500 text-xs">Identify if your screen has bleed or just normal glow.</span>
-                 </Link>
-              </div>
-           </div>
-           
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
               <h2 className="text-2xl font-bold text-white mb-8">Frequently Asked Questions</h2>
               <div className="space-y-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
@@ -708,6 +722,9 @@ const DeadPixelTest: React.FC = () => {
                  </div>
               </div>
            </div>
+
+           {/* Internal Linking Component */}
+           <RelatedArticles currentPath="/tests/dead-pixel" />
         </section>
 
         <div className="max-w-7xl mx-auto px-6 w-full">
