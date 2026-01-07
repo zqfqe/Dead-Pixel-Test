@@ -22,7 +22,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
   return (
     <div className="relative w-full overflow-hidden">
       {/* --- Dynamic Tech Background --- */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden transform-gpu">
         {/* 1. Grid Pattern */}
         <div 
           className="absolute inset-0 opacity-[0.03]" 
@@ -38,11 +38,11 @@ export const TestIntro: React.FC<TestIntroProps> = ({
         ></div>
 
         {/* 2. Scanning Beam Animation */}
-        <div className="absolute top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-blue-500/0 via-blue-500/5 to-blue-500/0 animate-scan-slow pointer-events-none"></div>
+        <div className="absolute top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-blue-500/0 via-blue-500/5 to-blue-500/0 animate-scan-slow pointer-events-none will-change-transform"></div>
         
         {/* 3. Glow Spots */}
-        <div className="absolute top-[-10%] left-[20%] w-[30vw] h-[30vw] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
-        <div className="absolute bottom-[-10%] right-[20%] w-[25vw] h-[25vw] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
+        <div className="absolute top-[-10%] left-[20%] w-[30vw] h-[30vw] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen will-change-transform"></div>
+        <div className="absolute bottom-[-10%] right-[20%] w-[25vw] h-[25vw] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen will-change-transform"></div>
       </div>
 
       <style>{`

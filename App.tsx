@@ -7,8 +7,10 @@ import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
 
-// Lazy Load Pages - Phase 1
-const DeadPixelTest = lazy(() => import('./components/tests/DeadPixelTest'));
+// Eager Load Home Page for LCP Optimization (Critical for 100 Score)
+import DeadPixelTest from './components/tests/DeadPixelTest';
+
+// Lazy Load Secondary Pages
 const UniformityTest = lazy(() => import('./components/tests/UniformityTest'));
 const TextClarityTest = lazy(() => import('./components/tests/TextClarityTest'));
 const ColorGradientTest = lazy(() => import('./components/tests/ColorGradientTest'));
@@ -23,17 +25,17 @@ const ContrastTest = lazy(() => import('./components/tests/ContrastTest'));
 const KeyboardTest = lazy(() => import('./components/tools/KeyboardTest'));
 const ControllerTest = lazy(() => import('./components/tools/ControllerTest'));
 
-// Lazy Load Pages - Phase 2 (New)
+// Lazy Load Pages - Phase 2
 const LocalDimmingTest = lazy(() => import('./components/tests/LocalDimmingTest'));
 const AudioSyncTest = lazy(() => import('./components/tests/AudioSyncTest'));
 const ReactionTimeTest = lazy(() => import('./components/tools/ReactionTimeTest'));
 const PPICalculator = lazy(() => import('./components/tools/PPICalculator'));
 
-// Lazy Load Pages - Phase 3 (Input Expansion)
+// Lazy Load Pages - Phase 3
 const MousePollingTest = lazy(() => import('./components/tools/MousePollingTest'));
 const TouchTest = lazy(() => import('./components/tools/TouchTest'));
 
-// Lazy Load Pages - Phase 4 (Audio & Utils)
+// Lazy Load Pages - Phase 4
 const SpeakerTest = lazy(() => import('./components/tools/SpeakerTest'));
 const PhysicalRuler = lazy(() => import('./components/tools/PhysicalRuler'));
 const WebcamTest = lazy(() => import('./components/tools/WebcamTest'));
@@ -70,9 +72,11 @@ const App: React.FC = () => {
               <div className="max-w-7xl mx-auto p-6 lg:p-12">
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    {/* Phase 1 Tests */}
+                    {/* Home - Eager Loaded */}
                     <Route path="/" element={<DeadPixelTest />} />
                     <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
+                    
+                    {/* Other Tests - Lazy Loaded */}
                     <Route path="/tests/uniformity" element={<UniformityTest />} />
                     <Route path="/tests/text-clarity" element={<TextClarityTest />} />
                     <Route path="/tests/color-gradient" element={<ColorGradientTest />} />
