@@ -408,6 +408,16 @@ const UniformityTest: React.FC = () => {
                   "text": "Sometimes. Gently massaging the area with a microfiber cloth can occasionally reseat the panel layers and reduce bleed caused by bezel pressure. However, severe bleed is a permanent manufacturing defect."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Test for Backlight Bleed",
+              "step": [
+                { "@type": "HowToStep", "text": "Dim the lights in your room to create a dark environment for better visibility." },
+                { "@type": "HowToStep", "text": "Start the Uniformity Test and select the 'Black' color pattern from the menu." },
+                { "@type": "HowToStep", "text": "Inspect the edges and corners of the screen for uneven bright patches or spotlights." },
+                { "@type": "HowToStep", "text": "Move your head side-to-side. If the glow moves, it is IPS Glow (Normal). If it stays static, it is Backlight Bleed (Defect)." }
+              ]
             }
           ]
         }}

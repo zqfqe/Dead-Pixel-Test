@@ -324,6 +324,16 @@ const TextClarityTest: React.FC = () => {
                   "text": "If red or blue text looks blurry on a black background, your display is likely using 'Chroma Subsampling' (YCbCr 4:2:0 or 4:2:2) to save bandwidth, rather than full RGB 4:4:4."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Test for Chroma Subsampling (4:2:0)",
+              "step": [
+                { "@type": "HowToStep", "text": "Open the Text Clarity Test and select 'Chroma Check' mode from the sidebar." },
+                { "@type": "HowToStep", "text": "Examine the red text on the black background." },
+                { "@type": "HowToStep", "text": "If the red text looks jagged, broken, or significantly blurrier than white text, your TV/Monitor is running in 4:2:0 mode." },
+                { "@type": "HowToStep", "text": "To fix this, enable 'PC Mode', 'Game Mode', or 'Enhanced HDMI' in your TV settings." }
+              ]
             }
           ]
         }}

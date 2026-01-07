@@ -305,6 +305,16 @@ const BrightnessTest: React.FC = () => {
                   "text": "Black crush occurs when the brightness is set too low, causing dark gray details to merge into pure black, resulting in a loss of detail in dark scenes."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Calibrate Black Levels",
+              "step": [
+                { "@type": "HowToStep", "text": "Start the Brightness Test to view the numbered black level squares (1-20)." },
+                { "@type": "HowToStep", "text": "Initially, increase your monitor's Brightness setting until you can clearly see all the dark gray squares against the black background." },
+                { "@type": "HowToStep", "text": "Slowly decrease Brightness until square 16 fades into the black background, but square 17 and above remain faintly visible." },
+                { "@type": "HowToStep", "text": "If square 16 is still visible, your blacks will look gray. If square 20 disappears, you are crushing shadow detail." }
+              ]
             }
           ]
         }}

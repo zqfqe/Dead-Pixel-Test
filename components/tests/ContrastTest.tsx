@@ -343,6 +343,16 @@ const ContrastTest: React.FC = () => {
                   "text": "Lower the Contrast setting until you can distinguish the difference between pure white (255) and the almost-white steps (253, 254)."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Calibrate White Levels",
+              "step": [
+                { "@type": "HowToStep", "text": "Start the Contrast Test to view the numbered white level squares (234-255)." },
+                { "@type": "HowToStep", "text": "Initially, raise your monitor's Contrast setting until the brightest squares (253-254) merge into the pure white background (Clipping)." },
+                { "@type": "HowToStep", "text": "Slowly lower the Contrast until you can just barely see the difference between square 254 and the white background (255)." },
+                { "@type": "HowToStep", "text": "If square 254 is invisible, you are losing highlight detail in photos and games." }
+              ]
             }
           ]
         }}

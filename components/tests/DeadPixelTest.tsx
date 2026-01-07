@@ -501,31 +501,54 @@ const DeadPixelTest: React.FC = () => {
         disableSuffix={isHome}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
+          "@graph": [
             {
-              "@type": "Question",
-              "name": "How to run a dead pixel test?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Start the test and cycle through the primary colors (Red, Green, Blue, Black, White). Look for any tiny dots that do not change color."
-              }
+              "@type": "WebApplication",
+              "name": "Dead Pixel Test",
+              "url": "https://deadpixeltest.cc/tests/dead-pixel",
+              "description": "Free online tool to detect dead and stuck pixels on LCD, LED, and OLED screens.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
             },
             {
-              "@type": "Question",
-              "name": "What is the difference between a dead pixel and a stuck pixel?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "A dead pixel is black and does not light up. A stuck pixel is frozen on a specific color (red, green, or blue). Stuck pixels can often be fixed, while dead pixels are permanent."
-              }
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How to run a dead pixel test?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Start the test and cycle through the primary colors (Red, Green, Blue, Black, White). Look for any tiny dots that do not change color."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What is the difference between a dead pixel and a stuck pixel?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A dead pixel is black and does not light up. A stuck pixel is frozen on a specific color (red, green, or blue). Stuck pixels can often be fixed, while dead pixels are permanent."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How to fix a stuck pixel?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use our 'Strobe' or 'Static Noise' tools to rapidly cycle colors on the affected area. This can stimulate the liquid crystal to unstuck itself. You can also try gently massaging the area with a soft cloth while the screen is off."
+                  }
+                }
+              ]
             },
             {
-              "@type": "Question",
-              "name": "How to fix a stuck pixel?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Use our 'Strobe' or 'Static Noise' tools to rapidly cycle colors on the affected area. This can stimulate the liquid crystal to unstuck itself. You can also try gently massaging the area with a soft cloth while the screen is off."
-              }
+              "@type": "HowTo",
+              "name": "How to Check for Dead Pixels",
+              "step": [
+                { "@type": "HowToStep", "text": "Clean your monitor screen carefully with a microfiber cloth." },
+                { "@type": "HowToStep", "text": "Click 'Start Test' to enter full-screen mode." },
+                { "@type": "HowToStep", "text": "Cycle through the solid colors (Red, Green, Blue, White, Black)." },
+                { "@type": "HowToStep", "text": "Inspect the screen closely for any dots that do not change color (Dead Pixels) or are permanently colored (Stuck Pixels)." }
+              ]
             }
           ]
         }}

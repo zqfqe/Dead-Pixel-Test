@@ -255,6 +255,16 @@ const GammaTest: React.FC = () => {
                   "text": "Sit back and squint your eyes. The solid inner circle should blend perfectly into the striped background. If the circle is darker, your gamma is too low. If brighter, your gamma is too high."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Calibrate Monitor Gamma",
+              "step": [
+                { "@type": "HowToStep", "text": "Sit at a normal viewing distance directly in front of the screen." },
+                { "@type": "HowToStep", "text": "Open the Gamma 2.2 test pattern from the sidebar." },
+                { "@type": "HowToStep", "text": "Squint your eyes slightly to blur the horizontal lines into a solid grey tone." },
+                { "@type": "HowToStep", "text": "Adjust your monitor's Gamma setting until the solid grey circle in the center blends perfectly with the background stripes." }
+              ]
             }
           ]
         }}
