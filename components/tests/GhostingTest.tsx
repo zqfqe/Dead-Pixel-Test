@@ -524,7 +524,7 @@ const GhostingTest: React.FC = () => {
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">What does Response Time (GtG) mean?</h4>
-                    <p className="text-neutral-400 text-sm">GtG (Gray-to-Gray) measures how long it takes a pixel to change from one shade of gray to another. Lower is better (e.g. 1ms). High response times (>5ms) cause visible blur.</p>
+                    <p className="text-neutral-400 text-sm">GtG (Gray-to-Gray) measures how long it takes a pixel to change from one shade of gray to another. Lower is better (e.g. 1ms). High response times (&gt;5ms) cause visible blur.</p>
                  </div>
               </div>
            </div>
