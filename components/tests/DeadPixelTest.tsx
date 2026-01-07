@@ -6,15 +6,14 @@ import {
   Flashlight, 
   Zap, 
   Palette,
-  Grid3X3,
   Waves,
   Info,
-  ShieldCheck,
   AlertTriangle,
+  HelpCircle,
+  BookOpen,
+  Settings,
+  ShieldCheck,
   Monitor,
-  Activity,
-  Layers,
-  CheckCircle2,
   Hand
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
@@ -547,31 +546,93 @@ const DeadPixelTest: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        <section className="max-w-4xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Info className="text-blue-500" /> Why run a Dead Pixel Test?
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed mb-4">
-                    A <strong>Dead Pixel Test</strong> is the only way to verify your screen's health. A dead pixel occurs when a transistor fails to supply power, causing the pixel to remain permanently black. This is most noticeable on white backgrounds during the test.
-                 </p>
-              </div>
-              <div>
-                 <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Zap className="text-yellow-500" /> Fixing Dead Pixel Test Results
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed mb-4">
-                    If your <strong>Dead Pixel Test</strong> reveals stuck pixels (Red/Green/Blue dots), they can often be fixed. Use the <span className="text-white font-bold">Strobe</span> tool to massage the liquid crystal back into place.
-                 </p>
-              </div>
-           </div>
+        <section className="max-w-5xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
            
-           <div className="flex gap-4 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
-              <AlertTriangle className="text-red-500 shrink-0" />
-              <p className="text-xs text-red-200/80 leading-relaxed">
-                 <strong>Health Warning:</strong> The Strobe and Noise repair tools create rapidly flashing lights. Do not use if you suffer from photosensitive epilepsy.
+           {/* Deep SEO Content: Definition */}
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12 items-start">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <HelpCircle className="text-blue-500" /> What is a Dead Pixel?
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       A <strong>Dead Pixel</strong> is a picture element (pixel) on a display screen that fails to change color. It appears as a tiny, permanent black dot on your screen, which is most visible against a white background. This occurs when the transistor controlling the pixel receives no power.
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed">
+                       In contrast, a <strong>Stuck Pixel</strong> is frozen in a specific color (Red, Green, or Blue) because the liquid crystal is stuck in the open position, allowing light to pass through permanently. Stuck pixels are often fixable, while dead pixels are usually permanent hardware failures.
+                    </p>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <ShieldCheck className="text-green-500" /> ISO 9241-307 Standards
+                    </h3>
+                    <p className="text-sm text-neutral-400 mb-4">
+                       Monitor manufacturers categorize display quality by "Classes" based on allowed defects per million pixels:
+                    </p>
+                    <ul className="space-y-3 text-sm">
+                       <li className="flex gap-2 text-neutral-300"><span className="font-bold text-white min-w-[60px]">Class 0</span> Zero defects allowed. (Medical/Military grade)</li>
+                       <li className="flex gap-2 text-neutral-300"><span className="font-bold text-white min-w-[60px]">Class 1</span> 1 dead or 1 stuck pixel allowed. (Premium monitors)</li>
+                       <li className="flex gap-2 text-neutral-300"><span className="font-bold text-white min-w-[60px]">Class 2</span> 2 dead or 5 stuck pixels allowed. (Most consumer screens)</li>
+                    </ul>
+                    <p className="mt-4 text-xs text-neutral-500 italic">
+                       *Always check your retailer's return policy, as it often overrides manufacturer warranty thresholds.
+                    </p>
+                 </div>
+              </div>
+
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <Zap className="text-yellow-500" /> How to Fix Stuck Pixels
+              </h2>
+              <p className="text-neutral-400 leading-relaxed mb-6">
+                 While dead pixels (black spots) are hard to fix, stuck pixels (colored dots) can often be revived. This tool includes two advanced repair modes:
               </p>
+              
+              <div className="grid md:grid-cols-3 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">1. Strobe Fix</h4>
+                    <p className="text-sm text-neutral-400">
+                       Rapidly cycles primary colors (RGB) to "massage" the liquid crystal sub-pixels back into a relaxed state. Run this for 10-20 minutes.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">2. Static Noise</h4>
+                    <p className="text-sm text-neutral-400">
+                       Displays random white noise snow. This chaotic signal forces every pixel to change state randomly, which can unstick stubborn sub-pixels.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">3. Manual Massage</h4>
+                    <p className="text-sm text-neutral-400">
+                       Use a soft cloth to gently apply pressure to the stuck pixel while the monitor is off, then turn it on. (Use caution to avoid damage).
+                    </p>
+                 </div>
+              </div>
+
+              <div className="mt-12 p-4 bg-red-900/20 border border-red-900/50 rounded-lg flex gap-4">
+                 <AlertTriangle className="text-red-500 shrink-0" />
+                 <p className="text-xs text-red-200/80 leading-relaxed">
+                    <strong>Health Warning:</strong> The Strobe and Noise repair tools create rapidly flashing lights. Do not use if you have a history of photosensitive epilepsy.
+                 </p>
+              </div>
+           </article>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <BookOpen className="text-blue-400" /> Learn More
+              </h3>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                 <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="block p-4 bg-black/40 rounded-lg hover:bg-white/5 hover:text-blue-400 transition-colors">
+                    <span className="font-bold block mb-1">Dead vs Stuck Pixels: The Ultimate Guide</span>
+                    <span className="text-neutral-500 text-xs">Deep dive into panel technology and repairs.</span>
+                 </Link>
+                 <Link to="/blog/ips-glow-vs-backlight-bleed-guide" className="block p-4 bg-black/40 rounded-lg hover:bg-white/5 hover:text-blue-400 transition-colors">
+                    <span className="font-bold block mb-1">Backlight Bleed vs IPS Glow</span>
+                    <span className="text-neutral-500 text-xs">Identify if your screen has bleed or just normal glow.</span>
+                 </Link>
+              </div>
            </div>
         </section>
 

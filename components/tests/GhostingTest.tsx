@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye, Settings, Zap, Camera } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
@@ -427,52 +427,79 @@ const GhostingTest: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        {/* Deep SEO Content */}
-        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <section className="max-w-5xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
            
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <FastForward className="text-blue-500" /> What is Response Time?
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Response time is how fast a pixel can change from one color to another (usually Gray-to-Gray or GtG). Slow pixels create a "trail" behind moving objects, known as <strong>Ghosting</strong>.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>MPRT (Moving Picture Response Time)</strong> measures how long a pixel stays visible. Lower MPRT reduces motion blur but often requires strobing backlight (BFI), which can lower brightness.
-                 </p>
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <FastForward className="text-blue-500" /> What is Response Time?
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       Response time measures how quickly a pixel can change from one color to another, typically measured in milliseconds (ms). The industry standard is <strong>GtG (Gray-to-Gray)</strong>. 
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed">
+                       If pixels change too slowly, the previous image lingers while the new one is drawn, creating a visual "trail" or blur behind moving objects. This is called <strong>Ghosting</strong>.
+                    </p>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <Eye className="text-yellow-500" /> Pursuit Camera Tracking
+                    </h3>
+                    <p className="text-sm text-neutral-400 mb-4">
+                       Stationary photos of this test are misleading because your eyes naturally track moving objects.
+                    </p>
+                    <div className="p-4 bg-black/40 rounded-lg border border-white/5">
+                        <h4 className="text-white font-bold text-sm mb-2 flex items-center gap-2"><Camera size={14}/> How to Photograph</h4>
+                        <p className="text-xs text-neutral-500">
+                           To capture what your eyes actually see, you must move your camera sideways at the exact same speed as the UFO (a "Pursuit Camera" shot). This simulates eye tracking and reveals the true motion blur performance of your monitor.
+                        </p>
+                    </div>
+                 </div>
               </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Eye className="text-yellow-500" /> Pursuit Camera Tracking
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    Your eyes naturally track moving objects. This test works because it forces your eyes to move at the same speed as the UFO. If the pixels can't keep up with your eye movement, you perceive blur.
-                 </p>
-              </div>
-           </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-4">Troubleshooting: "Inverse Ghosting"</h3>
-              <p className="text-sm text-neutral-400 mb-6">
-                 Many gaming monitors use "Overdrive" to speed up pixel transitions. However, if Overdrive is too aggressive, the pixel shoots past its target color, creating a bright "halo" or negative image behind the object.
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <Settings className="text-purple-500" /> Troubleshooting: Overdrive & Overshoot
+              </h2>
+              <p className="text-neutral-400 leading-relaxed mb-6">
+                 Most gaming monitors have a setting called "Overdrive", "Response Time", or "Trace Free". This increases the voltage sent to pixels to make them change colors faster.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Weak Overdrive</strong>
-                    <span className="text-neutral-500">Long blurry trails. Classic ghosting. Image looks soft in motion.</span>
+              <div className="grid md:grid-cols-3 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <div className="h-2 w-12 bg-red-500 rounded mb-4"></div>
+                    <h4 className="font-bold text-white mb-2">Weak Overdrive</h4>
+                    <p className="text-sm text-neutral-400">
+                       <strong>Symptom:</strong> Long, blurry trails behind objects.
+                       <br/><strong>Fix:</strong> Increase the Overdrive setting in your monitor menu.
+                    </p>
                  </div>
-                 <div className="bg-black border border-green-500/30 p-4 rounded-lg">
-                    <strong className="text-green-400 block mb-2">Balanced</strong>
-                    <span className="text-neutral-500">Short, faint trail. Minimal blur. No bright halos. Ideal for gaming.</span>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-green-500/20">
+                    <div className="h-2 w-12 bg-green-500 rounded mb-4"></div>
+                    <h4 className="font-bold text-white mb-2">Balanced</h4>
+                    <p className="text-sm text-neutral-400">
+                       <strong>Symptom:</strong> Short, faint trail. Image looks sharp in motion.
+                       <br/><strong>Fix:</strong> This is the ideal setting. Keep it here.
+                    </p>
                  </div>
-                 <div className="bg-black border border-red-500/30 p-4 rounded-lg">
-                    <strong className="text-red-400 block mb-2">Strong Overdrive</strong>
-                    <span className="text-neutral-500">Bright white outlines (coronas). Artifacts are more distracting than the blur itself.</span>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <div className="h-2 w-12 bg-blue-500 rounded mb-4"></div>
+                    <h4 className="font-bold text-white mb-2">Strong Overdrive</h4>
+                    <p className="text-sm text-neutral-400">
+                       <strong>Symptom:</strong> "Inverse Ghosting" or <strong>Overshoot</strong>. You see a bright white halo or "corona" around moving objects.
+                       <br/><strong>Fix:</strong> Lower the Overdrive setting.
+                    </p>
                  </div>
               </div>
-           </div>
+
+              <h3 className="text-xl font-bold text-white mt-12 mb-4">Black Smearing (VA Panels)</h3>
+              <p className="text-neutral-400 leading-relaxed">
+                 VA (Vertical Alignment) panels are known for high contrast ratios (deep blacks). However, pixels take much longer to transition from <strong>Black to Gray</strong> than from White to Gray. This causes dark objects moving on dark backgrounds to leave a long purple or brown smear. Use the <strong>"Dark Mode"</strong> preset in this tool to test for it.
+              </p>
+           </article>
 
         </section>
 
