@@ -6,13 +6,16 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: false, // Disable sourcemaps for production to save bandwidth
-    target: 'esnext', // Use modern JS for smaller bundle size
+    sourcemap: false, // Save bandwidth
+    target: 'esnext', // Modern browsers, smaller code
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
+          // Keep React separate as it rarely changes (better for browser cache)
           'react-vendor': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
-          'ui-vendor': ['lucide-react']
+          // CRITICAL: Do NOT manually chunk lucide-react. 
+          // Letting Vite handle it automatically enables Tree-Shaking to remove unused icons.
         }
       }
     }
