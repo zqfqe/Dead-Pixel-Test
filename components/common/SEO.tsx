@@ -66,6 +66,8 @@ export const SEO: React.FC<SEOProps> = ({
       
       {/* Robots Control - Explicit tag is better for SEO tools */}
       <meta name="robots" content={robotsContent} />
+      {/* Googlebot specific (redundant but safe) */}
+      <meta name="googlebot" content={robotsContent} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
