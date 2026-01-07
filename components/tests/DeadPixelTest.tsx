@@ -497,9 +497,9 @@ const DeadPixelTest: React.FC = () => {
       
       {showGuide && (
         <TestGuideOverlay 
-          title="Dead Pixel Check"
+          title="Dead Pixel Test Guide"
           instructions={[
-            "Clean your screen thoroughly before starting.",
+            "Clean your screen thoroughly before starting the Dead Pixel Test.",
             "We will cycle through full-screen colors (Black, White, Red, Green, Blue).",
             "On Black screens, look for 'stuck' pixels (tiny red/green/blue dots).",
             "On White screens, look for 'dead' pixels (black dots).",
@@ -520,11 +520,11 @@ const DeadPixelTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Dead Pixel Test"
-          description="The industry standard Dead Pixel Test tool. Check for dead or stuck pixels with solid color patterns. Includes Flashlight inspection and Stuck Pixel Repair modes."
+          description="The #1 industry-standard Dead Pixel Test tool. Accurately detect screen defects on any monitor or smartphone. Our comprehensive Dead Pixel Test includes solid color patterns, Flashlight inspection, and specialized repair tools."
           onStart={initiateTest}
           footerText="Press F11 for Best Experience"
         >
-          <InfoCard title="Pixel Defects">
+          <InfoCard title="Dead Pixel Test: Defects">
             <div className="space-y-3">
               <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off.</p>
               <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck.</p>
@@ -532,7 +532,7 @@ const DeadPixelTest: React.FC = () => {
             </div>
           </InfoCard>
 
-          <InfoCard title="Controls">
+          <InfoCard title="Dead Pixel Test Controls">
             <ul className="space-y-2 text-sm text-neutral-400 font-mono">
               <li><span className="text-white">{isMobile ? 'SWIPE' : 'CLICK'}</span> : Next Color</li>
               <li><span className="text-white">{isMobile ? 'DOUBLE TAP' : 'SPACE'}</span> : Auto Cycle</li>
@@ -545,18 +545,18 @@ const DeadPixelTest: React.FC = () => {
            <div className="grid md:grid-cols-2 gap-12">
               <div>
                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Info className="text-blue-500" /> What is a Dead Pixel?
+                    <Info className="text-blue-500" /> Why run a Dead Pixel Test?
                  </h2>
                  <p className="text-neutral-400 leading-relaxed mb-4">
-                    A dead pixel occurs when a transistor fails to supply power, causing the pixel to remain permanently black. Most noticeable on white backgrounds.
+                    A <strong>Dead Pixel Test</strong> is the only way to verify your screen's health. A dead pixel occurs when a transistor fails to supply power, causing the pixel to remain permanently black. This is most noticeable on white backgrounds during the test.
                  </p>
               </div>
               <div>
                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Zap className="text-yellow-500" /> How to Fix Stuck Pixels
+                    <Zap className="text-yellow-500" /> Fixing Dead Pixel Test Results
                  </h2>
                  <p className="text-neutral-400 leading-relaxed mb-4">
-                    Stuck pixels (Red/Green/Blue dots) can often be fixed. Use the <span className="text-white font-bold">Strobe</span> tool to massage the liquid crystal back into place.
+                    If your <strong>Dead Pixel Test</strong> reveals stuck pixels (Red/Green/Blue dots), they can often be fixed. Use the <span className="text-white font-bold">Strobe</span> tool to massage the liquid crystal back into place.
                  </p>
               </div>
            </div>
