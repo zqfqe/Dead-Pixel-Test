@@ -27,12 +27,19 @@ BLOG_POSTS.forEach(post => {
 // Add static footer pages
 ['/about', '/contact', '/privacy-policy', '/terms-of-service'].forEach(p => routes.add(p));
 
+// Add 404 explicitly
+routes.add('/404');
+
 console.log(`🚀 Prerendering ${routes.size} pages...`);
 
 // 2. Iterate and render
 for (const url of routes) {
   const context = {};
-  const { html, head } = render(url, context);
+  // For 404, we render the generic Not Found component (mapped to *)
+  // We pass the explicit url so the router matches it.
+  const renderUrl = url === '/404' ? '/non-existent-route-trigger-404' : url;
+  
+  const { html, head } = render(renderUrl, context);
 
   // Replace placeholders
   const appHtml = template
@@ -40,12 +47,17 @@ for (const url of routes) {
     .replace('<!-- app-html -->', html);
 
   // Determine file path
-  // / -> index.html
-  // /about -> about/index.html
-  const cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
-  const filePath = cleanUrl === '' 
-    ? 'dist/static/index.html' 
-    : `dist/static${cleanUrl}/index.html`;
+  let filePath = '';
+  if (url === '/404') {
+    filePath = 'dist/static/404.html';
+  } else {
+    // / -> index.html
+    // /about -> about/index.html
+    const cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+    filePath = cleanUrl === '' 
+      ? 'dist/static/index.html' 
+      : `dist/static${cleanUrl}/index.html`;
+  }
 
   const fullPath = toAbsolute(filePath);
   const dir = path.dirname(fullPath);
