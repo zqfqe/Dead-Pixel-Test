@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Monitor, Maximize2, Scan, Activity, Command } from 'lucide-react';
+import { Menu, X, ChevronDown, Monitor, Maximize2, Scan, Activity, Command, ClipboardCheck } from 'lucide-react';
 import { MENU_ITEMS } from '../../data/menu';
 import { MenuItem } from '../../types';
+import { useTestReport } from '../../contexts/TestReportContext';
+import { ReportDashboard } from '../common/ReportDashboard';
 
 const useGroupedMenu = () => {
   const grouped: { title: string; items: MenuItem[] }[] = [];
@@ -35,8 +37,10 @@ const useGroupedMenu = () => {
 const Header = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false); // Report Modal State
   const menuGroups = useGroupedMenu();
   const location = useLocation();
+  const { results } = useTestReport();
 
   // Telemetry State
   const [windowSize, setWindowSize] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -140,8 +144,21 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* 3. Right: Telemetry & Mobile Toggle */}
+          {/* 3. Right: Report, Telemetry & Mobile Toggle */}
           <div className="flex items-center justify-end gap-3 z-20">
+            
+            {/* Report Button (Visible if results exist) */}
+            {results.length > 0 && (
+                <button 
+                  onClick={() => setIsReportOpen(true)}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg shadow-blue-900/20 animate-in fade-in zoom-in"
+                >
+                   <ClipboardCheck size={14} />
+                   <span className="hidden sm:inline">Report</span>
+                   <span className="bg-white/20 px-1.5 rounded text-[10px]">{results.length}</span>
+                </button>
+            )}
+
             {/* Quick Command Hint */}
             <div className="hidden lg:flex items-center gap-1 text-[10px] font-mono text-neutral-600 border border-white/5 px-2 py-1 rounded bg-white/5 mr-2">
                 <Command size={10} /> + K
@@ -173,6 +190,9 @@ const Header = () => {
           </div>
         </div>
       </header>
+
+      {/* Global Report Dashboard Modal */}
+      <ReportDashboard isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
 
       {/* Mobile Menu Overlay */}
       <div 

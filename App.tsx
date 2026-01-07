@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { TestReportProvider } from './contexts/TestReportContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
@@ -58,68 +59,70 @@ const PageLoader = () => (
 const App: React.FC = () => {
   return (
     <HelmetProvider>
-      <Router>
-        <div className="min-h-screen font-sans bg-black text-white flex flex-col">
-          <Header />
-          <CommandPalette />
-          
-          {/* Main Content Area */}
-          <main className="w-full flex-1 pt-24 transition-all duration-300">
-            <div className="max-w-7xl mx-auto p-6 lg:p-12">
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  {/* Phase 1 Tests */}
-                  <Route path="/" element={<DeadPixelTest />} />
-                  <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
-                  <Route path="/tests/uniformity" element={<UniformityTest />} />
-                  <Route path="/tests/text-clarity" element={<TextClarityTest />} />
-                  <Route path="/tests/color-gradient" element={<ColorGradientTest />} />
-                  <Route path="/tests/color-distance" element={<ColorDistanceTest />} />
-                  <Route path="/tests/response-time" element={<GhostingTest />} />
-                  <Route path="/tests/gamma" element={<GammaTest />} />
-                  <Route path="/tests/test-patterns" element={<TestPatterns />} />
-                  <Route path="/tests/viewing-angle" element={<ViewingAngleTest />} />
-                  <Route path="/tests/brightness" element={<BrightnessTest />} />
-                  <Route path="/tests/contrast" element={<ContrastTest />} />
-                  <Route path="/tests/matrix" element={<MatrixTest />} />
-                  
-                  {/* Phase 2 Tests */}
-                  <Route path="/tests/local-dimming" element={<LocalDimmingTest />} />
-                  <Route path="/tests/audio-sync" element={<AudioSyncTest />} />
-                  <Route path="/tests/refresh-rate" element={<RefreshRateTest />} />
-                  
-                  {/* Tools */}
-                  <Route path="/tools/keyboard" element={<KeyboardTest />} />
-                  <Route path="/tools/controller" element={<ControllerTest />} />
-                  <Route path="/tools/reaction-time" element={<ReactionTimeTest />} />
-                  <Route path="/tools/ppi-calculator" element={<PPICalculator />} />
-                  <Route path="/tools/mouse-polling" element={<MousePollingTest />} />
-                  <Route path="/tools/touch" element={<TouchTest />} />
-                  <Route path="/tools/speaker-test" element={<SpeakerTest />} />
-                  <Route path="/tools/ruler" element={<PhysicalRuler />} />
-                  <Route path="/tools/webcam" element={<WebcamTest />} />
+      <TestReportProvider>
+        <Router>
+          <div className="min-h-screen font-sans bg-black text-white flex flex-col">
+            <Header />
+            <CommandPalette />
+            
+            {/* Main Content Area */}
+            <main className="w-full flex-1 pt-24 transition-all duration-300">
+              <div className="max-w-7xl mx-auto p-6 lg:p-12">
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    {/* Phase 1 Tests */}
+                    <Route path="/" element={<DeadPixelTest />} />
+                    <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
+                    <Route path="/tests/uniformity" element={<UniformityTest />} />
+                    <Route path="/tests/text-clarity" element={<TextClarityTest />} />
+                    <Route path="/tests/color-gradient" element={<ColorGradientTest />} />
+                    <Route path="/tests/color-distance" element={<ColorDistanceTest />} />
+                    <Route path="/tests/response-time" element={<GhostingTest />} />
+                    <Route path="/tests/gamma" element={<GammaTest />} />
+                    <Route path="/tests/test-patterns" element={<TestPatterns />} />
+                    <Route path="/tests/viewing-angle" element={<ViewingAngleTest />} />
+                    <Route path="/tests/brightness" element={<BrightnessTest />} />
+                    <Route path="/tests/contrast" element={<ContrastTest />} />
+                    <Route path="/tests/matrix" element={<MatrixTest />} />
+                    
+                    {/* Phase 2 Tests */}
+                    <Route path="/tests/local-dimming" element={<LocalDimmingTest />} />
+                    <Route path="/tests/audio-sync" element={<AudioSyncTest />} />
+                    <Route path="/tests/refresh-rate" element={<RefreshRateTest />} />
+                    
+                    {/* Tools */}
+                    <Route path="/tools/keyboard" element={<KeyboardTest />} />
+                    <Route path="/tools/controller" element={<ControllerTest />} />
+                    <Route path="/tools/reaction-time" element={<ReactionTimeTest />} />
+                    <Route path="/tools/ppi-calculator" element={<PPICalculator />} />
+                    <Route path="/tools/mouse-polling" element={<MousePollingTest />} />
+                    <Route path="/tools/touch" element={<TouchTest />} />
+                    <Route path="/tools/speaker-test" element={<SpeakerTest />} />
+                    <Route path="/tools/ruler" element={<PhysicalRuler />} />
+                    <Route path="/tools/webcam" element={<WebcamTest />} />
 
-                  {/* Blog & Resources */}
-                  <Route path="/blog" element={<BlogIndex />} />
-                  <Route path="/blog/:slug" element={<BlogPost />} />
-                  <Route path="/resources/:category/:slug" element={<ProductPage />} />
+                    {/* Blog & Resources */}
+                    <Route path="/blog" element={<BlogIndex />} />
+                    <Route path="/blog/:slug" element={<BlogPost />} />
+                    <Route path="/resources/:category/:slug" element={<ProductPage />} />
 
-                  {/* Info Pages */}
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/privacy-policy" element={<Privacy />} />
-                  <Route path="/terms-of-service" element={<Terms />} />
-                  
-                  {/* 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </div>
-          </main>
+                    {/* Info Pages */}
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/privacy-policy" element={<Privacy />} />
+                    <Route path="/terms-of-service" element={<Terms />} />
+                    
+                    {/* 404 */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </div>
+            </main>
 
-          <Footer />
-        </div>
-      </Router>
+            <Footer />
+          </div>
+        </Router>
+      </TestReportProvider>
     </HelmetProvider>
   );
 };

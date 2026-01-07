@@ -1,0 +1,207 @@
+import React, { useRef } from 'react';
+import { useTestReport } from '../../contexts/TestReportContext';
+import { X, Download, ShieldCheck, AlertTriangle, Share2, Trash2 } from 'lucide-react';
+import { Button } from './Button';
+
+interface ReportDashboardProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const ReportDashboard: React.FC<ReportDashboardProps> = ({ isOpen, onClose }) => {
+  const { results, getReportScore, clearResults } = useTestReport();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  if (!isOpen) return null;
+
+  const score = getReportScore();
+  
+  // Determine Grade
+  let grade = 'A+';
+  let gradeColor = 'text-green-400';
+  if (score < 100) { grade = 'A'; gradeColor = 'text-green-500'; }
+  if (score < 90) { grade = 'B'; gradeColor = 'text-blue-400'; }
+  if (score < 80) { grade = 'C'; gradeColor = 'text-yellow-400'; }
+  if (score < 60) { grade = 'D'; gradeColor = 'text-orange-400'; }
+  if (score < 40) { grade = 'F'; gradeColor = 'text-red-500'; }
+
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // --- GENERATE CERTIFICATE IMAGE ---
+    const w = 1200;
+    const h = 630; // OG Image Size typical
+    canvas.width = w;
+    canvas.height = h;
+
+    // Background
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, '#0a0a0a');
+    grad.addColorStop(1, '#111111');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Border
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 20;
+    ctx.strokeRect(0, 0, w, h);
+
+    // Header
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 60px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Monitor Health Report', w / 2, 100);
+
+    ctx.fillStyle = '#666';
+    ctx.font = '30px Inter, sans-serif';
+    ctx.fillText('Certified by DeadPixelTest.cc', w / 2, 150);
+
+    // Score Circle
+    ctx.beginPath();
+    ctx.arc(w / 2, h / 2 - 20, 100, 0, Math.PI * 2);
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = score === 100 ? '#22c55e' : score > 80 ? '#3b82f6' : '#eab308';
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 80px Inter, sans-serif';
+    ctx.fillText(grade, w / 2, h / 2 + 10);
+
+    ctx.fillStyle = '#888';
+    ctx.font = '24px Inter, sans-serif';
+    ctx.fillText(`Score: ${score}%`, w / 2, h / 2 + 60);
+
+    // Stats Grid
+    ctx.font = '24px monospace';
+    ctx.textAlign = 'left';
+    const startX = 150;
+    let startY = 450;
+    
+    // Draw up to 6 results
+    results.slice(0, 6).forEach((r, i) => {
+        const x = i % 2 === 0 ? startX : w / 2 + 50;
+        const y = startY + Math.floor(i / 2) * 40;
+        
+        ctx.fillStyle = r.status === 'pass' ? '#22c55e' : '#ef4444';
+        ctx.fillText(r.status === 'pass' ? '✓' : '✗', x, y);
+        
+        ctx.fillStyle = '#ccc';
+        ctx.fillText(r.testName, x + 30, y);
+    });
+
+    // Date
+    ctx.fillStyle = '#444';
+    ctx.textAlign = 'right';
+    ctx.font = '20px sans-serif';
+    ctx.fillText(new Date().toLocaleDateString(), w - 40, h - 30);
+
+    // Trigger Download
+    const link = document.createElement('a');
+    link.download = `Monitor-Report-${Date.now()}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.9);
+    link.click();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-[#0f0f0f] border border-white/10 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        
+        {/* Header */}
+        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+           <h2 className="text-xl font-bold text-white flex items-center gap-2">
+             <ShieldCheck className="text-blue-500" /> Diagnostic Report
+           </h2>
+           <button onClick={onClose} className="text-neutral-400 hover:text-white transition-colors">
+             <X size={24} />
+           </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="overflow-y-auto p-6 flex-1 custom-scrollbar">
+           
+           {/* Score Card */}
+           <div className="flex flex-col items-center justify-center py-8 mb-8 relative">
+              <div className="relative w-32 h-32 flex items-center justify-center">
+                 <svg className="w-full h-full -rotate-90">
+                    <circle cx="64" cy="64" r="60" stroke="#333" strokeWidth="8" fill="transparent" />
+                    <circle 
+                      cx="64" cy="64" r="60" 
+                      stroke="currentColor" strokeWidth="8" 
+                      fill="transparent" 
+                      strokeDasharray={377} 
+                      strokeDashoffset={377 - (377 * score) / 100}
+                      className={`transition-all duration-1000 ${gradeColor}`}
+                    />
+                 </svg>
+                 <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className={`text-4xl font-bold ${gradeColor}`}>{grade}</span>
+                    <span className="text-xs text-neutral-500 font-mono">{score}% Health</span>
+                 </div>
+              </div>
+              <p className="text-neutral-400 text-sm mt-4 text-center max-w-sm">
+                {score === 100 ? "Perfect! Your display shows no obvious defects based on the tests run." : "Some defects were reported. Check details below."}
+              </p>
+           </div>
+
+           {/* Results List */}
+           <div className="space-y-3">
+              <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Test Log</h3>
+              {results.length === 0 ? (
+                <div className="text-center py-8 text-neutral-600 italic border border-dashed border-white/10 rounded-lg">
+                   No tests completed yet.
+                </div>
+              ) : (
+                results.map((res, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/5">
+                     <span className="font-medium text-white">{res.testName}</span>
+                     <div className="flex items-center gap-3">
+                        {res.status === 'pass' ? (
+                           <span className="px-2 py-1 bg-green-900/30 text-green-400 text-xs font-bold rounded flex items-center gap-1 border border-green-500/20">
+                             <ShieldCheck size={12} /> PASS
+                           </span>
+                        ) : (
+                           <span className="px-2 py-1 bg-red-900/30 text-red-400 text-xs font-bold rounded flex items-center gap-1 border border-red-500/20">
+                             <AlertTriangle size={12} /> FAIL
+                           </span>
+                        )}
+                        <span className="text-xs text-neutral-600 font-mono w-16 text-right">
+                          {new Date(res.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                     </div>
+                  </div>
+                ))
+              )}
+           </div>
+
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row gap-4 justify-between items-center">
+           <button 
+             onClick={clearResults}
+             className="text-neutral-500 hover:text-red-400 text-xs flex items-center gap-2 transition-colors"
+           >
+             <Trash2 size={14} /> Clear History
+           </button>
+
+           <div className="flex gap-3 w-full sm:w-auto">
+              <Button 
+                onClick={handleDownload} 
+                disabled={results.length === 0}
+                className="w-full sm:w-auto"
+                icon={Download}
+              >
+                Download Report
+              </Button>
+           </div>
+        </div>
+
+        {/* Hidden Canvas for Generation */}
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+      </div>
+    </div>
+  );
+};
