@@ -16,6 +16,9 @@ const RefreshRateTest: React.FC = () => {
   const frameCountRef = useRef(0);
   const lastTimeRef = useRef(0);
 
+  // Safe window check for target Hz
+  const targetHz = (typeof window !== 'undefined' && window.screen) ? 'Max' : '60';
+
   const startTest = () => {
     setIsActive(true);
     enterFullscreen();
@@ -113,7 +116,7 @@ const RefreshRateTest: React.FC = () => {
                 <div className="bg-black/60 backdrop-blur border border-white/20 px-6 py-4 rounded-xl text-center">
                     <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">Browser FPS</div>
                     <div className="text-6xl font-mono font-bold text-green-400">{fps}</div>
-                    <div className="text-xs text-neutral-600 mt-2">Target: {window.screen.width > 0 ? 'Max' : '60'} Hz</div>
+                    <div className="text-xs text-neutral-600 mt-2">Target: {targetHz} Hz</div>
                 </div>
             </div>
         </div>
