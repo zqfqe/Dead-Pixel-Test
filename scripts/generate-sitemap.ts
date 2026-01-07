@@ -1,10 +1,15 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { MENU_ITEMS } from '../data/menu';
 import { BLOG_POSTS } from '../data/blog';
 
 // Configuration
 const DOMAIN = 'https://deadpixeltest.cc';
-const OUTPUT_PATH = 'public/sitemap.xml';
+// Determine correct output directory relative to this script
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DIST_DIR = path.resolve(__dirname, '../dist/static');
+const OUTPUT_PATH = path.join(DIST_DIR, 'sitemap.xml');
 
 // Static pages that are not in the main menu but should be indexed
 const STATIC_PAGES = [
@@ -15,13 +20,18 @@ const STATIC_PAGES = [
 ];
 
 const generateSitemap = () => {
+  // Ensure dist/static exists (in case sitemap runs before client build, though typically run after)
+  if (!existsSync(DIST_DIR)) {
+    mkdirSync(DIST_DIR, { recursive: true });
+  }
+
   const urls: string[] = [];
   const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
   // Helper to add URL
-  const addUrl = (path: string, priority: string, changefreq: string) => {
+  const addUrl = (pathStr: string, priority: string, changefreq: string) => {
     // Remove trailing slash for consistency, but ensure domain has no trailing slash
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const cleanPath = pathStr.startsWith('/') ? pathStr : `/${pathStr}`;
     const loc = `${DOMAIN}${cleanPath === '/' ? '' : cleanPath}`;
     
     urls.push(`  <url>
@@ -32,7 +42,7 @@ const generateSitemap = () => {
   </url>`);
   };
 
-  console.log('🔍 Scanning routes...');
+  console.log('🔍 Scanning routes for Sitemap...');
 
   // 1. Core Tools from Menu
   MENU_ITEMS.forEach(item => {
