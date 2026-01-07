@@ -7,10 +7,12 @@ import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
 
-// Critical Path: Eager load the home page component for fastest LCP
+// Critical Path Optimization:
+// Statically import the Home Page to bundle it with the main entry point.
+// This prevents the "Waterfall" effect where the browser waits for App.js before fetching Home.js.
 import DeadPixelTest from './components/tests/DeadPixelTest';
 
-// Lazy Load Other Pages
+// Lazy Load Other Pages (Non-Critical)
 const UniformityTest = lazy(() => import('./components/tests/UniformityTest'));
 const TextClarityTest = lazy(() => import('./components/tests/TextClarityTest'));
 const ColorGradientTest = lazy(() => import('./components/tests/ColorGradientTest'));

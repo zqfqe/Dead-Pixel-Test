@@ -1,14 +1,11 @@
-import typography from '@tailwindcss/typography';
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
     "./components/**/*.{js,ts,jsx,tsx}",
-    "./contexts/**/*.{js,ts,jsx,tsx}",
+    "./contexts/**/*.{js,ts,jsx,tsx}", 
     "./hooks/**/*.{js,ts,jsx,tsx}",
-    "./data/**/*.{js,ts,jsx,tsx}",
-    "./*.{js,ts,jsx,tsx}"
+    "./App.tsx",
   ],
   theme: {
     extend: {
@@ -54,7 +51,5 @@ export default {
       }
     },
   },
-  plugins: [
-    typography,
-  ],
+  plugins: [],
 }

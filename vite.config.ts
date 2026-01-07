@@ -6,23 +6,18 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'dist',
-    sourcemap: false,
-    target: 'esnext',
+    target: 'es2015', // Support slightly older browsers while keeping bundles small
+    minify: 'esbuild', // Use esbuild for fast and efficient minification
+    cssMinify: true,   // Ensure CSS is minified to fix "Minify CSS" error
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1000, // Increase warning limit slightly
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // 1. Vendor Chunk: React and core libraries
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-          // 2. Common UI Chunk: Group small shared components to reduce request chains
-          if (id.includes('components/common')) {
-            return 'common-ui';
-          }
-          // 3. Layout Chunk: Sidebar, Header, Footer
-          if (id.includes('components/layout')) {
-            return 'layout';
-          }
+        // Critical: Smart Code Splitting to fix "Long main-thread tasks"
+        manualChunks: {
+          'react-core': ['react', 'react-dom', 'react-helmet-async'],
+          'router': ['react-router-dom'],
+          'ui-icons': ['lucide-react'], // Isolate the heavy icon library
         }
       }
     }

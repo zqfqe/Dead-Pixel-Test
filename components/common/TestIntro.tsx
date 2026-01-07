@@ -72,7 +72,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
             {title}
           </h1>
           
-          <p className="text-lg md:text-xl text-neutral-300 mb-10 leading-relaxed font-light max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed font-light max-w-2xl mx-auto">
             {description}
           </p>
           
@@ -83,7 +83,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
             >
               {startButtonText}
             </Button>
-            <span className="text-[10px] text-neutral-400 font-mono tracking-widest uppercase opacity-70">
+            <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase opacity-70">
               {footerText}
             </span>
           </div>
@@ -110,7 +110,7 @@ export const InfoCard: React.FC<{ title: string; children: React.ReactNode }> = 
         </span>
         {title}
       </h2>
-      <div className="text-neutral-300 leading-relaxed text-sm font-light pl-9">
+      <div className="text-neutral-400 leading-relaxed text-sm font-light pl-9">
         {children}
       </div>
     </div>

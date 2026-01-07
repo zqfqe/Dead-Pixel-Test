@@ -6,9 +6,15 @@ import {
   Flashlight, 
   Zap, 
   Palette,
+  Grid3X3,
   Waves,
   Info,
+  ShieldCheck,
   AlertTriangle,
+  Monitor,
+  Activity,
+  Layers,
+  CheckCircle2,
   Hand
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
@@ -398,7 +404,7 @@ const DeadPixelTest: React.FC = () => {
             {/* Auto Cycle */}
             <button 
               onClick={(e) => { e.stopPropagation(); toggleAutoCycle(); }}
-              aria-label={isAutoCycle ? "Pause Color Cycle" : "Start Auto Color Cycle"}
+              aria-label="Toggle Auto Cycle"
               className={`p-3 rounded-xl transition-all ${isAutoCycle ? 'bg-white text-black' : 'text-neutral-400 hover:text-white hover:bg-white/10'}`}
             >
               {isAutoCycle ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
@@ -417,7 +423,7 @@ const DeadPixelTest: React.FC = () => {
                     setCustomColor(null);
                     setColorIndex(idx); 
                   }}
-                  aria-label={`Set screen color to ${c.name}`}
+                  aria-label={`Set color to ${c.name}`}
                   className={`
                     w-6 h-6 rounded-md border transition-all duration-200
                     ${!customColor && colorIndex === idx && !isFlashlightMode && !isStrobeMode && !isNoiseMode ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-black z-10' : 'border-white/10 hover:scale-110 opacity-70 hover:opacity-100'}
@@ -437,7 +443,7 @@ const DeadPixelTest: React.FC = () => {
                     onChange={handleColorPick}
                 />
                 <button 
-                    aria-label="Open Custom Color Picker"
+                    aria-label="Custom Color Picker"
                     className={`
                         w-6 h-6 rounded-md border transition-all duration-200 flex items-center justify-center
                         ${customColor && !isFlashlightMode ? 'bg-white text-black scale-125' : 'border-white/10 text-neutral-400 hover:text-white hover:bg-white/10'}
@@ -461,7 +467,7 @@ const DeadPixelTest: React.FC = () => {
             {!isMobile && (
               <button 
                 onClick={(e) => { e.stopPropagation(); toggleFlashlight(); }}
-                aria-label="Toggle Flashlight Tool"
+                aria-label="Toggle Flashlight Mode"
                 className={`p-3 rounded-xl transition-all ${isFlashlightMode ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'text-neutral-400 hover:text-white hover:bg-white/10'}`}
               >
                 <Flashlight size={20} />
@@ -526,8 +532,8 @@ const DeadPixelTest: React.FC = () => {
         >
           <InfoCard title="Dead Pixel Test: Defects">
             <div className="space-y-3">
-              <p className="text-sm text-neutral-300"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off.</p>
-              <p className="text-sm text-neutral-300"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck.</p>
+              <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off.</p>
+              <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck.</p>
               <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our repair guide &rarr;</Link>
             </div>
           </InfoCard>
@@ -547,7 +553,7 @@ const DeadPixelTest: React.FC = () => {
                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                     <Info className="text-blue-500" /> Why run a Dead Pixel Test?
                  </h2>
-                 <p className="text-neutral-300 leading-relaxed mb-4">
+                 <p className="text-neutral-400 leading-relaxed mb-4">
                     A <strong>Dead Pixel Test</strong> is the only way to verify your screen's health. A dead pixel occurs when a transistor fails to supply power, causing the pixel to remain permanently black. This is most noticeable on white backgrounds during the test.
                  </p>
               </div>
@@ -555,7 +561,7 @@ const DeadPixelTest: React.FC = () => {
                  <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                     <Zap className="text-yellow-500" /> Fixing Dead Pixel Test Results
                  </h2>
-                 <p className="text-neutral-300 leading-relaxed mb-4">
+                 <p className="text-neutral-400 leading-relaxed mb-4">
                     If your <strong>Dead Pixel Test</strong> reveals stuck pixels (Red/Green/Blue dots), they can often be fixed. Use the <span className="text-white font-bold">Strobe</span> tool to massage the liquid crystal back into place.
                  </p>
               </div>

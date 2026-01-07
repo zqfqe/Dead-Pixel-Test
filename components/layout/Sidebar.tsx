@@ -31,7 +31,7 @@ const Sidebar = () => {
            <h1 className="font-bold text-xl tracking-tight text-white">
              DeadPixelTest
            </h1>
-           <p className="text-xs text-neutral-400 mt-2 font-medium tracking-wide">
+           <p className="text-xs text-neutral-500 mt-2 font-medium tracking-wide">
              Display Calibration Suite
            </p>
         </div>
@@ -40,7 +40,7 @@ const Sidebar = () => {
           {MENU_ITEMS.map((item, index) => {
             if (item.isHeader) {
               return (
-                <div key={index} className="mt-8 mb-4 px-4 text-[11px] font-medium text-neutral-500 uppercase tracking-widest">
+                <div key={index} className="mt-8 mb-4 px-4 text-[11px] font-medium text-neutral-600 uppercase tracking-widest">
                   {item.title}
                 </div>
               );
