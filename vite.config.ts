@@ -8,17 +8,14 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     target: 'esnext',
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Group all NPM dependencies into one file to reduce network requests
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-          // Group shared UI components (buttons, layout, etc.) to prevent request waterfalls
-          if (id.includes('components/common')) {
-            return 'common-ui';
-          }
+        manualChunks: {
+          // Critical Core: React itself. This rarely changes.
+          'react-core': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
+          // UI Library: Icons are large, split them out so they don't block the initial render frame.
+          'ui-libs': ['lucide-react'],
         }
       }
     }

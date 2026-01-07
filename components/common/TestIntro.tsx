@@ -29,6 +29,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
           style={{ 
             backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
             backgroundSize: '40px 40px',
+            // Simple radial mask is performant
             maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)',
             WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
           }}
@@ -46,6 +47,7 @@ export const TestIntro: React.FC<TestIntroProps> = ({
 
         {/* Hero Section */}
         <div className="text-center mb-20 max-w-3xl mx-auto">
+          {/* LCP Element: This badge and H1 are usually LCP. Ensure no heavy styles delay paint. */}
           <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono uppercase tracking-widest text-blue-300 mb-8 backdrop-blur-md shadow-lg shadow-blue-900/10">
             <ScanLine size={12} /> Display Diagnostic Suite
           </div>
