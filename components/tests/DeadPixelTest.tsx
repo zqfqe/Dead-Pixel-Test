@@ -404,6 +404,7 @@ const DeadPixelTest: React.FC = () => {
             {/* Auto Cycle */}
             <button 
               onClick={(e) => { e.stopPropagation(); toggleAutoCycle(); }}
+              aria-label="Toggle Auto Cycle"
               className={`p-3 rounded-xl transition-all ${isAutoCycle ? 'bg-white text-black' : 'text-neutral-400 hover:text-white hover:bg-white/10'}`}
             >
               {isAutoCycle ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
@@ -422,6 +423,7 @@ const DeadPixelTest: React.FC = () => {
                     setCustomColor(null);
                     setColorIndex(idx); 
                   }}
+                  aria-label={`Set color to ${c.name}`}
                   className={`
                     w-6 h-6 rounded-md border transition-all duration-200
                     ${!customColor && colorIndex === idx && !isFlashlightMode && !isStrobeMode && !isNoiseMode ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-black z-10' : 'border-white/10 hover:scale-110 opacity-70 hover:opacity-100'}
@@ -436,10 +438,12 @@ const DeadPixelTest: React.FC = () => {
                 <input 
                     ref={colorInputRef}
                     type="color" 
+                    aria-label="Pick Custom Color"
                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                     onChange={handleColorPick}
                 />
                 <button 
+                    aria-label="Custom Color Picker"
                     className={`
                         w-6 h-6 rounded-md border transition-all duration-200 flex items-center justify-center
                         ${customColor && !isFlashlightMode ? 'bg-white text-black scale-125' : 'border-white/10 text-neutral-400 hover:text-white hover:bg-white/10'}
@@ -454,6 +458,7 @@ const DeadPixelTest: React.FC = () => {
             {/* Tools */}
             <button 
               onClick={(e) => { e.stopPropagation(); toggleStrobeMode(); }}
+              aria-label="Toggle Strobe Mode"
               className={`p-3 rounded-xl transition-all ${isStrobeMode ? 'bg-red-500 text-white animate-pulse' : 'text-neutral-400 hover:text-red-400 hover:bg-white/10'}`}
             >
               <Zap size={20} fill={isStrobeMode ? "currentColor" : "none"} />
@@ -462,6 +467,7 @@ const DeadPixelTest: React.FC = () => {
             {!isMobile && (
               <button 
                 onClick={(e) => { e.stopPropagation(); toggleFlashlight(); }}
+                aria-label="Toggle Flashlight Mode"
                 className={`p-3 rounded-xl transition-all ${isFlashlightMode ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'text-neutral-400 hover:text-white hover:bg-white/10'}`}
               >
                 <Flashlight size={20} />

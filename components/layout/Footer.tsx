@@ -18,13 +18,13 @@ const Footer: React.FC = () => {
               </div>
               DeadPixelTest.cc
             </div>
-            <p className="text-neutral-500 leading-relaxed">
+            <p className="text-neutral-400 leading-relaxed">
               The industry standard for display diagnostics. We help gamers, designers, and professionals achieve pixel perfection through advanced browser-based calibration tools.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="text-neutral-400 hover:text-white transition-colors"><Twitter size={18} /></a>
-              <a href="#" className="text-neutral-400 hover:text-white transition-colors"><Github size={18} /></a>
-              <a href="mailto:info@deadpixeltest.cc" className="text-neutral-400 hover:text-white transition-colors"><Mail size={18} /></a>
+              <a href="#" aria-label="Twitter" className="text-neutral-400 hover:text-white transition-colors"><Twitter size={18} /></a>
+              <a href="#" aria-label="GitHub" className="text-neutral-400 hover:text-white transition-colors"><Github size={18} /></a>
+              <a href="mailto:info@deadpixeltest.cc" aria-label="Email Support" className="text-neutral-400 hover:text-white transition-colors"><Mail size={18} /></a>
             </div>
           </div>
 
@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-600">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
           <p>&copy; {currentYear} DeadPixelTest.cc. All rights reserved.</p>
           <p>Designed for display enthusiasts.</p>
         </div>

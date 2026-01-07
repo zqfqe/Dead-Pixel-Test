@@ -114,7 +114,7 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ isOpen, onClos
            <h2 className="text-xl font-bold text-white flex items-center gap-2">
              <ShieldCheck className="text-blue-500" /> Diagnostic Report
            </h2>
-           <button onClick={onClose} className="text-neutral-400 hover:text-white transition-colors">
+           <button onClick={onClose} aria-label="Close Report" className="text-neutral-400 hover:text-white transition-colors">
              <X size={24} />
            </button>
         </div>

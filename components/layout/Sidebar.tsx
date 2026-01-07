@@ -11,7 +11,7 @@ const Sidebar = () => {
       {/* Mobile Header (Minimal) */}
       <div className="lg:hidden fixed top-0 left-0 w-full bg-black/80 backdrop-blur-md z-[60] px-6 py-4 flex items-center justify-between border-b border-white/5">
         <span className="font-bold text-lg tracking-tight">DeadPixelTest</span>
-        <button onClick={() => setIsOpen(!isOpen)} className="text-white">
+        <button onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"} className="text-white">
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>

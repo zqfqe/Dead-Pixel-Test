@@ -81,6 +81,7 @@ const CommandPalette: React.FC = () => {
             <input 
                 ref={inputRef}
                 type="text" 
+                aria-label="Search tools"
                 placeholder="Search tools..." 
                 className="flex-1 bg-transparent text-white placeholder-neutral-500 outline-none text-sm font-medium h-6"
                 value={query}
