@@ -1,8 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Zap, Droplets, Languages, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Zap, Droplets, Languages, Sparkles, Moon, Sun, HelpCircle, Monitor } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type MatrixColor = 'green' | 'blue' | 'red' | 'white' | 'gold';
 type Charset = 'katakana' | 'binary' | 'latin';
@@ -333,19 +334,107 @@ const MatrixTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Matrix Rain Effect"
-        description="A visual treat and a good test for OLED motion handling and black levels. Ensure the black background stays deep black while the green text pops."
-        startButtonText="Enter The Matrix"
-        onStart={startTest}
-      >
-         <InfoCard title="OLED Black Test">
-          <p>
-            On an OLED or Mini-LED display, the black background between the characters should be perfectly black (pixels off). 
-            On standard IPS/TN panels, you might see a grayish glow (backlight bleed).
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Matrix Rain Effect"
+          description="A visual treat and a good test for OLED motion handling and black levels. Ensure the black background stays deep black while the green text pops."
+          startButtonText="Enter The Matrix"
+          onStart={startTest}
+        >
+           <InfoCard title="OLED Black Test">
+            <p>
+              On an OLED or Mini-LED display, the black background between the characters should be perfectly black (pixels off). 
+              On standard IPS/TN panels, you might see a grayish glow (backlight bleed).
+            </p>
+          </InfoCard>
+          <InfoCard title="Motion Clarity">
+            <p>
+              Watch the falling text. Does it leave a blurry trail? On fast OLED/TN panels, the text should remain sharp even at high speeds.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep SEO Content */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <Moon className="text-blue-500" /> OLED True Black
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       Unlike traditional LCD screens which use a backlight, OLED pixels emit their own light. When a pixel is black, it is completely turned off.
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed">
+                       This Matrix test simulates high contrast content. If you see a faint gray glow in the empty spaces (like a hazy fog), your monitor is likely an IPS or VA panel with backlight bleed, not an OLED.
+                    </p>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <Zap className="text-yellow-500" /> Burn-In Protection
+                    </h3>
+                    <p className="text-sm text-neutral-400 mb-4">
+                       Static images are the enemy of OLED screens. The "Matrix Rain" effect is actually an excellent screensaver because the pixels are constantly changing state.
+                    </p>
+                    <div className="flex gap-4 p-4 bg-black/40 rounded-lg border border-white/5">
+                        <Monitor className="text-neutral-500 shrink-0" />
+                        <div className="text-xs text-neutral-400">
+                           <strong>Pixel Shift:</strong> Most OLED TVs have a feature that shifts the entire image by a few pixels every few minutes to prevent static logo burn-in.
+                        </div>
+                    </div>
+                 </div>
+              </div>
+
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6">Display Technology Comparison</h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">IPS Glow</h4>
+                    <p className="text-sm text-neutral-400">
+                       In a dark room, black backgrounds on IPS screens often glow silver or amber, especially in the corners.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-blue-500/20">
+                    <h4 className="font-bold text-blue-400 mb-2">VA Black Smear</h4>
+                    <p className="text-sm text-neutral-400">
+                       VA panels have better blacks than IPS, but moving dark objects (like these characters) might leave a purple/brown trail.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-purple-500/20">
+                    <h4 className="font-bold text-purple-400 mb-2">OLED Contrast</h4>
+                    <p className="text-sm text-neutral-400">
+                       Infinite contrast. The green letters pop vividly against the void-like black background.
+                    </p>
+                 </div>
+              </div>
+           </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to test OLED True Black?</h4>
+                    <p className="text-neutral-400 text-sm">Run the Matrix Rain test. On a perfect OLED screen, the background between the falling characters should be completely black (pixels off), not dark gray.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Can this test cause burn-in?</h4>
+                    <p className="text-neutral-400 text-sm">No, because the text is constantly moving. Burn-in occurs when static elements (like a news ticker or game HUD) stay in the exact same place for hours.</p>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/matrix" />
+        </div>
+      </div>
     </>
   );
 };

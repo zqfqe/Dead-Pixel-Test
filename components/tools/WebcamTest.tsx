@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, Mic, Video, VideoOff, MicOff, RefreshCw, Grid, Download, FlipHorizontal, Lock, Settings, Aperture } from 'lucide-react';
+import { Camera, Mic, Video, VideoOff, MicOff, RefreshCw, Grid, Download, FlipHorizontal, Lock, Settings, Aperture, HelpCircle, ShieldCheck } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
@@ -160,23 +160,52 @@ const WebcamTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Webcam Test - Check Camera & Mic Online" 
-        description="Test your webcam and microphone online. Check video resolution, frame rate, and audio input levels securely in your browser. No data is recorded."
+        title="Webcam Test Online - Check Camera, Mic & FPS" 
+        description="Securely test your webcam and microphone online. Check resolution, frame rate, and audio levels. Troubleshoot black screens and mirroring issues."
         canonical="/tools/webcam"
-        keywords={['webcam test', 'online camera test', 'mic check', 'webcam mirror', 'camera resolution test', 'online mirror']}
+        keywords={['webcam test', 'mic test', 'online camera check', 'zoom camera test', 'webcam mirror', 'camera fps test', 'video resolution check']}
         breadcrumbs={[
           { name: 'Home', path: '/' },
           { name: 'Webcam Test', path: '/tools/webcam' }
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "Webcam & Microphone Tester",
-          "url": "https://deadpixeltest.cc/tools/webcam",
-          "description": "Secure, browser-based webcam test tool to check video resolution and audio input.",
-          "applicationCategory": "UtilitiesApplication",
-          "operatingSystem": "Web Browser",
-          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          "@graph": [
+            {
+              "@type": "WebApplication",
+              "name": "Webcam & Microphone Tester",
+              "url": "https://deadpixeltest.cc/tools/webcam",
+              "description": "Secure, browser-based webcam test tool to check video resolution and audio input.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [{
+                "@type": "Question",
+                "name": "Why is my webcam screen black?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Common reasons include: 1. Browser permission denied (check the lock icon in URL bar). 2. Another app (Zoom/Teams) is using the camera. 3. A physical privacy shutter covers the lens."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Why is my video mirrored?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Webcams mirror the preview by default so it feels natural (like a mirror). However, the recorded video is usually not mirrored. Use our 'Mirror' toggle to check how others see you."
+                }
+              }, {
+                "@type": "Question",
+                "name": "Is this webcam test secure?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. This tool runs 100% in your browser using client-side technology. Your video and audio feed never leaves your computer and is never sent to any server."
+                }
+              }]
+            }
+          ]
         }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
@@ -187,7 +216,7 @@ const WebcamTest: React.FC = () => {
            <h1 className="text-4xl font-bold text-white mb-4">Webcam & Mic Test</h1>
            <p className="text-neutral-400 max-w-lg mx-auto">
               Check your video resolution, framing, and microphone levels before your next call.
-              <br/><span className="text-xs opacity-60 flex items-center justify-center gap-1 mt-2"><Lock size={10} /> Secure: Runs locally. No server upload.</span>
+              <br/><span className="text-xs opacity-60 flex items-center justify-center gap-1 mt-2 text-green-400"><Lock size={10} /> Secure: Runs locally. No server upload.</span>
            </p>
         </div>
 
@@ -351,7 +380,24 @@ const WebcamTest: React.FC = () => {
               </div>
            </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Why is my webcam screen black?</h4>
+                    <p className="text-neutral-400 text-sm">Common reasons include: 1. Browser permission denied (check the lock icon in URL bar). 2. Another app (Zoom/Teams) is using the camera. 3. A physical privacy shutter covers the lens.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Is this webcam test secure?</h4>
+                    <p className="text-neutral-400 text-sm">Yes. This tool runs 100% in your browser using client-side technology. Your video and audio feed never leaves your computer and is never sent to any server.</p>
+                 </div>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                  <Aperture className="text-purple-500" /> Common Resolutions
               </h3>

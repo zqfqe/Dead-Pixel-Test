@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Activity, Radar, Zap, MoveVertical, Sliders } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Activity, Radar, Zap, MoveVertical, Sliders, Mic, Bluetooth, Monitor, HelpCircle, Film } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type Pattern = 'bar' | 'radar' | 'flash';
 
@@ -219,56 +220,23 @@ const AudioSyncTest: React.FC = () => {
             }
          };
          
-         // Markers are inverted relative to motion.
-         // If ball is BELOW line (+y), it arrived LATE relative to sound? 
-         // If sound plays at center...
-         // If ball is at +100px when sound plays, Video is EARLY (ball moved too fast? no).
-         // Ball moves Top -> Bottom.
-         // Hits center at Time 0.
-         // If Sound plays when Ball is at +100ms mark (below center), Sound is LATE.
-         // If Sound plays when Ball is at -100ms mark (above center), Sound is EARLY.
-         
          drawTick(-100, '-100ms');
          drawTick(-50, '-50ms');
          drawTick(50, '+50ms');
          drawTick(100, '+100ms');
 
          // Moving Puck
-         // Progress 0 -> 1. We want 0 to be at top? No, we want hit at specific time.
-         // Let's map progress so that 0.5 is Center Hit? No, audio schedules at interval.
-         // Usually audio plays at start of beat.
-         // So we want visual to cross center at start of beat (progress 0 or 1).
-         
-         let puckY = cy - (trackH/2) + (progress * trackH);
-         // This moves Top to Bottom. At progress 0.5 (halfway through beat), it's at center.
-         // But we schedule audio at nextNoteTime.
-         // We need to phase shift so that progress 0 = Center.
-         // Let's shift visually.
-         
-         // Adjust so Puck is at Center when progress = 0 (Beat).
-         // Current: Top at 0.
-         // We need Top to be at -0.5 and Bottom at +0.5?
-         // Let's just animate continuous flow.
-         
-         // Better logic: distance = speed * time.
-         // speed = trackH / intervalSeconds.
-         // At time=0 (beat), y=cy.
-         // At time=dt, y = cy + (dt * speed).
          const speed = trackH / intervalSeconds;
-         // timeSinceBeat goes from 0 to intervalSeconds.
-         // But we want to see it approach.
-         // Let's use a wrapping window centered on the beat.
          // Time relative to closest beat:
          let dt = (audioContextRef.current.currentTime - nextNoteTimeRef.current); 
          // dt is negative (approaching) then positive (passed).
          // Range -0.5*interval to +0.5*interval
          
          // Wrap dt to stay within current window
-         // This ensures the ball keeps flowing
          while (dt > intervalSeconds/2) dt -= intervalSeconds;
          while (dt < -intervalSeconds/2) dt += intervalSeconds;
          
-         puckY = cy + (dt * speed);
+         let puckY = cy + (dt * speed);
          
          ctx.fillStyle = '#fff';
          ctx.beginPath();
@@ -468,30 +436,108 @@ const AudioSyncTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Audio/Video Sync Test"
-        description="Measure and calibrate the delay between your display and speakers. Essential for home theater lip-sync and competitive gaming."
-        onStart={startTest}
-      >
-        <InfoCard title="How to Calibrate">
-          <p>
-            1. Listen to the click and watch the visual marker.
-            <br/>
-            2. Use the <strong>Manual Compensation</strong> slider in the menu.
-            <br/>
-            3. Adjust until they feel perfectly synced. The final number (e.g., +100ms) is the delay you should enter in your TV or AV Receiver settings.
-          </p>
-        </InfoCard>
-        <InfoCard title="Patterns">
-          <p>
-            <strong>Bar:</strong> Best for checking vertical sync.
-            <br/>
-            <strong>Radar:</strong> Easier to spot angular errors.
-            <br/>
-            <strong>Flash:</strong> High-speed photography reference.
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Audio/Video Sync Test"
+          description="Measure and calibrate the delay between your display and speakers. Essential for home theater lip-sync and competitive gaming."
+          onStart={startTest}
+        >
+          <InfoCard title="How to Calibrate">
+            <p>
+              1. Listen to the click and watch the visual marker.
+              <br/>
+              2. Use the <strong>Manual Compensation</strong> slider in the menu.
+              <br/>
+              3. Adjust until they feel perfectly synced. The final number (e.g., +100ms) is the delay you should enter in your TV or AV Receiver settings.
+            </p>
+          </InfoCard>
+          <InfoCard title="Patterns">
+            <p>
+              <strong>Bar:</strong> Best for checking vertical sync.
+              <br/>
+              <strong>Radar:</strong> Easier to spot angular errors.
+              <br/>
+              <strong>Flash:</strong> High-speed photography reference.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep SEO Content */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <Film className="text-blue-500" /> What causes Lip Sync issues?
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       Modern TVs do heavy image processing (motion smoothing, upscaling) which adds video delay. Audio receivers process sound almost instantly.
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed">
+                       This results in the sound arriving <strong>before</strong> the picture (negative lag), making characters look like poorly dubbed movies.
+                    </p>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <Bluetooth className="text-purple-500" /> Bluetooth Lag Explained
+                    </h3>
+                    <div className="space-y-4">
+                       <div className="flex justify-between items-center text-sm">
+                          <span className="text-neutral-300">Wired Audio</span>
+                          <span className="text-green-400 font-mono">0-5 ms</span>
+                       </div>
+                       <div className="w-full h-1 bg-neutral-800 rounded"><div className="w-1 h-full bg-green-500 rounded"></div></div>
+                       
+                       <div className="flex justify-between items-center text-sm">
+                          <span className="text-neutral-300">AptX Low Latency</span>
+                          <span className="text-blue-400 font-mono">~40 ms</span>
+                       </div>
+                       <div className="w-full h-1 bg-neutral-800 rounded"><div className="w-1/4 h-full bg-blue-500 rounded"></div></div>
+
+                       <div className="flex justify-between items-center text-sm">
+                          <span className="text-neutral-300">Standard Bluetooth (SBC)</span>
+                          <span className="text-red-400 font-mono">~200 ms</span>
+                       </div>
+                       <div className="w-full h-1 bg-neutral-800 rounded"><div className="w-3/4 h-full bg-red-500 rounded"></div></div>
+                    </div>
+                 </div>
+              </div>
+
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <Monitor className="text-green-500" /> TV Game Mode
+              </h2>
+              <p className="text-neutral-400 leading-relaxed mb-6">
+                 If you are experiencing heavy video lag (your mouse feels floaty or audio is way ahead), make sure your TV is set to <strong>Game Mode</strong>. This disables post-processing features and reduces input lag significantly, often fixing sync issues automatically.
+              </p>
+           </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to fix Lip Sync Delay?</h4>
+                    <p className="text-neutral-400 text-sm">Most modern TVs and AV Receivers have an "Audio Delay" or "Lip Sync" setting. Use this tool to find the exact millisecond offset (e.g., +100ms) and enter that value in your device settings.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Is Bluetooth lag normal?</h4>
+                    <p className="text-neutral-400 text-sm">Yes. Standard Bluetooth audio typically introduces 100-200ms of latency, which is noticeable in gaming and movies. Use AptX Low Latency codecs or wired connections for better sync.</p>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/audio-sync" />
+        </div>
+      </div>
     </>
   );
 };

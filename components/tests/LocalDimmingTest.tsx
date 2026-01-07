@@ -10,10 +10,16 @@ import {
   Circle, 
   MoveHorizontal, 
   MoveVertical,
-  Play
+  Play,
+  Grid,
+  Sun,
+  Monitor,
+  AlertTriangle,
+  HelpCircle
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type TestShape = 'box' | 'circle' | 'text' | 'v-bar' | 'h-bar';
 type ControlMode = 'auto' | 'manual';
@@ -369,22 +375,104 @@ const LocalDimmingTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Local Dimming / Blooming"
-        description="Evaluate your Mini-LED or FALD monitor's zone transitions. Use the mouse to drag the test object into corners to check for edge blooming."
-        onStart={startTest}
-      >
-        <InfoCard title="Manual Testing">
-          <p>
-            Switch to <strong>Manual Mode</strong> to drag the white box into the black bars of a movie aspect ratio (top/bottom) to see if the backlight bleeds into the black bars.
-          </p>
-        </InfoCard>
-        <InfoCard title="Zone Counting">
-          <p>
-            Use the <strong>Sweep</strong> tools. As the line moves across the screen, a poor local dimming algorithm will show visible 'steps' or blocks lighting up ahead of the line.
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Local Dimming / Blooming"
+          description="Evaluate your Mini-LED or FALD monitor's zone transitions. Use the mouse to drag the test object into corners to check for edge blooming."
+          onStart={startTest}
+        >
+          <InfoCard title="Manual Testing">
+            <p>
+              Switch to <strong>Manual Mode</strong> to drag the white box into the black bars of a movie aspect ratio (top/bottom) to see if the backlight bleeds into the black bars.
+            </p>
+          </InfoCard>
+          <InfoCard title="Zone Counting">
+            <p>
+              Use the <strong>Sweep</strong> tools. As the line moves across the screen, a poor local dimming algorithm will show visible 'steps' or blocks lighting up ahead of the line.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        <section className="max-w-5xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <Grid className="text-blue-500" /> What is Local Dimming?
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       Traditional LED monitors have a single backlight that is always on. <strong>FALD (Full Array Local Dimming)</strong> monitors split the backlight into hundreds or thousands of "zones".
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed">
+                       This allows the screen to turn off the backlight in dark areas while keeping it bright in light areas, creating significantly deeper contrast and true HDR capability.
+                    </p>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <Sun className="text-yellow-500" /> The Blooming Effect
+                    </h3>
+                    <p className="text-sm text-neutral-400 mb-4">
+                       Also known as the "Halo Effect". Since dimming zones are much larger than individual pixels, a small bright object (like a star or mouse cursor) forces an entire zone to light up.
+                    </p>
+                    <div className="flex gap-4 p-4 bg-black/40 rounded-lg border border-white/5">
+                        <Monitor className="text-neutral-500 shrink-0" />
+                        <div className="text-xs text-neutral-400">
+                           <strong>The Test:</strong> Use our "Starfield" mode. On a poor FALD display, the stars will look fuzzy or have gray auras. On OLED, they will be sharp with zero glow.
+                        </div>
+                    </div>
+                 </div>
+              </div>
+
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6">Panel Technologies</h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">Edge-Lit</h4>
+                    <p className="text-sm text-neutral-400">
+                       LEDs are only on the edges. Dimming is limited to large vertical columns. Worst HDR performance.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-blue-500/20">
+                    <h4 className="font-bold text-blue-400 mb-2">Mini-LED (FALD)</h4>
+                    <p className="text-sm text-neutral-400">
+                       Thousands of tiny LEDs behind the screen. Great brightness (1000+ nits) but still suffers from minor blooming.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-purple-500/20">
+                    <h4 className="font-bold text-purple-400 mb-2">OLED</h4>
+                    <p className="text-sm text-neutral-400">
+                       No backlight. Each pixel is its own light source. Perfect local dimming (pixel-level) with zero bloom.
+                    </p>
+                 </div>
+              </div>
+           </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is Blooming / Halo Effect?</h4>
+                    <p className="text-neutral-400 text-sm">Blooming creates a glow or halo around bright objects on dark backgrounds. It occurs when a backlight dimming zone is larger than the bright object it's illuminating, causing light to spill into adjacent dark areas.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to check for Local Dimming Zones?</h4>
+                    <p className="text-neutral-400 text-sm">Use the "Starfield" pattern or the "Box" tool. Move a small white box across a black screen. If you see blocky squares lighting up behind the box as it moves, those are your dimming zones activating.</p>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/local-dimming" />
+        </div>
+      </div>
     </>
   );
 };

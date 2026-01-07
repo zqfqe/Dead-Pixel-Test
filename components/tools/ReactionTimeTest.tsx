@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye, Zap, Brain } from 'lucide-react';
+import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye, Zap, Brain, HelpCircle } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
@@ -193,33 +193,31 @@ const ReactionTimeTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@graph": [
+          "@type": "FAQPage",
+          "mainEntity": [
             {
-              "@type": "WebApplication",
-              "name": "Reaction Time Test",
-              "url": "https://deadpixeltest.cc/tools/reaction-time",
-              "description": "A scientific tool to measure visual and auditory reaction times (reflexes) in milliseconds.",
-              "applicationCategory": "HealthApplication",
-              "operatingSystem": "Web Browser",
-              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+              "@type": "Question",
+              "name": "What is the average human reaction time?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The average visual reaction time is around 215-250ms. Auditory reaction time is typically faster, around 170ms."
+              }
             },
             {
-              "@type": "FAQPage",
-              "mainEntity": [{
-                "@type": "Question",
-                "name": "What is the average human reaction time?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "The average visual reaction time is around 215-250ms. Auditory reaction time is typically faster, around 170ms."
-                }
-              }, {
-                "@type": "Question",
-                "name": "Why is audio reaction faster?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms), allowing for a quicker reflex response."
-                }
-              }]
+              "@type": "Question",
+              "name": "Why is audio reaction faster?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Auditory stimuli reach the brain faster (8-10ms) than visual stimuli (20-40ms), allowing for a quicker reflex response."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does age affect reaction time?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Reaction time peaks around age 24 and slowly declines by about 2-6ms per decade thereafter."
+              }
             }
           ]
         }}
@@ -368,7 +366,24 @@ const ReactionTimeTest: React.FC = () => {
               </div>
            </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is the average human reaction time?</h4>
+                    <p className="text-neutral-400 text-sm">The average visual reaction time is around 215-250ms. Auditory reaction time is typically faster, around 170ms.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Does age affect reaction time?</h4>
+                    <p className="text-neutral-400 text-sm">Yes. Reaction time peaks around age 24 and slowly declines by about 2-6ms per decade thereafter.</p>
+                 </div>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
               <h3 className="text-lg font-bold text-white mb-4">Age Factors</h3>
               <p className="text-sm text-neutral-400 mb-6">
                  Reaction time naturally declines with age. This decline typically starts around age 24.

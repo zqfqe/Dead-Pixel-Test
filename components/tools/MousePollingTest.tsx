@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { MousePointer2, Activity, Zap, Info, RotateCcw, Monitor, Gamepad2, Smartphone } from 'lucide-react';
+import { MousePointer2, Activity, Zap, Info, RotateCcw, Monitor, Gamepad2, Smartphone, HelpCircle } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
@@ -131,6 +131,36 @@ const MousePollingTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Mouse Polling Rate', path: '/tools/mouse-polling' }
         ]}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is 1000Hz better than 500Hz for gaming?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Technically yes, as 1000Hz reports position every 1ms compared to 2ms for 500Hz. However, the difference is very subtle. Pro players prefer 1000Hz for maximum responsiveness, but 500Hz is smoother on some systems."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How to check my mouse Polling Rate?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Move your mouse quickly in continuous circles on this page. The 'Average' Hz counter will stabilize at your polling rate (usually 125, 500, or 1000)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does high polling rate affect FPS?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. extremely high rates (4000Hz/8000Hz) can consume significant CPU resources, causing FPS drops or stuttering in older games that aren't optimized for high-frequency input."
+              }
+            }
+          ]
+        }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
         <div className="text-center mb-12">
@@ -251,7 +281,24 @@ const MousePollingTest: React.FC = () => {
               </div>
            </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Is 1000Hz better than 500Hz for gaming?</h4>
+                    <p className="text-neutral-400 text-sm">Technically yes, as 1000Hz reports position every 1ms compared to 2ms for 500Hz. However, the difference is very subtle. Pro players prefer 1000Hz for maximum responsiveness, but 500Hz is smoother on some systems.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Does high polling rate affect FPS?</h4>
+                    <p className="text-neutral-400 text-sm">Yes. extremely high rates (4000Hz/8000Hz) can consume significant CPU resources, causing FPS drops or stuttering in older games that aren't optimized for high-frequency input.</p>
+                 </div>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                  <Gamepad2 className="text-purple-500" /> Troubleshooting Stutter
               </h3>

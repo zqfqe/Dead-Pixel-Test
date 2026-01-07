@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Palette, LayoutTemplate, BoxSelect, Type, Eye, EyeOff } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Palette, LayoutTemplate, BoxSelect, Type, Eye, EyeOff, Activity, Droplet, HelpCircle } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
+import { RelatedTools } from '../common/RelatedTools';
 
 type BaseColor = 'gray' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'skin' | 'teal';
 type ShapeMode = 'split' | 'inset' | 'text';
@@ -245,7 +246,7 @@ const ColorDistanceTest: React.FC = () => {
         title="Color Distance Test - Check Eye Sensitivity" 
         description="Test your color vision sensitivity. Can you distinguish subtle shade differences? Compare colors against gray, skin tones, and pastels."
         canonical="/tests/color-distance"
-        keywords={['color distance test', 'color sensitivity test', 'delta e test', 'monitor color accuracy', 'eye test color']}
+        keywords={['color distance test', 'color sensitivity test', 'delta e test', 'monitor color accuracy', 'eye test color', 'just noticeable difference']}
         breadcrumbs={[
           { name: 'Home', path: '/' },
           { name: 'Color Distance', path: '/tests/color-distance' }
@@ -271,27 +272,116 @@ const ColorDistanceTest: React.FC = () => {
                   "@type": "Answer",
                   "text": "Delta E is a metric for understanding how the human eye perceives color difference. A Delta E of less than 2 is generally considered imperceptible to the standard observer."
                 }
+              }, {
+                "@type": "Question",
+                "name": "What is JND (Just Noticeable Difference)?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "JND represents the smallest difference in sensory input that is detectable by a human. In this test, it's the minimum RGB step where you can still distinguish the shape from the background."
+                }
               }]
             }
           ]
         }}
       />
-      <TestIntro
-        title="Color Distance Test"
-        description="Test your eyes and your monitor's ability to distinguish subtle shade differences. Use the 'Inset' and 'Text' modes to simulate real-world UI scenarios."
-        onStart={startTest}
-      >
-        <InfoCard title="The 'Inset' Advantage">
-          <p>
-            The human eye is much better at detecting contrast when one color is surrounded by another. Use the <strong>Inset Mode</strong> to detect subtle differences that are invisible in Split mode.
-          </p>
-        </InfoCard>
-        <InfoCard title="Lighter vs. Darker">
-          <p>
-            Some monitors crush blacks (can't see dark gray on black) but handle whites fine. Switch between <strong>Lighter</strong> and <strong>Darker</strong> modes to test both ends of the spectrum.
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Color Distance Test"
+          description="Test your eyes and your monitor's ability to distinguish subtle shade differences. Use the 'Inset' and 'Text' modes to simulate real-world UI scenarios."
+          onStart={startTest}
+        >
+          <InfoCard title="The 'Inset' Advantage">
+            <p>
+              The human eye is much better at detecting contrast when one color is surrounded by another. Use the <strong>Inset Mode</strong> to detect subtle differences that are invisible in Split mode.
+            </p>
+          </InfoCard>
+          <InfoCard title="Lighter vs. Darker">
+            <p>
+              Some monitors crush blacks (can't see dark gray on black) but handle whites fine. Switch between <strong>Lighter</strong> and <strong>Darker</strong> modes to test both ends of the spectrum.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        {/* Deep SEO Content */}
+        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <Activity className="text-blue-500" /> What is Delta E?
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       <strong>Delta E (dE)</strong> is the standard metric used to quantify the difference between two colors.
+                    </p>
+                    <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
+                        <li><strong>dE &lt; 1.0:</strong> Not perceptible by human eyes. Considered "perfect" calibration.</li>
+                        <li><strong>dE 1.0 - 2.0:</strong> Perceptible only through close observation.</li>
+                        <li><strong>dE 2.0 - 10.0:</strong> Perceptible at a glance.</li>
+                    </ul>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <Eye className="text-yellow-500" /> Human Vision Limits
+                    </h3>
+                    <p className="text-sm text-neutral-400 mb-4">
+                       Most people can distinguish a difference of about 1-2 RGB steps on a decent monitor.
+                    </p>
+                    <div className="flex gap-4 p-4 bg-black/40 rounded-lg border border-white/5">
+                        <Droplet className="text-neutral-500 shrink-0" />
+                        <div className="text-xs text-neutral-400">
+                           <strong>Age Factor:</strong> The lens of the human eye yellows with age, reducing sensitivity to blue light differences. Use the "Blind Mode" to test your friends without bias!
+                        </div>
+                    </div>
+                 </div>
+              </div>
+
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6">Monitor Calibration Importance</h2>
+              <p className="text-neutral-400 leading-relaxed mb-6">
+                 If you cannot distinguish steps below "5" on this test, your monitor might be set up incorrectly.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">Contrast too High?</h4>
+                    <p className="text-sm text-neutral-400">
+                       If you can't distinguish light colors (250 vs 255), your Contrast setting is clipping highlights.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-blue-500/20">
+                    <h4 className="font-bold text-white mb-2">Gamma incorrect?</h4>
+                    <p className="text-sm text-neutral-400">
+                       If mid-tones (like the Skin Tone test) look identical despite large numerical differences, check your Gamma.
+                    </p>
+                 </div>
+              </div>
+           </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is Delta E?</h4>
+                    <p className="text-neutral-400 text-sm">Delta E is a metric for understanding how the human eye perceives color difference. A Delta E of less than 2 is generally considered imperceptible to the standard observer.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is JND (Just Noticeable Difference)?</h4>
+                    <p className="text-neutral-400 text-sm">JND represents the smallest difference in sensory input that is detectable by a human. In this test, it's the minimum RGB step where you can still distinguish the shape from the background.</p>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+
+        <div className="max-w-7xl mx-auto px-6 w-full">
+           <RelatedTools currentPath="/tests/color-distance" />
+        </div>
+      </div>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, Play, Pause, Headphones, Radio, Mic2, AlertTriangle, Speaker, Waves, Info, Music, Activity } from 'lucide-react';
+import { Volume2, Play, Pause, Headphones, Radio, Mic2, AlertTriangle, Speaker, Waves, Info, Music, Activity, HelpCircle } from 'lucide-react';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
 
@@ -177,33 +177,31 @@ const SpeakerTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@graph": [
+          "@type": "FAQPage",
+          "mainEntity": [
             {
-              "@type": "WebApplication",
-              "name": "Speaker & Headphone Test",
-              "url": "https://deadpixeltest.cc/tools/speaker-test",
-              "description": "Test left/right stereo channels, phase polarity, and frequency response range.",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web Browser",
-              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+              "@type": "Question",
+              "name": "How to test Left and Right speakers?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Click the 'LEFT' and 'RIGHT' buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings."
+              }
             },
             {
-              "@type": "FAQPage",
-              "mainEntity": [{
-                "@type": "Question",
-                "name": "How to test Left and Right speakers?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Click the 'LEFT' and 'RIGHT' buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings."
-                }
-              }, {
-                "@type": "Question",
-                "name": "What is Speaker Phase (Polarity)?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Speakers are 'In Phase' when their cones move in and out together. If one is wired backwards (+ to -), they move oppositely, causing bass frequencies to cancel out. The 'Out of Phase' test sound will feel hollow and hard to locate."
-                }
-              }]
+              "@type": "Question",
+              "name": "What is Speaker Phase (Polarity)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Speakers are 'In Phase' when their cones move in and out together. If one is wired backwards (+ to -), they move oppositely, causing bass frequencies to cancel out. The 'Out of Phase' test sound will feel hollow and hard to locate."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why can't I hear high frequencies in the Sweep Test?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Human hearing naturally degrades with age. While the theoretical limit is 20kHz, most adults cannot hear above 15-17kHz. If you hear nothing above 15kHz, it is likely your ears, not the speakers."
+              }
             }
           ]
         }}
@@ -385,7 +383,24 @@ const SpeakerTest: React.FC = () => {
               </div>
            </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to test Left and Right speakers?</h4>
+                    <p className="text-neutral-400 text-sm">Click the "LEFT" and "RIGHT" buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Why can't I hear high frequencies in the Sweep Test?</h4>
+                    <p className="text-neutral-400 text-sm">Human hearing naturally degrades with age. While the theoretical limit is 20kHz, most adults cannot hear above 15-17kHz. If you hear nothing above 15kHz, it is likely your ears, not the speakers.</p>
+                 </div>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                  <Activity className="text-purple-500" /> Frequency Response Limits
               </h3>
