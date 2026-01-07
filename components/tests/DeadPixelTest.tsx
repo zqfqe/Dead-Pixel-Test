@@ -11,7 +11,10 @@ import {
   Waves,
   Info,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Monitor,
+  Activity,
+  Layers
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -477,14 +480,14 @@ const DeadPixelTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Dead Pixel Test" 
-        description="The #1 Dead Pixel Test. Check your monitor for dead or stuck pixels. Includes repair tools like RGB flashing and white noise."
+        title={isHome ? "Dead Pixel Test - Check & Fix Stuck Pixels (Free)" : "Dead Pixel Test & Fixer"}
+        description="The #1 Dead Pixel Test. Check your monitor, TV, or phone for dead or stuck pixels instantly. Includes repair tools for stuck pixels and a full display health check."
         canonical={isHome ? '/' : '/tests/dead-pixel'}
         breadcrumbs={isHome ? [] : [
           { name: 'Home', path: '/' },
           { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }
         ]}
-        keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'white screen', 'pixel repair']}
+        keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'check monitor for defects', 'pixel repair', 'screen health check']}
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
@@ -495,6 +498,16 @@ const DeadPixelTest: React.FC = () => {
               "operatingSystem": "Web",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
               "featureList": "Dead Pixel Locator, Stuck Pixel Fixer, Screen Burn-in Check"
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Check for Dead Pixels",
+              "step": [
+                { "@type": "HowToStep", "text": "Clean your screen thoroughly to remove dust." },
+                { "@type": "HowToStep", "text": "Start the Dead Pixel Test to enter fullscreen mode." },
+                { "@type": "HowToStep", "text": "Cycle through the Red, Green, Blue, Black, and White screens using the arrow keys or by clicking." },
+                { "@type": "HowToStep", "text": "Inspect the screen closely for any dots that do not change color." }
+              ]
             },
             {
               "@type": "FAQPage",
@@ -514,7 +527,7 @@ const DeadPixelTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Dead Pixel Test"
-          description="The industry standard diagnostic suite. Includes solid color tests, Flashlight inspection, and advanced Stuck Pixel Repair modes (Strobe & Noise)."
+          description="The industry standard diagnostic tool. Check for dead or stuck pixels with solid color patterns. Includes Flashlight inspection and Stuck Pixel Repair modes."
           onStart={startTest}
           footerText="Press F11 for Best Experience"
         >
@@ -564,7 +577,46 @@ const DeadPixelTest: React.FC = () => {
               </div>
            </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
+           {/* --- NEW SECTION: COMPLETE HEALTH CHECK --- */}
+           <div className="border-t border-white/10 pt-16">
+              <h2 className="text-3xl font-bold text-center text-white mb-10">Beyond Dead Pixels: Complete Monitor Check</h2>
+              <p className="text-center text-neutral-400 max-w-2xl mx-auto mb-10">
+                 A perfect panel requires more than just working pixels. If you just bought a new monitor, use these essential tests to verify its quality before the return window closes.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <Link to="/tests/uniformity" className="group bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 p-6 rounded-xl transition-all hover:border-blue-500/30">
+                    <div className="bg-blue-900/20 w-12 h-12 rounded-lg flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition-transform">
+                       <Monitor size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Backlight Bleed</h3>
+                    <p className="text-sm text-neutral-400 leading-relaxed">
+                       Check for uneven lighting or "clouding" on dark screens. Essential for IPS and VA panels.
+                    </p>
+                 </Link>
+                 
+                 <Link to="/tests/response-time" className="group bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 p-6 rounded-xl transition-all hover:border-green-500/30">
+                    <div className="bg-green-900/20 w-12 h-12 rounded-lg flex items-center justify-center text-green-400 mb-4 group-hover:scale-110 transition-transform">
+                       <Activity size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Ghosting & Motion</h3>
+                    <p className="text-sm text-neutral-400 leading-relaxed">
+                       Test pixel response times. Look for trails behind moving objects, critical for high-refresh gaming.
+                    </p>
+                 </Link>
+
+                 <Link to="/tests/color-gradient" className="group bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 p-6 rounded-xl transition-all hover:border-purple-500/30">
+                    <div className="bg-purple-900/20 w-12 h-12 rounded-lg flex items-center justify-center text-purple-400 mb-4 group-hover:scale-110 transition-transform">
+                       <Layers size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Color Banding</h3>
+                    <p className="text-sm text-neutral-400 leading-relaxed">
+                       Verify 8-bit/10-bit color depth. Ensure gradients are smooth without ugly steps or lines.
+                    </p>
+                 </Link>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-12">
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                  <ShieldCheck className="text-green-500" /> ISO 9241-307 Warranty Standard
               </h2>
