@@ -7,12 +7,8 @@ import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
 
-// Critical Path Optimization:
-// Eagerly load the Home Page so it is included in the main bundle or started immediately.
-// This removes one full round-trip of latency for the user's first view.
-import DeadPixelTest from './components/tests/DeadPixelTest';
-
-// Lazy Load Other Pages (Non-Critical)
+// Lazy Load Pages - Phase 1
+const DeadPixelTest = lazy(() => import('./components/tests/DeadPixelTest'));
 const UniformityTest = lazy(() => import('./components/tests/UniformityTest'));
 const TextClarityTest = lazy(() => import('./components/tests/TextClarityTest'));
 const ColorGradientTest = lazy(() => import('./components/tests/ColorGradientTest'));
@@ -27,17 +23,17 @@ const ContrastTest = lazy(() => import('./components/tests/ContrastTest'));
 const KeyboardTest = lazy(() => import('./components/tools/KeyboardTest'));
 const ControllerTest = lazy(() => import('./components/tools/ControllerTest'));
 
-// Phase 2
+// Lazy Load Pages - Phase 2 (New)
 const LocalDimmingTest = lazy(() => import('./components/tests/LocalDimmingTest'));
 const AudioSyncTest = lazy(() => import('./components/tests/AudioSyncTest'));
 const ReactionTimeTest = lazy(() => import('./components/tools/ReactionTimeTest'));
 const PPICalculator = lazy(() => import('./components/tools/PPICalculator'));
 
-// Phase 3
+// Lazy Load Pages - Phase 3 (Input Expansion)
 const MousePollingTest = lazy(() => import('./components/tools/MousePollingTest'));
 const TouchTest = lazy(() => import('./components/tools/TouchTest'));
 
-// Phase 4
+// Lazy Load Pages - Phase 4 (Audio & Utils)
 const SpeakerTest = lazy(() => import('./components/tools/SpeakerTest'));
 const PhysicalRuler = lazy(() => import('./components/tools/PhysicalRuler'));
 const WebcamTest = lazy(() => import('./components/tools/WebcamTest'));
@@ -74,11 +70,9 @@ const App: React.FC = () => {
               <div className="max-w-7xl mx-auto p-6 lg:p-12">
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    {/* Eager Loaded Home */}
+                    {/* Phase 1 Tests */}
                     <Route path="/" element={<DeadPixelTest />} />
                     <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
-                    
-                    {/* Lazy Loaded Routes */}
                     <Route path="/tests/uniformity" element={<UniformityTest />} />
                     <Route path="/tests/text-clarity" element={<TextClarityTest />} />
                     <Route path="/tests/color-gradient" element={<ColorGradientTest />} />
@@ -91,10 +85,12 @@ const App: React.FC = () => {
                     <Route path="/tests/contrast" element={<ContrastTest />} />
                     <Route path="/tests/matrix" element={<MatrixTest />} />
                     
+                    {/* Phase 2 Tests */}
                     <Route path="/tests/local-dimming" element={<LocalDimmingTest />} />
                     <Route path="/tests/audio-sync" element={<AudioSyncTest />} />
                     <Route path="/tests/refresh-rate" element={<RefreshRateTest />} />
                     
+                    {/* Tools */}
                     <Route path="/tools/keyboard" element={<KeyboardTest />} />
                     <Route path="/tools/controller" element={<ControllerTest />} />
                     <Route path="/tools/reaction-time" element={<ReactionTimeTest />} />
@@ -105,15 +101,18 @@ const App: React.FC = () => {
                     <Route path="/tools/ruler" element={<PhysicalRuler />} />
                     <Route path="/tools/webcam" element={<WebcamTest />} />
 
+                    {/* Blog & Resources */}
                     <Route path="/blog" element={<BlogIndex />} />
                     <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/resources/:category/:slug" element={<ProductPage />} />
 
+                    {/* Info Pages */}
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/privacy-policy" element={<Privacy />} />
                     <Route path="/terms-of-service" element={<Terms />} />
                     
+                    {/* 404 */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
