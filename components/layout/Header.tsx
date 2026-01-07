@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Monitor, Maximize2, Scan, Activity, Command, ClipboardCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, Monitor, Maximize2, Activity, Command, ClipboardCheck } from 'lucide-react';
 import { MENU_ITEMS } from '../../data/menu';
 import { MenuItem } from '../../types';
 import { useTestReport } from '../../contexts/TestReportContext';
@@ -104,10 +104,8 @@ const Header = () => {
           
           {/* 1. Left: Logo */}
           <div className="flex items-center justify-start z-20">
-            <NavLink to="/" aria-label="DeadPixelTest Home" className="flex items-center gap-2 group opacity-90 hover:opacity-100 transition-opacity">
-              <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black shadow-[0_0_15px_rgba(255,255,255,0.15)]">
-                <Scan size={14} strokeWidth={3} />
-              </div>
+            <NavLink to="/" aria-label="DeadPixelTest Home" className="flex items-center gap-3 group opacity-90 hover:opacity-100 transition-opacity">
+              <img src="/logo.svg" alt="DeadPixelTest Logo" className="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.15)]" />
               <span className="font-bold text-white tracking-tight text-sm hidden sm:inline-block">DeadPixelTest</span>
             </NavLink>
           </div>

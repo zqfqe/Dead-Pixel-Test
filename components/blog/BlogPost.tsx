@@ -47,7 +47,7 @@ const BlogPost: React.FC = () => {
             "name": "DeadPixelTest.cc",
             "logo": {
               "@type": "ImageObject",
-              "url": "https://deadpixeltest.cc/logo.png"
+              "url": "https://deadpixeltest.cc/logo.svg"
             }
           },
           "datePublished": post.date, // Note: Format should ideally be ISO8601

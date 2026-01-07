@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Scan, Github, Twitter, Mail } from 'lucide-react';
+import { Github, Twitter, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -12,10 +12,8 @@ const Footer: React.FC = () => {
           
           {/* Brand Column */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-white font-bold text-lg">
-              <div className="w-6 h-6 bg-white rounded-md flex items-center justify-center text-black">
-                <Scan size={14} strokeWidth={3} />
-              </div>
+            <div className="flex items-center gap-3 text-white font-bold text-lg">
+              <img src="/logo.svg" alt="DeadPixelTest Logo" className="w-8 h-8 rounded-lg" />
               DeadPixelTest.cc
             </div>
             <p className="text-neutral-400 leading-relaxed">

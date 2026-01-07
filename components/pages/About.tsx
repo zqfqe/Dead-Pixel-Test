@@ -17,7 +17,7 @@ const About: React.FC = () => {
           "mainEntity": {
             "@type": "Organization",
             "name": "DeadPixelTest.cc",
-            "logo": "https://deadpixeltest.cc/logo.png",
+            "logo": "https://deadpixeltest.cc/logo.svg",
             "description": "Provider of online display diagnostic tools."
           }
         }}
