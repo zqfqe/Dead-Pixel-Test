@@ -18,7 +18,7 @@ const MousePollingTest: React.FC = () => {
   const [eventCount, setEventCount] = useState(0);
 
   const lastTimeRef = useRef<number>(0);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const reset = () => {

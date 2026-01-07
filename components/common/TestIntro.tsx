@@ -34,19 +34,9 @@ export const TestIntro: React.FC<TestIntroProps> = ({
           }}
         ></div>
 
-        {/* 2. Simplified Scan Animation (Hardware Accelerated) */}
+        {/* 2. Simplified Scan Animation (Hardware Accelerated via Tailwind) */}
         <div className="absolute top-0 left-0 right-0 h-[30vh] bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-scan-slow pointer-events-none will-change-transform"></div>
       </div>
-
-      <style>{`
-        @keyframes scan-slow {
-          0% { transform: translate3d(0, -100%, 0); }
-          100% { transform: translate3d(0, 100vh, 0); }
-        }
-        .animate-scan-slow {
-          animation: scan-slow 8s linear infinite;
-        }
-      `}</style>
 
       {/* --- Main Content --- */}
       <div className="max-w-[1200px] mx-auto py-16 px-6 lg:py-24 relative z-10 animate-fade-in">
