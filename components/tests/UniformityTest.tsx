@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link } from 'react-router-dom';
@@ -399,6 +399,13 @@ const UniformityTest: React.FC = () => {
                   "@type": "Answer",
                   "text": "Use the 'Gray 5%' or 'Gray 10%' presets. DSE appears as faint vertical bands or patchy clouds on a uniform gray background."
                 }
+              }, {
+                "@type": "Question",
+                "name": "Can backlight bleed be fixed?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Sometimes. Gently massaging the area with a microfiber cloth can occasionally reseat the panel layers and reduce bleed caused by bezel pressure. However, severe bleed is a permanent manufacturing defect."
+                }
               }]
             }
           ]
@@ -425,44 +432,84 @@ const UniformityTest: React.FC = () => {
         {/* Deep Content Section for SEO */}
         <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
            
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Monitor className="text-blue-500" /> What is Screen Uniformity?
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    Screen uniformity refers to the ability of a display to maintain the same brightness and color temperature across the entire panel. A perfect screen would look exactly the same in the corners as it does in the center. However, manufacturing tolerances often lead to "Clouding" (uneven brightness) or "Tinting" (color shifts).
-                 </p>
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                       <Monitor className="text-blue-500" /> What is Screen Uniformity?
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed text-sm mb-4">
+                       Screen uniformity refers to the ability of a display to maintain the same brightness and color temperature across the entire panel. A perfect screen would look exactly the same in the corners as it does in the center. However, manufacturing tolerances often lead to "Clouding" (uneven brightness) or "Tinting" (color shifts).
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed text-sm">
+                       This test allows you to inspect solid colors (Black, White, Gray) to easily spot these imperfections.
+                    </p>
+                 </div>
+                 <div>
+                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                       <HelpCircle className="text-yellow-500" /> Glow vs. Bleed
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed text-sm mb-2">
+                       <strong>IPS Glow:</strong> A "shimmering" effect in the corners that changes when you move your head. This is normal technology behavior for IPS panels.
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed text-sm">
+                       <strong>Backlight Bleed:</strong> Bright spots leaking from the edges that remain static regardless of viewing angle. This is a manufacturing defect caused by poor bezel assembly.
+                    </p>
+                 </div>
               </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <HelpCircle className="text-yellow-500" /> Glow vs. Bleed
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-2">
-                    <strong>IPS Glow:</strong> A "shimmering" effect in the corners that changes when you move your head. This is normal technology behavior.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>Backlight Bleed:</strong> Bright spots leaking from the edges that remain static regardless of viewing angle. This is a manufacturing defect.
-                 </p>
-              </div>
-           </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-4">How to Interpret Results</h3>
-              <div className="space-y-4">
-                 <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded bg-black border border-white/20 shrink-0"></div>
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <Layers className="text-purple-500" /> How to Interpret Results
+              </h2>
+              <div className="space-y-6">
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10 flex gap-6 items-start">
+                    <div className="w-16 h-16 rounded bg-black border border-white/20 shrink-0 flex items-center justify-center">
+                        <AlertTriangle className="text-red-500" size={24} />
+                    </div>
                     <div>
-                       <h4 className="text-sm font-bold text-white">The Black Test</h4>
-                       <p className="text-xs text-neutral-400">Use in a dim room. Check for "spotlights" beaming from the bezel. A perfectly uniform black screen is rare on LCDs but standard on OLEDs.</p>
+                       <h3 className="text-lg font-bold text-white mb-1">The Black Test (Backlight Bleed)</h3>
+                       <p className="text-sm text-neutral-400 mb-2">Use in a dim room. Look for "spotlights" beaming from the bezel.</p>
+                       <ul className="text-sm text-neutral-500 list-disc pl-4 space-y-1">
+                          <li><strong>LCD/IPS:</strong> It is normal for black to look dark gray.</li>
+                          <li><strong>OLED:</strong> Should be perfectly black (pixels off).</li>
+                       </ul>
                     </div>
                  </div>
-                 <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded bg-neutral-500 border border-white/20 shrink-0"></div>
-                    <div>
-                       <h4 className="text-sm font-bold text-white">The 50% Gray Test</h4>
-                       <p className="text-xs text-neutral-400">The "Dirty Screen Effect" (DSE) is most visible here. Look for faint stationary shadows that look like a dirty window. This is common in large TVs.</p>
+
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10 flex gap-6 items-start">
+                    <div className="w-16 h-16 rounded bg-neutral-600 border border-white/20 shrink-0 flex items-center justify-center">
+                        <Grid className="text-white/50" size={24} />
                     </div>
+                    <div>
+                       <h3 className="text-lg font-bold text-white mb-1">The 50% Gray Test (DSE)</h3>
+                       <p className="text-sm text-neutral-400 mb-2">The "Dirty Screen Effect" (DSE) is most visible here.</p>
+                       <p className="text-sm text-neutral-500">
+                          Look for faint stationary shadows that look like a dirty window or vertical bands. This is very common in large TVs and can be distracting during sports (panning shots over grass/ice).
+                       </p>
+                    </div>
+                 </div>
+              </div>
+           </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is IPS Glow vs Backlight Bleed?</h4>
+                    <p className="text-neutral-400 text-sm">IPS Glow changes intensity when you change your viewing angle. Backlight bleed remains static regardless of your viewing position.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to check for Dirty Screen Effect (DSE)?</h4>
+                    <p className="text-neutral-400 text-sm">Use the "Gray 5%" or "Gray 10%" presets. DSE appears as faint vertical bands or patchy clouds on a uniform gray background.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Can backlight bleed be fixed?</h4>
+                    <p className="text-neutral-400 text-sm">Sometimes. Gently massaging the area with a microfiber cloth can occasionally reseat the panel layers and reduce bleed caused by bezel pressure. However, severe bleed is a permanent manufacturing defect.</p>
                  </div>
               </div>
            </div>

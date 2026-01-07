@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Volume2, VolumeX, RotateCcw, Keyboard as KeyboardIcon, Activity, PaintBucket, Terminal, Settings, LayoutTemplate, Ghost, Zap, Cpu } from 'lucide-react';
+import { Volume2, VolumeX, RotateCcw, Keyboard as KeyboardIcon, Activity, PaintBucket, Terminal, Settings, LayoutTemplate, Ghost, Zap, Cpu, HelpCircle, AlertTriangle } from 'lucide-react';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
 
@@ -256,6 +256,13 @@ const KeyboardTest: React.FC = () => {
                   "@type": "Answer",
                   "text": "Key Chatter (double typing) is often caused by dust in the switch. Try cleaning the switch with compressed air or isopropyl alcohol."
                 }
+              }, {
+                "@type": "Question",
+                "name": "Why is my key not working?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "If a key stays grey when pressed, the switch might be dead, the PCB trace broken, or dirt is blocking the contact. Try pressing hard or wiggling it."
+                }
               }]
             },
             {
@@ -499,6 +506,27 @@ const KeyboardTest: React.FC = () => {
                  </div>
               </div>
            </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is Keyboard Ghosting (NKRO)?</h4>
+                    <p className="text-neutral-400 text-sm">Ghosting occurs when a keyboard cannot register multiple keys pressed simultaneously. N-Key Rollover (NKRO) means the keyboard can register all keys at once.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to fix Key Chatter?</h4>
+                    <p className="text-neutral-400 text-sm">Key Chatter (double typing) is often caused by dust in the switch. Try cleaning the switch with compressed air or isopropyl alcohol.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Why is my key not working?</h4>
+                    <p className="text-neutral-400 text-sm">If a key stays grey when pressed, the switch might be dead, the PCB trace broken, or dirt is blocking the contact. Try pressing hard or wiggling it.</p>
+                 </div>
+              </div>
+           </div>
 
         </section>
 

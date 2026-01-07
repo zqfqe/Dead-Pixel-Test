@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye, Settings, Zap, Camera } from 'lucide-react';
+import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye, Settings, Zap, Camera, HelpCircle, Monitor } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
@@ -394,6 +394,13 @@ const GhostingTest: React.FC = () => {
                   "@type": "Answer",
                   "text": "Black smearing is common on VA panels. Try increasing the 'Black Stabilizer' or 'Dark Boost' setting in your monitor menu to lift dark shades, making them easier to transition."
                 }
+              }, {
+                "@type": "Question",
+                "name": "What does Response Time (GtG) mean?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "GtG (Gray-to-Gray) measures how long it takes a pixel to change from one shade of gray to another. Lower is better (e.g. 1ms). High response times (>5ms) cause visible blur."
+                }
               }]
             },
             {
@@ -495,11 +502,32 @@ const GhostingTest: React.FC = () => {
                  </div>
               </div>
 
-              <h3 className="text-xl font-bold text-white mt-12 mb-4">Black Smearing (VA Panels)</h3>
+              <h3 className="text-xl font-bold text-white mt-12 mb-4 flex items-center gap-2"><Monitor size={24} /> Black Smearing (VA Panels)</h3>
               <p className="text-neutral-400 leading-relaxed">
                  VA (Vertical Alignment) panels are known for high contrast ratios (deep blacks). However, pixels take much longer to transition from <strong>Black to Gray</strong> than from White to Gray. This causes dark objects moving on dark backgrounds to leave a long purple or brown smear. Use the <strong>"Dark Mode"</strong> preset in this tool to test for it.
               </p>
            </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is Ghosting vs Inverse Ghosting?</h4>
+                    <p className="text-neutral-400 text-sm">Ghosting is a trail behind moving objects caused by slow pixel transitions. Inverse Ghosting (Overshoot) is a bright "halo" or "corona" caused by the monitor's Overdrive setting being too high.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to fix Black Smearing?</h4>
+                    <p className="text-neutral-400 text-sm">Black smearing is common on VA panels. Try increasing the "Black Stabilizer" or "Dark Boost" setting in your monitor menu to lift dark shades, making them easier to transition.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What does Response Time (GtG) mean?</h4>
+                    <p className="text-neutral-400 text-sm">GtG (Gray-to-Gray) measures how long it takes a pixel to change from one shade of gray to another. Lower is better (e.g. 1ms). High response times (>5ms) cause visible blur.</p>
+                 </div>
+              </div>
+           </div>
 
         </section>
 
