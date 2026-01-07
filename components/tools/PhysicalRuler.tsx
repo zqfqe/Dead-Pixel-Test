@@ -42,6 +42,9 @@ const PhysicalRuler: React.FC = () => {
 
   // --- Render Ruler Ticks ---
   const renderTicks = () => {
+    // Handle SSR safety
+    if (typeof window === 'undefined') return null;
+
     const screenWidthMm = window.innerWidth / pxPerMm;
     const ticks = [];
     

@@ -42,9 +42,9 @@ const Header = () => {
   const location = useLocation();
   const { results } = useTestReport();
 
-  // Telemetry State
-  const [windowSize, setWindowSize] = useState({ w: window.innerWidth, h: window.innerHeight });
-  const [pixelRatio, setPixelRatio] = useState(window.devicePixelRatio);
+  // Telemetry State - Initialize with safe defaults for SSR
+  const [windowSize, setWindowSize] = useState({ w: 0, h: 0 });
+  const [pixelRatio, setPixelRatio] = useState(1);
   const [fps, setFps] = useState(0);
   
   // FPS Logic
@@ -57,6 +57,11 @@ const Header = () => {
   }, [location]);
 
   useEffect(() => {
+    // Client-side initialization
+    setWindowSize({ w: window.innerWidth, h: window.innerHeight });
+    setPixelRatio(window.devicePixelRatio);
+    setScrolled(window.scrollY > 10);
+
     const handleScroll = () => setScrolled(window.scrollY > 10);
     const handleResize = () => {
         setWindowSize({ w: window.innerWidth, h: window.innerHeight });
