@@ -116,7 +116,7 @@ const Header = () => {
           <nav className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 z-10">
             {menuGroups.map((group, idx) => (
               <div key={idx} className="relative group/dropdown px-3 py-4">
-                <button className="flex items-center gap-1.5 text-[11px] font-medium text-neutral-400 group-hover/dropdown:text-white transition-colors uppercase tracking-widest">
+                <button className="flex items-center gap-1.5 text-[11px] font-medium text-neutral-300 group-hover/dropdown:text-white transition-colors uppercase tracking-widest">
                   {group.title}
                   <ChevronDown size={10} className="opacity-50 group-hover/dropdown:rotate-180 transition-transform duration-300" />
                 </button>
@@ -151,7 +151,7 @@ const Header = () => {
             {results.length > 0 && (
                 <button 
                   onClick={() => setIsReportOpen(true)}
-                  aria-label="View Report"
+                  aria-label="View Test Report"
                   className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg shadow-blue-900/20 animate-in fade-in zoom-in"
                 >
                    <ClipboardCheck size={14} />
@@ -161,12 +161,12 @@ const Header = () => {
             )}
 
             {/* Quick Command Hint */}
-            <div className="hidden lg:flex items-center gap-1 text-[10px] font-mono text-neutral-500 border border-white/5 px-2 py-1 rounded bg-white/5 mr-2">
+            <div className="hidden lg:flex items-center gap-1 text-[10px] font-mono text-neutral-400 border border-white/10 px-2 py-1 rounded bg-white/5 mr-2">
                 <Command size={10} /> + K
             </div>
 
             {/* Telemetry (Desktop Only) */}
-            <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
+            <div className="hidden md:flex items-center gap-2 text-[10px] font-mono text-neutral-400 uppercase tracking-wider">
                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Viewport Size">
                   <Monitor size={10} />
                   <span>{windowSize.w}x{windowSize.h}</span>
