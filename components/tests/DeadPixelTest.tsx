@@ -14,7 +14,8 @@ import {
   AlertTriangle,
   Monitor,
   Activity,
-  Layers
+  Layers,
+  CheckCircle2
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -501,12 +502,12 @@ const DeadPixelTest: React.FC = () => {
             },
             {
               "@type": "HowTo",
-              "name": "How to Check for Dead Pixels",
+              "name": "How to Run a Dead Pixel Test",
               "step": [
                 { "@type": "HowToStep", "text": "Clean your screen thoroughly to remove dust." },
                 { "@type": "HowToStep", "text": "Start the Dead Pixel Test to enter fullscreen mode." },
-                { "@type": "HowToStep", "text": "Cycle through the Red, Green, Blue, Black, and White screens using the arrow keys or by clicking." },
-                { "@type": "HowToStep", "text": "Inspect the screen closely for any dots that do not change color." }
+                { "@type": "HowToStep", "text": "Cycle through the Red, Green, Blue, Black, and White screens." },
+                { "@type": "HowToStep", "text": "Inspect the screen closely for any dead (black) or stuck (colored) pixels." }
               ]
             },
             {
@@ -517,7 +518,7 @@ const DeadPixelTest: React.FC = () => {
                 "acceptedAnswer": { "@type": "Answer", "text": "A dead pixel is permanently off (black), typically caused by a failed transistor. A stuck pixel is frozen on a specific color (Red, Green, or Blue) and can often be fixed with software." }
               }, {
                 "@type": "Question",
-                "name": "How do I fix a stuck pixel?",
+                "name": "How do I fix a stuck pixel using this test?",
                 "acceptedAnswer": { "@type": "Answer", "text": "Use the 'Strobe' or 'White Noise' tool on this page. Run it over the stuck area for 10-60 minutes to stimulate the liquid crystals." }
               }]
             }
@@ -527,14 +528,14 @@ const DeadPixelTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Dead Pixel Test"
-          description="The industry standard diagnostic tool. Check for dead or stuck pixels with solid color patterns. Includes Flashlight inspection and Stuck Pixel Repair modes."
+          description="The industry standard Dead Pixel Test tool. Check for dead or stuck pixels with solid color patterns. Includes Flashlight inspection and Stuck Pixel Repair modes."
           onStart={startTest}
           footerText="Press F11 for Best Experience"
         >
           <InfoCard title="Pixel Defects">
             <div className="space-y-3">
               <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off. Hard to fix.</p>
-              <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools.</p>
+              <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck. Can often be fixed using the <strong>Strobe</strong> or <strong>Noise</strong> tools within this <strong>Dead Pixel Test</strong>.</p>
               <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our repair guide &rarr;</Link>
             </div>
           </InfoCard>
@@ -561,7 +562,7 @@ const DeadPixelTest: React.FC = () => {
                     A dead pixel occurs when a transistor in your monitor's panel fails to supply power, causing the pixel to remain permanently black. This is most noticeable on white backgrounds.
                  </p>
                  <p className="text-neutral-400 leading-relaxed">
-                    Unlike stuck pixels, dead pixels are rarely fixable via software. However, dust trapped behind the glass can often look like a dead pixel. Use our <strong>Flashlight Mode</strong> to check if the spot casts a shadow (indicating dust).
+                    The most effective way to spot these defects is by running a full-screen <strong>dead pixel test</strong>. Unlike stuck pixels, dead pixels are rarely fixable via software. However, dust trapped behind the glass can often look like a dead pixel. Use our <strong>Flashlight Mode</strong> to check if the spot casts a shadow (indicating dust).
                  </p>
               </div>
               <div>
@@ -572,16 +573,31 @@ const DeadPixelTest: React.FC = () => {
                     Stuck pixels are frozen in an "on" state (Red, Green, or Blue). This means the liquid crystal is jammed but the transistor is working.
                  </p>
                  <p className="text-neutral-400 leading-relaxed">
-                    <strong>The Fix:</strong> Launch the test and select the <span className="text-white font-bold">Strobe</span> or <span className="text-white font-bold">Noise</span> tool. Drag the flashing box over the stuck pixel and leave it for 10-20 minutes. The rapid voltage changes can often unstick the crystal.
+                    <strong>The Fix:</strong> Launch the <strong>dead pixel test</strong> and select the <span className="text-white font-bold">Strobe</span> or <span className="text-white font-bold">Noise</span> tool. Drag the flashing box over the stuck pixel and leave it for 10-20 minutes. The rapid voltage changes generated by the tool can often unstick the crystal.
+                 </p>
+              </div>
+           </div>
+
+           {/* New Educational Section to increase keyword density naturally */}
+           <div className="bg-neutral-900/30 border border-white/5 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <CheckCircle2 className="text-green-500" /> Why Run a Dead Pixel Test?
+              </h2>
+              <div className="space-y-4 text-neutral-400 leading-relaxed">
+                 <p>
+                    Performing a <strong>dead pixel test</strong> is crucial whenever you purchase a new monitor, laptop, or TV. Manufacturers often have a "return window" (typically 14-30 days) where you can exchange a defective panel.
+                 </p>
+                 <p>
+                    By running our <strong>dead pixel test</strong> immediately after unboxing, you can identify defects that might be invisible during normal use but will become annoying later. A proper <strong>dead pixel test</strong> cycles through primary colors (Red, Green, Blue) to check each sub-pixel individually, ensuring your screen is 100% perfect.
                  </p>
               </div>
            </div>
 
            {/* --- NEW SECTION: COMPLETE HEALTH CHECK --- */}
            <div className="border-t border-white/10 pt-16">
-              <h2 className="text-3xl font-bold text-center text-white mb-10">Beyond Dead Pixels: Complete Monitor Check</h2>
+              <h2 className="text-3xl font-bold text-center text-white mb-10">Beyond the Dead Pixel Test: Complete Monitor Check</h2>
               <p className="text-center text-neutral-400 max-w-2xl mx-auto mb-10">
-                 A perfect panel requires more than just working pixels. If you just bought a new monitor, use these essential tests to verify its quality before the return window closes.
+                 A perfect panel requires more than just working pixels. After completing the <strong>dead pixel test</strong>, use these essential tools to verify your monitor's overall quality before the return window closes.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                  <Link to="/tests/uniformity" className="group bg-neutral-900/50 hover:bg-neutral-900 border border-white/10 p-6 rounded-xl transition-all hover:border-blue-500/30">
@@ -621,7 +637,7 @@ const DeadPixelTest: React.FC = () => {
                  <ShieldCheck className="text-green-500" /> ISO 9241-307 Warranty Standard
               </h2>
               <p className="text-neutral-400 mb-6">
-                 Most manufacturers follow the ISO 9241-307 standard (formerly ISO 13406-2) to determine if a monitor is eligible for return.
+                 Most manufacturers follow the ISO 9241-307 standard (formerly ISO 13406-2) to determine if a monitor is eligible for return based on the results of a <strong>dead pixel test</strong>.
               </p>
               
               <div className="overflow-x-auto">
@@ -658,7 +674,7 @@ const DeadPixelTest: React.FC = () => {
                  </table>
               </div>
               <p className="text-xs text-neutral-500 mt-4">
-                 *Always check your specific manufacturer's "Zero Bright Dot" guarantee, which often supersedes this standard for premium models.
+                 *Always check your specific manufacturer's "Zero Bright Dot" guarantee. If your <strong>dead pixel test</strong> reveals even one bright pixel on a Class 1 monitor, you are usually entitled to a replacement.
               </p>
            </div>
 
