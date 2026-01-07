@@ -40,8 +40,7 @@ const LocalDimmingTest: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Mouse tracking refs to avoid re-renders
-  // SSR FIX: Initialize with 0, update in useEffect if needed or let manual mode handle it
-  const mousePos = useRef({ x: 0, y: 0 });
+  const mousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
   const startTest = () => {
     setIsActive(true);
@@ -58,13 +57,6 @@ const LocalDimmingTest: React.FC = () => {
       mousePos.current = { x: e.clientX, y: e.clientY };
     }
   };
-
-  useEffect(() => {
-    // Client-side init for mouse position center
-    if (typeof window !== 'undefined') {
-        mousePos.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    }
-  }, []);
 
   useEffect(() => {
     if (!isActive || !canvasRef.current) return;
