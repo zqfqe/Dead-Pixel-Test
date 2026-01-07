@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Critical CSS moved from index.html */
+html, body {
+  background-color: #000000;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+  background: #222; 
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444; 
+}
+
+::selection {
+  background: #333;
+  color: white;
+}
+
+.glass-panel {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Utilities for Animations that Tailwind might miss in arbitrary values */
+.animate-in {
+  animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-rotate: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+}
+
+/* Ensure Typography plugin prose works well in dark mode defaults */
+.prose {
+  color: #d4d4d4;
+  max-width: 65ch;
+}
+.prose h1, .prose h2, .prose h3, .prose h4, .prose strong {
+  color: #fff;
+}
+.prose a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+.prose a:hover {
+  text-decoration: underline;
+}
