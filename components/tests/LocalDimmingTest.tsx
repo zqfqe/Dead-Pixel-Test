@@ -34,7 +34,11 @@ const LocalDimmingTest: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Mouse tracking refs to avoid re-renders
-  const mousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  // Default to 0,0 on server, update on client
+  const mousePos = useRef({ 
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0, 
+    y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0 
+  });
 
   const startTest = () => {
     setIsActive(true);
