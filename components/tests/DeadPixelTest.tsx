@@ -488,6 +488,7 @@ const DeadPixelTest: React.FC = () => {
           { name: 'Home', path: '/' },
           { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }
         ]}
+        disableSuffix={isHome}
         keywords={['dead pixel test', 'stuck pixel fixer', 'screen test', 'monitor calibration', 'check monitor for defects', 'pixel repair', 'screen health check']}
         jsonLd={{
           "@context": "https://schema.org",

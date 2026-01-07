@@ -16,6 +16,7 @@ interface SEOProps {
   jsonLd?: Record<string, any>; // Custom Structured Data
   breadcrumbs?: BreadcrumbItem[]; // New prop for breadcrumbs
   noindex?: boolean; // New prop to prevent indexing
+  disableSuffix?: boolean; // Prevents appending " | DeadPixelTest.cc"
 }
 
 const DOMAIN = 'https://deadpixeltest.cc';
@@ -29,10 +30,11 @@ export const SEO: React.FC<SEOProps> = ({
   keywords = [],
   jsonLd,
   breadcrumbs,
-  noindex = false
+  noindex = false,
+  disableSuffix = false
 }) => {
   const siteTitle = 'DeadPixelTest.cc';
-  const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+  const fullTitle = (title === siteTitle || disableSuffix) ? title : `${title} | ${siteTitle}`;
   const url = canonical ? `${DOMAIN}${canonical}` : DOMAIN;
   const fullImage = image.startsWith('http') ? image : `${DOMAIN}${image}`;
 
