@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Instantly check your screen for dead pixels, backlight bleed, and ghosting. The best free online monitor test tool for PC & Mobile. No download needed." />
+    <!-- app-head -->
     
     <!-- Performance Optimizations: Preconnect to critical CDNs -->
     <link rel="preconnect" href="https://esm.sh" />
@@ -13,7 +13,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <!-- Default Title/Desc as fallback, will be overwritten by Helmet -->
     <title>Dead Pixel Test - Free Screen Check & Monitor Calibration</title>
+    <meta name="description" content="Instantly check your screen for dead pixels, backlight bleed, and ghosting. The best free online monitor test tool for PC & Mobile." />
 <script type="importmap">
 {
   "imports": {
@@ -25,13 +27,16 @@
     "vite": "https://esm.sh/vite@^7.3.0",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
     "react-helmet-async": "https://esm.sh/react-helmet-async@^2.0.5",
-    "fs": "https://esm.sh/fs@^0.0.1-security"
+    "fs": "https://esm.sh/fs@^0.0.1-security",
+    "url": "https://esm.sh/url@^0.11.4",
+    "path": "https://esm.sh/path@^0.12.7",
+    "react-router-dom/": "https://esm.sh/react-router-dom@^7.12.0/"
   }
 }
 </script>
 </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!-- app-html --></div>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
