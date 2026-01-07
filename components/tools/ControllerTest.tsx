@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Gamepad2, Zap, Target, Activity, RefreshCw, AlertCircle, Settings2, Trash2, MousePointer2, Info, Crosshair, Move } from 'lucide-react';
+import { Gamepad2, Zap, Target, Activity, RefreshCw, AlertCircle, Settings2, Trash2, MousePointer2, Info, Crosshair, Move, HelpCircle } from 'lucide-react';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
 
@@ -598,9 +598,26 @@ const ControllerTest: React.FC = () => {
               </div>
            </div>
 
+           {/* FAQ Section Visual - Matches Schema */}
            <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Info className="text-yellow-500" /> Troubleshooting Connection Issues
+                 <HelpCircle className="text-yellow-500" /> Frequently Asked Questions
+              </h3>
+              <div className="space-y-4">
+                 <div>
+                    <h4 className="text-white font-bold text-sm mb-1">How to check for Stick Drift?</h4>
+                    <p className="text-neutral-400 text-xs">Connect your controller and look at the 'Stick Analysis' circle. If the crosshair moves or jitters even when you aren't touching the stick, you have stick drift.</p>
+                 </div>
+                 <div>
+                    <h4 className="text-white font-bold text-sm mb-1">What is Circularity Error?</h4>
+                    <p className="text-neutral-400 text-xs">Circularity Error measures how close your analog stick's rotation is to a perfect circle. An error rate below 10% is good. High error rates mean you might lose speed in diagonal movement.</p>
+                 </div>
+              </div>
+           </div>
+
+           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-4">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <Info className="text-blue-500" /> Troubleshooting Connection Issues
               </h3>
               <p className="text-sm text-neutral-400 mb-4">
                  If your controller isn't detected:

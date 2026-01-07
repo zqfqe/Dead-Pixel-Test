@@ -14,7 +14,8 @@ import {
   Settings,
   ShieldCheck,
   Monitor,
-  Hand
+  Hand,
+  CheckCircle2
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -498,6 +499,36 @@ const DeadPixelTest: React.FC = () => {
         canonical={isHome ? '/' : '/tests/dead-pixel'}
         breadcrumbs={isHome ? [] : [{ name: 'Home', path: '/' }, { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }]}
         disableSuffix={isHome}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How to run a dead pixel test?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Start the test and cycle through the primary colors (Red, Green, Blue, Black, White). Look for any tiny dots that do not change color."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between a dead pixel and a stuck pixel?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A dead pixel is black and does not light up. A stuck pixel is frozen on a specific color (red, green, or blue). Stuck pixels can often be fixed, while dead pixels are permanent."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How to fix a stuck pixel?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Use our 'Strobe' or 'Static Noise' tools to rapidly cycle colors on the affected area. This can stimulate the liquid crystal to unstuck itself. You can also try gently massaging the area with a soft cloth while the screen is off."
+              }
+            }
+          ]
+        }}
       />
       
       {showGuide && (
@@ -632,6 +663,25 @@ const DeadPixelTest: React.FC = () => {
                     <span className="font-bold block mb-1">Backlight Bleed vs IPS Glow</span>
                     <span className="text-neutral-500 text-xs">Identify if your screen has bleed or just normal glow.</span>
                  </Link>
+              </div>
+           </div>
+           
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8">Frequently Asked Questions</h3>
+              <div className="space-y-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to run a dead pixel test?</h4>
+                    <p className="text-neutral-400 text-sm">Start the test and cycle through the primary colors (Red, Green, Blue, Black, White). Look for any tiny dots that do not change color.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is the difference between a dead pixel and a stuck pixel?</h4>
+                    <p className="text-neutral-400 text-sm">A dead pixel is black and does not light up. A stuck pixel is frozen on a specific color (red, green, or blue). Stuck pixels can often be fixed, while dead pixels are permanent.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to fix a stuck pixel?</h4>
+                    <p className="text-neutral-400 text-sm">Use our "Strobe" or "Static Noise" tools to rapidly cycle colors on the affected area. This can stimulate the liquid crystal to unstuck itself. You can also try gently massaging the area with a soft cloth while the screen is off.</p>
+                 </div>
               </div>
            </div>
         </section>

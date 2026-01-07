@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, Monitor, Zap, Info, Camera, Activity, AlertTriangle, Cpu, Layers } from 'lucide-react';
+import { ChevronLeft, Monitor, Zap, Info, Camera, Activity, AlertTriangle, Cpu, Layers, HelpCircle } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
@@ -35,17 +35,6 @@ const RefreshRateTest: React.FC = () => {
     if (!ctx) return;
 
     // We want to divide the screen width into N columns where N is roughly the refresh rate
-    // Actually, to visualize frame skipping, we just need a grid of N boxes.
-    // The box moves 1 slot per frame.
-    // If you take a 1/5th second exposure photo:
-    // A 60Hz monitor will light up 12 boxes.
-    // A 144Hz monitor will light up ~29 boxes.
-    // Gaps mean frames were skipped.
-    
-    // We will use a fixed number of slots to fill the width.
-    // Let's use 60 slots for simplicity, or dynamic?
-    // Dynamic is better.
-    
     let slots = 60; 
     let currentSlot = 0;
 
@@ -151,33 +140,31 @@ const RefreshRateTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@graph": [
+          "@type": "FAQPage",
+          "mainEntity": [
             {
-              "@type": "WebApplication",
-              "name": "Monitor Frame Skipping Test",
-              "url": "https://deadpixeltest.cc/tests/refresh-rate",
-              "description": "Verify your monitor's overclocked refresh rate (Hz) and check for dropped frames (skipping).",
-              "applicationCategory": "UtilitiesApplication",
-              "operatingSystem": "Web Browser",
-              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+              "@type": "Question",
+              "name": "How to check for Frame Skipping?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames."
+              }
+            }, 
+            {
+              "@type": "Question",
+              "name": "Why is my 144Hz monitor showing 60Hz?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Check your Windows Display Settings > Advanced Display Settings to ensure the refresh rate is set correctly. Also, verify that your browser has 'Hardware Acceleration' enabled."
+              }
             },
             {
-              "@type": "FAQPage",
-              "mainEntity": [{
-                "@type": "Question",
-                "name": "How to check for Frame Skipping?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames."
-                }
-              }, {
-                "@type": "Question",
-                "name": "Why is my 144Hz monitor showing 60Hz?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Check your Windows Display Settings > Advanced Display Settings to ensure the refresh rate is set correctly. Also, verify that your browser has 'Hardware Acceleration' enabled."
-                }
-              }]
+              "@type": "Question",
+              "name": "What is the difference between Hz and FPS?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Hz (Hertz) is how many times per second your monitor refreshes the image. FPS (Frames Per Second) is how many images your computer generates. For smooth motion, FPS should match Hz."
+              }
             }
           ]
         }}
@@ -256,6 +243,21 @@ const RefreshRateTest: React.FC = () => {
                  </p>
               </div>
            </article>
+
+           {/* Explicit FAQ Section for SEO Visibility */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2"><HelpCircle size={24} /> Frequently Asked Questions</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to check for Frame Skipping?</h4>
+                    <p className="text-neutral-400 text-sm">Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">Why is my 144Hz monitor showing 60Hz?</h4>
+                    <p className="text-neutral-400 text-sm">Check your Windows Display Settings to ensure the refresh rate is set correctly. Also, verify that your browser has 'Hardware Acceleration' enabled.</p>
+                 </div>
+              </div>
+           </div>
 
         </section>
 
