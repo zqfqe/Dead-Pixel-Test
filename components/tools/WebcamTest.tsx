@@ -204,11 +204,23 @@ const WebcamTest: React.FC = () => {
                   "text": "Yes. This tool runs 100% in your browser using client-side technology. Your video and audio feed never leaves your computer and is never sent to any server."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Test Webcam and Microphone",
+              "step": [
+                { "@type": "HowToStep", "text": "Click 'Start Camera' and allow browser permissions for both camera and microphone." },
+                { "@type": "HowToStep", "text": "Verify your video feed appears. Check the reported resolution (e.g., 1920x1080) in the top-left corner." },
+                { "@type": "HowToStep", "text": "Speak into your microphone and watch the green 'Audio Input' bar to verify sound levels." },
+                { "@type": "HowToStep", "text": "Use the 'Mirror' button to flip your view if needed, or 'Take Snapshot' to save a test image." }
+              ]
             }
           ]
         }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
+        {/* ... (Rest of component remains unchanged) ... */}
+        {/* Header */}
         <div className="text-center mb-12">
            <div className="inline-flex items-center justify-center p-4 bg-red-500/10 text-red-500 rounded-2xl mb-4">
               <Camera size={32} />

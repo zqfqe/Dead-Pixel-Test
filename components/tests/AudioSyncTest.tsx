@@ -433,6 +433,16 @@ const AudioSyncTest: React.FC = () => {
                   "text": "Yes. Standard Bluetooth audio typically introduces 100-200ms of latency, which is noticeable in gaming and movies. Use AptX Low Latency codecs or wired connections for better sync."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Fix Audio Video Sync",
+              "step": [
+                { "@type": "HowToStep", "text": "Turn up your volume and watch the moving bar." },
+                { "@type": "HowToStep", "text": "Listen for the 'Click' sound as the bar hits the center mark." },
+                { "@type": "HowToStep", "text": "If the sound is early or late, use the 'Manual Compensation' slider to adjust it until it feels perfectly synced." },
+                { "@type": "HowToStep", "text": "The resulting offset (e.g., +50ms) is your system latency. Enter this value into your TV or AV Receiver's 'Audio Delay' setting." }
+              ]
             }
           ]
         }}

@@ -372,6 +372,16 @@ const LocalDimmingTest: React.FC = () => {
                   "text": "Use the 'Starfield' pattern or the 'Box' tool. Move a small white box across a black screen. If you see blocky squares lighting up behind the box as it moves, those are your dimming zones activating."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Test for Blooming",
+              "step": [
+                { "@type": "HowToStep", "text": "Enable the 'Starfield Background' mode." },
+                { "@type": "HowToStep", "text": "Move the mouse cursor (or a small test box) rapidly across the dark background." },
+                { "@type": "HowToStep", "text": "Observe if the stars dim or brighten as the bright object passes near them." },
+                { "@type": "HowToStep", "text": "Look for a grey haze or 'halo' surrounding the moving object. On a perfect OLED, there is no halo. On LCD/Mini-LED, minimal halo is acceptable." }
+              ]
             }
           ]
         }}

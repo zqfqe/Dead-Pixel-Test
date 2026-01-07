@@ -336,6 +336,16 @@ const ColorGradientTest: React.FC = () => {
                   "text": "FRC is a technique where a monitor rapidly flashes two colors to simulate a third color it cannot natively display. Use the 'Animate' feature to check for FRC flickering artifacts."
                 }
               }]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Test for Color Banding",
+              "step": [
+                { "@type": "HowToStep", "text": "Select the 'Sky' or 'Gray' gradient preset from the menu." },
+                { "@type": "HowToStep", "text": "Inspect the gradient closely. It should transition smoothly from one color to another." },
+                { "@type": "HowToStep", "text": "If you see distinct vertical lines or steps (bands), your monitor has low bit-depth or poor color calibration." },
+                { "@type": "HowToStep", "text": "Enable 'Animate' to check for FRC (temporal dithering). If the gradient flickers or looks noisy, your monitor is simulating colors." }
+              ]
             }
           ]
         }}

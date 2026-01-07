@@ -177,36 +177,52 @@ const SpeakerTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
+          "@graph": [
             {
-              "@type": "Question",
-              "name": "How to test Left and Right speakers?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Click the 'LEFT' and 'RIGHT' buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings."
-              }
+              "@type": "WebApplication",
+              "name": "Speaker & Headphone Tester",
+              "url": "https://deadpixeltest.cc/tools/speaker-test",
+              "description": "Online tool to test left/right stereo channels, speaker phase polarity, and frequency response range.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
             },
             {
-              "@type": "Question",
-              "name": "What is Speaker Phase (Polarity)?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Speakers are 'In Phase' when their cones move in and out together. If one is wired backwards (+ to -), they move oppositely, causing bass frequencies to cancel out. The 'Out of Phase' test sound will feel hollow and hard to locate."
-              }
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How to test Left and Right speakers?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Click the 'LEFT' and 'RIGHT' buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What is Speaker Phase (Polarity)?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Speakers are 'In Phase' when their cones move in and out together. If one is wired backwards (+ to -), they move oppositely, causing bass frequencies to cancel out. The 'Out of Phase' test sound will feel hollow and hard to locate."
+                  }
+                }
+              ]
             },
             {
-              "@type": "Question",
-              "name": "Why can't I hear high frequencies in the Sweep Test?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Human hearing naturally degrades with age. While the theoretical limit is 20kHz, most adults cannot hear above 15-17kHz. If you hear nothing above 15kHz, it is likely your ears, not the speakers."
-              }
+              "@type": "HowTo",
+              "name": "How to Test Stereo Speakers",
+              "step": [
+                { "@type": "HowToStep", "text": "Ensure your speakers or headphones are connected and volume is at a safe level." },
+                { "@type": "HowToStep", "text": "Click 'Left' to play a tone from the left channel only." },
+                { "@type": "HowToStep", "text": "Click 'Right' to play a tone from the right channel only. If sound bleeds to the other side, check your audio settings for 'Mono Audio' features." },
+                { "@type": "HowToStep", "text": "Select 'Polarity / Phase' mode and toggle between 'In Phase' and 'Out of Phase' to ensure your speakers are wired correctly." }
+              ]
             }
           ]
         }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
+        {/* ... (Rest of component remains unchanged) ... */}
         {/* Header */}
         <div className="text-center mb-12">
            <div className="inline-flex items-center justify-center p-4 bg-purple-500/10 text-purple-400 rounded-2xl mb-4">

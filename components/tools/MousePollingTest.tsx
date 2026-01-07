@@ -133,36 +133,61 @@ const MousePollingTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
+          "@graph": [
             {
-              "@type": "Question",
-              "name": "Is 1000Hz better than 500Hz for gaming?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Technically yes, as 1000Hz reports position every 1ms compared to 2ms for 500Hz. However, the difference is very subtle. Pro players prefer 1000Hz for maximum responsiveness, but 500Hz is smoother on some systems."
-              }
+              "@type": "WebApplication",
+              "name": "Mouse Polling Rate Checker",
+              "url": "https://deadpixeltest.cc/tools/mouse-polling",
+              "description": "Test your mouse's report rate (Hz) in real-time. Supports high-frequency gaming mice (1000Hz, 4000Hz, 8000Hz).",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
             },
             {
-              "@type": "Question",
-              "name": "How to check my mouse Polling Rate?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Move your mouse quickly in continuous circles on this page. The 'Average' Hz counter will stabilize at your polling rate (usually 125, 500, or 1000)."
-              }
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "Is 1000Hz better than 500Hz for gaming?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Technically yes, as 1000Hz reports position every 1ms compared to 2ms for 500Hz. However, the difference is very subtle. Pro players prefer 1000Hz for maximum responsiveness, but 500Hz is smoother on some systems."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "How to check my mouse Polling Rate?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Move your mouse quickly in continuous circles on this page. The 'Average' Hz counter will stabilize at your polling rate (usually 125, 500, or 1000)."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Does high polling rate affect FPS?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. extremely high rates (4000Hz/8000Hz) can consume significant CPU resources, causing FPS drops or stuttering in older games that aren't optimized for high-frequency input."
+                  }
+                }
+              ]
             },
             {
-              "@type": "Question",
-              "name": "Does high polling rate affect FPS?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes. extremely high rates (4000Hz/8000Hz) can consume significant CPU resources, causing FPS drops or stuttering in older games that aren't optimized for high-frequency input."
-              }
+              "@type": "HowTo",
+              "name": "How to Check Mouse Polling Rate",
+              "step": [
+                { "@type": "HowToStep", "text": "Close other CPU-intensive applications for the most accurate reading." },
+                { "@type": "HowToStep", "text": "Move your mouse cursor quickly in continuous circles over the test area." },
+                { "@type": "HowToStep", "text": "Observe the 'Live Rate' and 'Average' Hz counters." },
+                { "@type": "HowToStep", "text": "Verify if the average matches your mouse settings (e.g., 1000Hz, 500Hz)." }
+              ]
             }
           ]
         }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
+        {/* ... (Rest of component remains unchanged) ... */}
+        {/* Header */}
         <div className="text-center mb-12">
            <div className="inline-flex items-center justify-center p-4 bg-green-500/10 text-green-500 rounded-2xl mb-4">
               <Activity size={32} />

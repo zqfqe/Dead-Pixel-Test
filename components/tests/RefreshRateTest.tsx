@@ -140,31 +140,54 @@ const RefreshRateTest: React.FC = () => {
         ]}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
+          "@graph": [
             {
-              "@type": "Question",
-              "name": "How to check for Frame Skipping?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames."
-              }
-            }, 
-            {
-              "@type": "Question",
-              "name": "Why is my 144Hz monitor showing 60Hz?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Check your Windows Display Settings > Advanced Display Settings to ensure the refresh rate is set correctly. Also, verify that your browser has 'Hardware Acceleration' enabled."
-              }
+              "@type": "WebApplication",
+              "name": "Monitor Refresh Rate Checker",
+              "url": "https://deadpixeltest.cc/tests/refresh-rate",
+              "description": "Test monitor refresh rate (Hz) and check for frame skipping in overclocked displays.",
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "Web Browser",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
             },
             {
-              "@type": "Question",
-              "name": "What is the difference between Hz and FPS?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Hz (Hertz) is how many times per second your monitor refreshes the image. FPS (Frames Per Second) is how many images your computer generates. For smooth motion, FPS should match Hz."
-              }
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "How to check for Frame Skipping?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames."
+                  }
+                }, 
+                {
+                  "@type": "Question",
+                  "name": "Why is my 144Hz monitor showing 60Hz?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Check your Windows Display Settings > Advanced Display Settings to ensure the refresh rate is set correctly. Also, verify that your browser has 'Hardware Acceleration' enabled."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What is the difference between Hz and FPS?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Hz (Hertz) is how many times per second your monitor refreshes the image. FPS (Frames Per Second) is how many images your computer generates. For smooth motion, FPS should match Hz."
+                  }
+                }
+              ]
+            },
+            {
+              "@type": "HowTo",
+              "name": "How to Check Monitor Refresh Rate",
+              "step": [
+                { "@type": "HowToStep", "text": "Close all other browser tabs and applications to ensure maximum performance." },
+                { "@type": "HowToStep", "text": "Start the test. A white block will move across the grid slots." },
+                { "@type": "HowToStep", "text": "Read the 'Browser FPS' counter. It should match your monitor's Hertz (e.g., 60, 144, 240)." },
+                { "@type": "HowToStep", "text": "To check for frame skipping (on overclocked monitors), take a photo of the screen with a smartphone camera set to 1/10s shutter speed." }
+              ]
             }
           ]
         }}
