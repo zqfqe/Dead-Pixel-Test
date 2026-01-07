@@ -5,9 +5,7 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./hooks/**/*.{js,ts,jsx,tsx}",
     "./contexts/**/*.{js,ts,jsx,tsx}",
-    "./data/**/*.{js,ts,jsx,tsx}",
-    "./App.tsx",
-    "./index.tsx"
+    "./**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
