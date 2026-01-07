@@ -668,7 +668,8 @@ const DeadPixelTest: React.FC = () => {
            
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8">Frequently Asked Questions</h3>
+              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
+              <h2 className="text-2xl font-bold text-white mb-8">Frequently Asked Questions</h2>
               <div className="space-y-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to run a dead pixel test?</h4>

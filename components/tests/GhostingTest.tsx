@@ -242,7 +242,8 @@ const GhostingTest: React.FC = () => {
            {isSidebarOpen && (
              <div className="flex-1 bg-white text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200">
                 <div className="p-5 border-b border-neutral-100 flex justify-between items-center sticky top-0 bg-white z-20">
-                   <h3 className="font-bold text-sm tracking-wider text-neutral-800">MOTION TEST</h3>
+                   {/* SEO OPTIMIZATION: Changed h3 to div to not interfere with document outline */}
+                   <div className="font-bold text-sm tracking-wider text-neutral-800">MOTION TEST</div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
                    </button>
@@ -399,7 +400,7 @@ const GhostingTest: React.FC = () => {
                 "name": "What does Response Time (GtG) mean?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "GtG (Gray-to-Gray) measures how long it takes a pixel to change from one shade of gray to another. Lower is better (e.g. 1ms). High response times (>5ms) cause visible blur."
+                  "text": "GtG (Gray-to-Gray) measures how long it takes a pixel to change from one shade of gray to another. Lower is better (e.g. 1ms). High response times (&gt;5ms) cause visible blur."
                 }
               }]
             },
@@ -510,9 +511,10 @@ const GhostingTest: React.FC = () => {
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
+              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
+              </h2>
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">What is Ghosting vs Inverse Ghosting?</h4>

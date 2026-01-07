@@ -293,7 +293,8 @@ const AudioSyncTest: React.FC = () => {
            {isSidebarOpen && (
              <div className="flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20">
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
-                   <h3 className="font-bold text-sm tracking-wider text-neutral-800">A/V SYNC</h3>
+                   {/* SEO OPTIMIZATION: H3 -> DIV */}
+                   <div className="font-bold text-sm tracking-wider text-neutral-800">A/V SYNC</div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
                    </button>
@@ -517,9 +518,10 @@ const AudioSyncTest: React.FC = () => {
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
+              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
+              </h2>
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to fix Lip Sync Delay?</h4>

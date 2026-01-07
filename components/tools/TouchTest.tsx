@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
-import { ChevronLeft, RotateCcw, Hand, Fingerprint, Maximize2 } from 'lucide-react';
+import { ChevronLeft, RotateCcw, Hand, Fingerprint, Maximize2, Smartphone, Tablet, Zap, Layers, HelpCircle } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 
@@ -265,23 +265,106 @@ const TouchTest: React.FC = () => {
           ]
         }}
       />
-      <TestIntro
-        title="Touch Screen Test"
-        description="Test your digitizer for dead zones, phantom touches, and multi-touch capability. Supports pressure sensitivity on compatible devices (iPad/Surface)."
-        startButtonText="Start Touch Test"
-        onStart={startTest}
-      >
-        <InfoCard title="Multi-Touch Check">
-          <p>
-            Try placing 10 fingers on the screen at once. High-quality digitizers support 10+ points. Budget devices may ghost or merge points when more than 5 fingers are used.
-          </p>
-        </InfoCard>
-        <InfoCard title="Linearity Test">
-          <p>
-            Use a ruler (plastic, not metal) to draw a straight diagonal line slowly. If the line becomes wavy or jagged ("jitter"), the digitizer's grid resolution is low or noisy.
-          </p>
-        </InfoCard>
-      </TestIntro>
+      <div className="flex flex-col min-h-screen">
+        <TestIntro
+          title="Touch Screen Test"
+          description="Test your digitizer for dead zones, phantom touches, and multi-touch capability. Supports pressure sensitivity on compatible devices (iPad/Surface)."
+          startButtonText="Start Touch Test"
+          onStart={startTest}
+        >
+          <InfoCard title="Multi-Touch Check">
+            <p>
+              Try placing 10 fingers on the screen at once. High-quality digitizers support 10+ points. Budget devices may ghost or merge points when more than 5 fingers are used.
+            </p>
+          </InfoCard>
+          <InfoCard title="Linearity Test">
+            <p>
+              Use a ruler (plastic, not metal) to draw a straight diagonal line slowly. If the line becomes wavy or jagged ("jitter"), the digitizer's grid resolution is low or noisy.
+            </p>
+          </InfoCard>
+        </TestIntro>
+
+        <section className="max-w-5xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+           
+           <article className="prose prose-invert max-w-none">
+              <div className="grid md:grid-cols-2 gap-12">
+                 <div>
+                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                       <Tablet className="text-blue-500" /> How Digitizers Work
+                    </h2>
+                    <p className="text-neutral-400 leading-relaxed mb-4">
+                       Modern smartphones use <strong>Capacitive Touch Screens</strong>. They detect the disruption in an electrical field caused by the conductivity of your finger.
+                    </p>
+                    <p className="text-neutral-400 leading-relaxed">
+                       The screen is covered in a grid of tiny transparent electrodes. When you touch it, the controller calculates the intersection point (X, Y).
+                    </p>
+                 </div>
+                 
+                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <Zap className="text-yellow-500" /> Ghost Touches
+                    </h3>
+                    <p className="text-sm text-neutral-400 mb-4">
+                       "Ghost Touches" occur when the screen registers input without you touching it. This is usually caused by:
+                    </p>
+                    <ul className="text-sm text-neutral-400 list-disc pl-4 space-y-1">
+                       <li>Static electricity build-up.</li>
+                       <li>Low-quality charging cables (electrical noise).</li>
+                       <li>Physical damage to the digitizer layer.</li>
+                    </ul>
+                 </div>
+              </div>
+
+              <hr className="my-12 border-white/10" />
+
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                 <Layers className="text-purple-500" /> Troubleshooting Touch Issues
+              </h2>
+              <div className="grid md:grid-cols-3 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">1. Dead Zones</h4>
+                    <p className="text-sm text-neutral-400">
+                       A specific strip or corner doesn't respond. This usually indicates a broken connection in the electrode grid. Requires screen replacement.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">2. Intermittent Touch</h4>
+                    <p className="text-sm text-neutral-400">
+                       Touches drop while dragging. Often caused by a loose flex cable inside the device after a drop.
+                    </p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
+                    <h4 className="font-bold text-white mb-2">3. Accuracy Drift</h4>
+                    <p className="text-sm text-neutral-400">
+                       You touch 'A' but it types 'S'. Older resistive screens needed calibration; capacitive screens usually don't unless damaged.
+                    </p>
+                 </div>
+              </div>
+           </article>
+
+           {/* FAQ Section Visual - Matches Schema */}
+           <div className="border-t border-white/10 pt-12">
+              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to check for Ghost Touches?</h4>
+                    <p className="text-neutral-400 text-sm">Open the test and leave your hands off the screen. If you see circles appearing or lines drawing themselves, your digitizer is registering 'ghost touches'.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">How to check for Dead Zones?</h4>
+                    <p className="text-neutral-400 text-sm">Drag your finger across the entire screen, painting a grid. If there are areas where the line breaks or doesn't draw, you have found a dead zone.</p>
+                 </div>
+                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
+                    <h4 className="font-bold text-white text-base mb-2">What is maximum touch points?</h4>
+                    <p className="text-neutral-400 text-sm">Most modern phones support 10 touch points (fingers). Older or budget devices may only support 2 or 5. This matters for gaming and fast typing.</p>
+                 </div>
+              </div>
+           </div>
+
+        </section>
+      </div>
     </>
   );
 };

@@ -219,7 +219,8 @@ const UniformityTest: React.FC = () => {
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
                    <div className="flex items-center gap-2">
                      <Sun size={18} className="text-blue-600" />
-                     <h3 className="font-bold text-sm tracking-wider text-neutral-800">UNIFORMITY</h3>
+                     {/* SEO: Changed H3 to DIV */}
+                     <div className="font-bold text-sm tracking-wider text-neutral-800">UNIFORMITY</div>
                    </div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800 p-1 hover:bg-neutral-100 rounded">
                      <ChevronUp size={20} className="rotate-90" />
@@ -495,9 +496,10 @@ const UniformityTest: React.FC = () => {
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
+              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
+              </h2>
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">What is IPS Glow vs Backlight Bleed?</h4>
