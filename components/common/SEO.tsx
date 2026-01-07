@@ -38,6 +38,12 @@ export const SEO: React.FC<SEOProps> = ({
   const url = canonical ? `${DOMAIN}${canonical}` : DOMAIN;
   const fullImage = image.startsWith('http') ? image : `${DOMAIN}${image}`;
 
+  // Explicitly define robots content. 
+  // 'max-image-preview:large' helps with Google Discover visibility.
+  const robotsContent = noindex 
+    ? "noindex, nofollow" 
+    : "index, follow, max-image-preview:large";
+
   // Construct Breadcrumb Schema
   const breadcrumbSchema = breadcrumbs ? {
     "@context": "https://schema.org",
@@ -58,8 +64,8 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="keywords" content={keywords.join(', ')} />
       <link rel="canonical" href={url} />
       
-      {/* Robots Control */}
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {/* Robots Control - Explicit tag is better for SEO tools */}
+      <meta name="robots" content={robotsContent} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
