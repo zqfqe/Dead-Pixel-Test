@@ -137,7 +137,7 @@ const BurnInWiper: React.FC = () => {
       <div className={`fixed inset-0 z-50 bg-black overflow-hidden ${isIdle ? 'cursor-none' : ''}`}>
         <canvas ref={canvasRef} className="block w-full h-full" />
         
-        <FullscreenControls onExit={stopTest} title={`Wiper: ${mode.toUpperCase()} (${formatTime(timeLeft)})`} />
+        <FullscreenControls onExit={stopTest} title={`Wiper: ${mode.toUpperCase()} (${formatTime(timeLeft)})`} visible={!isIdle} />
 
         {/* Floating Timer (Only visible when active, not idle) */}
         {!isIdle && (

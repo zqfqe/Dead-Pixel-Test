@@ -315,8 +315,9 @@ const DeadPixelTest: React.FC = () => {
           }
         }}
       >
-        {/* Universal Exit Button (Hover top to show) */}
-        <FullscreenControls onExit={stopTest} title="Dead Pixel Test" visible={!isMobile} />
+        {/* Universal Exit Button (Hover top on desktop, visible on tap on mobile) */}
+        {/* Pass !isIdle so it shows when user interacts/taps */}
+        <FullscreenControls onExit={stopTest} title="Dead Pixel Test" visible={!isIdle} />
 
         {/* Noise Canvas */}
         {isNoiseMode && (
@@ -456,16 +457,6 @@ const DeadPixelTest: React.FC = () => {
               >
                 <Flashlight size={20} />
               </button>
-            )}
-
-            {/* Mobile Exit (Since no top-hover) */}
-            {isMobile && (
-               <button 
-                 onClick={(e) => { e.stopPropagation(); stopTest(); }}
-                 className="p-3 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10 border-l border-white/10 ml-1"
-               >
-                 Exit
-               </button>
             )}
 
           </div>

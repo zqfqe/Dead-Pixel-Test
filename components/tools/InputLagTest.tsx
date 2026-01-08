@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { Camera, MousePointer2, Keyboard, Zap, Play, RotateCcw, Monitor, Clock } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -10,6 +11,7 @@ const InputLagTest: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [frameData, setFrameData] = useState<{ count: number, time: number }>({ count: 0, time: 0 });
   const [isFlashed, setIsFlashed] = useState(false);
+  const isIdle = useIdleCursor(3000); // UI Hiding logic
   
   const reqRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
@@ -57,9 +59,9 @@ const InputLagTest: React.FC = () => {
   if (isActive) {
     return (
       <div 
-        className={`fixed inset-0 z-50 flex flex-col items-center justify-center font-mono cursor-crosshair select-none ${isFlashed ? 'bg-white text-black' : 'bg-black text-white'}`}
+        className={`fixed inset-0 z-50 flex flex-col items-center justify-center font-mono cursor-crosshair select-none ${isFlashed ? 'bg-white text-black' : 'bg-black text-white'} ${isIdle ? 'cursor-none' : ''}`}
       >
-        <FullscreenControls onExit={stopTest} title="Input Lag Counter" />
+        <FullscreenControls onExit={stopTest} title="Input Lag Counter" visible={!isIdle} />
 
         {/* Main Counter */}
         <div className="text-center">

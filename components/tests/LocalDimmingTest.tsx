@@ -20,6 +20,7 @@ import {
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
+import { useIdleCursor } from '../../hooks/useIdleCursor';
 
 type TestShape = 'box' | 'circle' | 'text' | 'v-bar' | 'h-bar';
 type ControlMode = 'auto' | 'manual';
@@ -28,6 +29,7 @@ const LocalDimmingTest: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
+  const isIdle = useIdleCursor(3000);
   
   // Settings
   const [objectSize, setObjectSize] = useState(100);
@@ -179,15 +181,19 @@ const LocalDimmingTest: React.FC = () => {
   }, [isActive, objectSize, speed, showStars, shape, controlMode, colorHex]);
 
   if (isActive) {
+    // UI visibility Logic
+    const uiHidden = isIdle && !isSidebarOpen;
+
     return (
       <div 
-        className={`fixed inset-0 z-50 bg-black ${controlMode === 'manual' ? 'cursor-none' : ''}`}
+        className={`fixed inset-0 z-50 bg-black ${controlMode === 'manual' && uiHidden ? 'cursor-none' : ''}`}
         onMouseMove={handleMouseMove}
       >
         <canvas ref={canvasRef} className="block w-full h-full" />
 
-        {/* Top-Left Exit (Hover to show) */}
-        <div className="absolute top-0 left-0 p-6 opacity-0 hover:opacity-100 transition-opacity duration-300 z-[70]">
+        {/* Top-Left Exit */}
+        {/* Changed from hover-only to state-based opacity so it works on mobile tap-to-wake */}
+        <div className={`absolute top-0 left-0 p-6 transition-opacity duration-300 z-[70] ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <button 
             onClick={stopTest}
             className="flex items-center gap-2 bg-neutral-900 text-white px-4 py-2 rounded-lg shadow-lg border border-neutral-700 font-medium text-sm cursor-auto"
@@ -202,16 +208,15 @@ const LocalDimmingTest: React.FC = () => {
            {!isSidebarOpen && (
              <button 
                onClick={() => setIsSidebarOpen(true)}
-               className="bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-colors opacity-30 hover:opacity-100"
+               className={`bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-all duration-300 ${uiHidden ? 'opacity-0 pointer-events-none translate-x-10' : 'opacity-100 translate-x-0'}`}
              >
                <ChevronLeft size={24} />
              </button>
            )}
 
            {isSidebarOpen && (
-             <div className="flex-1 bg-white text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200">
+             <div className={`flex-1 bg-white text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 transition-opacity duration-300 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                 <div className="p-5 border-b border-neutral-100 flex justify-between items-center sticky top-0 bg-white z-20">
-                   {/* SEO OPTIMIZATION: H3 -> DIV */}
                    <div className="font-bold text-sm tracking-wider text-neutral-800">DIMMING TEST</div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
@@ -463,7 +468,6 @@ const LocalDimmingTest: React.FC = () => {
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
               <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
               </h2>
