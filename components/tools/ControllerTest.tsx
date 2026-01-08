@@ -265,7 +265,7 @@ const ControllerTest: React.FC = () => {
   const [gamepads, setGamepads] = useState<(Gamepad | null)[]>([]);
   const [activeIdx, setActiveIdx] = useState<number>(0);
   const [layout, setLayout] = useState<ControllerLayout>('xbox');
-  const reqRef = useRef<number>();
+  const reqRef = useRef<number | null>(null);
   
   // Polling Rate Calc
   const lastUpdateRef = useRef<number>(0);

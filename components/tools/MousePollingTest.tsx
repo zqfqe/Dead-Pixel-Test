@@ -20,7 +20,7 @@ const MousePollingTest: React.FC = () => {
   // Refs for low-level data collection (avoiding state in event handler)
   const lastTimeRef = useRef<number>(0);
   const dataQueueRef = useRef<number[]>([]);
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastActivityRef = useRef<number>(0);
 
