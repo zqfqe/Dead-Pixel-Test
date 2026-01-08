@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Radar, Zap, MoveVertical, Sliders, Mic, Bluetooth, Monitor, HelpCircle, Film } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
+import { TestResultControls } from '../common/TestResultControls';
 
 type Pattern = 'bar' | 'radar' | 'flash';
 
@@ -11,10 +13,12 @@ const AudioSyncTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
   
-  // Settings
+  // Persistent State
+  const [offsetMs, setOffsetMs] = useLocalStorage('audiosync-offset', 0);
+  const [pattern, setPattern] = useLocalStorage<Pattern>('audiosync-pattern', 'bar');
+  
+  // Local State
   const [bpm, setBpm] = useState(60);
-  const [offsetMs, setOffsetMs] = useState(0); // User manual compensation
-  const [pattern, setPattern] = useState<Pattern>('bar');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Engine Refs
@@ -293,7 +297,6 @@ const AudioSyncTest: React.FC = () => {
            {isSidebarOpen && (
              <div className="flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20">
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
-                   {/* SEO OPTIMIZATION: H3 -> DIV */}
                    <div className="font-bold text-sm tracking-wider text-neutral-800">A/V SYNC</div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
@@ -377,7 +380,11 @@ const AudioSyncTest: React.FC = () => {
 
                 </div>
 
-                <div className="p-5 border-t border-neutral-100 bg-neutral-50">
+                {/* Footer Report Actions */}
+                <div className="p-5 border-t border-neutral-100 bg-neutral-50 space-y-4">
+                  
+                  <TestResultControls testId="audiosync" testName="Audio / Video Sync Latency" />
+
                   <button 
                     onClick={resetSettings}
                     className="w-full py-3 bg-neutral-900 hover:bg-black text-white rounded-lg font-bold shadow-lg shadow-neutral-900/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
@@ -528,7 +535,6 @@ const AudioSyncTest: React.FC = () => {
 
            {/* FAQ Section Visual - Matches Schema */}
            <div className="border-t border-white/10 pt-12">
-              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
               <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
                  <HelpCircle className="text-blue-400" /> Frequently Asked Questions
               </h2>

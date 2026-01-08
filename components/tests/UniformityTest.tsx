@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { useIdleCursor } from '../../hooks/useIdleCursor';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers, Laptop } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link } from 'react-router-dom';
 import { RelatedTools } from '../common/RelatedTools';
 import { RelatedArticles } from '../common/RelatedArticles';
+import { TestResultControls } from '../common/TestResultControls';
 
 type PatternType = 'solid' | 'checkerboard';
 type ColorType = 'white' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'black';
@@ -28,10 +30,12 @@ const UniformityTest: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const isIdle = useIdleCursor(3000);
   
-  // State
-  const [brightness, setBrightness] = useState(50);
-  const [selectedColor, setSelectedColor] = useState<ColorType>('white');
-  const [patternType, setPatternType] = useState<PatternType>('solid');
+  // Persistent State
+  const [brightness, setBrightness] = useLocalStorage('uniformity-brightness', 50);
+  const [selectedColor, setSelectedColor] = useLocalStorage<ColorType>('uniformity-color', 'white');
+  const [patternType, setPatternType] = useLocalStorage<PatternType>('uniformity-pattern', 'solid');
+  
+  // Local State
   const [checkerInvert, setCheckerInvert] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showCrosshair, setShowCrosshair] = useState(false);
@@ -115,7 +119,7 @@ const UniformityTest: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, selectedColor, stopTest]);
+  }, [isActive, selectedColor, stopTest, setBrightness, setSelectedColor, setPatternType]);
 
   if (isActive) {
     const mainColor = getFillColor();
@@ -143,7 +147,6 @@ const UniformityTest: React.FC = () => {
 
     // Determine UI contrast color based on brightness
     const isDark = brightness < 40 || (patternType === 'checkerboard');
-    const uiColor = isDark ? 'text-white' : 'text-black';
     const gridColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
 
     // Determine if UI should be hidden
@@ -249,7 +252,7 @@ const UniformityTest: React.FC = () => {
                          {COLORS.map(c => (
                            <button
                              key={c.id}
-                             onClick={() => { setSelectedColor(c.id); setBrightness(50); }} // Reset brightness on color change for clarity? Maybe keep it.
+                             onClick={() => { setSelectedColor(c.id); setBrightness(50); }} 
                              className={`
                                aspect-square rounded-lg border-2 transition-all shadow-sm
                                ${selectedColor === c.id 
@@ -328,8 +331,11 @@ const UniformityTest: React.FC = () => {
                    </div>
                 </div>
 
-                {/* Footer Reset */}
-                <div className="p-5 border-t border-neutral-100 bg-neutral-50">
+                {/* Footer Report + Reset */}
+                <div className="p-5 border-t border-neutral-100 bg-neutral-50 space-y-4">
+                  
+                  <TestResultControls testId="uniformity" testName="Screen Uniformity / Bleed" />
+
                   <button 
                     onClick={resetSettings}
                     className="w-full py-3 bg-neutral-900 hover:bg-black text-white rounded-xl font-bold shadow-lg shadow-neutral-900/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
@@ -345,6 +351,7 @@ const UniformityTest: React.FC = () => {
     );
   }
 
+  // Fallback / Landing UI (Same as before)
   return (
     <>
       <SEO 

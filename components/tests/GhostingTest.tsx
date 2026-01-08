@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye, Settings, Zap, Camera, HelpCircle, Monitor } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
 import { RelatedArticles } from '../common/RelatedArticles';
+import { TestResultControls } from '../common/TestResultControls';
 
 type Direction = 'horizontal' | 'vertical';
 type Pattern = 'ufo' | 'text' | 'blocks';
@@ -15,12 +17,13 @@ const GhostingTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
   
-  // State
-  const [speed, setSpeed] = useState(960); // px per second
+  // Persistent State
+  const [speed, setSpeed] = useLocalStorage('ghosting-speed', 960);
+  const [direction, setDirection] = useLocalStorage<Direction>('ghosting-direction', 'horizontal');
+  const [pattern, setPattern] = useLocalStorage<Pattern>('ghosting-pattern', 'ufo');
+  const [preset, setPreset] = useLocalStorage<Preset>('ghosting-preset', 'default');
+  
   const [fps, setFps] = useState(0);
-  const [direction, setDirection] = useState<Direction>('horizontal');
-  const [pattern, setPattern] = useState<Pattern>('ufo');
-  const [preset, setPreset] = useState<Preset>('default');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const startTest = () => {
@@ -243,7 +246,6 @@ const GhostingTest: React.FC = () => {
            {isSidebarOpen && (
              <div className="flex-1 bg-white text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200">
                 <div className="p-5 border-b border-neutral-100 flex justify-between items-center sticky top-0 bg-white z-20">
-                   {/* SEO OPTIMIZATION: Changed h3 to div to not interfere with document outline */}
                    <div className="font-bold text-sm tracking-wider text-neutral-800">MOTION TEST</div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
@@ -339,13 +341,17 @@ const GhostingTest: React.FC = () => {
 
                 </div>
 
-                <div className="p-5 border-t border-neutral-100 bg-neutral-50">
+                {/* Footer Report Actions */}
+                <div className="p-5 border-t border-neutral-100 bg-neutral-50 space-y-4">
+                  
+                  <TestResultControls testId="ghosting" testName="Ghosting / Motion Blur" />
+
                   <button 
                     onClick={resetSettings}
                     className="w-full py-3 bg-neutral-900 hover:bg-black text-white rounded-lg font-bold shadow-lg shadow-neutral-900/10 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
-                    <RotateCcw size={18} />
-                    Reset
+                    <RotateCcw size={16} />
+                    Reset Defaults
                   </button>
                 </div>
              </div>
@@ -355,7 +361,7 @@ const GhostingTest: React.FC = () => {
     );
   }
 
-  // Main Page View with SEO
+  // Main Page View (Landing) - Unchanged
   return (
     <>
       <SEO 

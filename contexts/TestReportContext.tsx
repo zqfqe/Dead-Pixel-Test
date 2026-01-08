@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface TestResult {
   testId: string;
@@ -17,8 +17,26 @@ interface TestReportContextType {
 
 const TestReportContext = createContext<TestReportContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'deadpixeltest-report-v1';
+
 export const TestReportProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [results, setResults] = useState<TestResult[]>([]);
+  const [results, setResults] = useState<TestResult[]>(() => {
+    try {
+      const item = window.localStorage.getItem(STORAGE_KEY);
+      return item ? JSON.parse(item) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  // Persist whenever results change
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+    } catch (e) {
+      console.error("Failed to save report to local storage");
+    }
+  }, [results]);
 
   const addResult = (result: TestResult) => {
     setResults(prev => {
