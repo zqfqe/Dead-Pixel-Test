@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { useIdleCursor } from '../../hooks/useIdleCursor';
+import { useSwipe } from '../../hooks/useSwipe';
 import { 
   Play, 
   Pause, 
@@ -78,7 +79,6 @@ const DeadPixelTest: React.FC = () => {
   const noiseReqRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
-  const touchStartX = useRef<number | null>(null);
 
   // --- Handlers ---
 
@@ -125,6 +125,12 @@ const DeadPixelTest: React.FC = () => {
     setCustomColor(null);
     setColorIndex((prev) => (prev - 1 + COLORS.length) % COLORS.length);
   }, []);
+
+  // Swipe Hook
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: handleNextColor,
+    onSwipeRight: handlePrevColor,
+  });
 
   const toggleAutoCycle = () => {
     resetModes();
@@ -273,7 +279,7 @@ const DeadPixelTest: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isActive, isAutoCycle, isStrobeMode, isNoiseMode, handleNextColor, handlePrevColor, stopTest]);
 
-  // 5. Mouse & Touch
+  // 5. Mouse
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   }, []);
@@ -283,24 +289,6 @@ const DeadPixelTest: React.FC = () => {
        setFlashlightSize(prev => Math.max(50, Math.min(800, prev + (e.deltaY > 0 ? -20 : 20))));
     }
   }, [isFlashlightMode]);
-
-  // --- MOBILE GESTURES ---
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX;
-    
-    // Swipe Threshold
-    if (Math.abs(diff) > 50) {
-       if (diff > 0) handleNextColor(); // Swipe Left -> Next
-       else handlePrevColor(); // Swipe Right -> Prev
-    }
-    touchStartX.current = null;
-  };
 
   // --- Render Active Test ---
   if (isActive) {
@@ -319,8 +307,7 @@ const DeadPixelTest: React.FC = () => {
         style={{ backgroundColor: isFlashlightMode ? '#000000' : displayColor }}
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        {...swipeHandlers}
         onClick={(e) => {
           // Only handle click navigation if not interacting with controls
           if ((e.target as HTMLElement).tagName === 'DIV' || (e.target as HTMLElement).tagName === 'CANVAS') {

@@ -2,13 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers, Laptop } from 'lucide-react';
+import { useSwipe } from '../../hooks/useSwipe';
+import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers, Laptop, Hand } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { Link } from 'react-router-dom';
 import { RelatedTools } from '../common/RelatedTools';
 import { RelatedArticles } from '../common/RelatedArticles';
 import { TestResultControls } from '../common/TestResultControls';
+import { useMobile } from '../../hooks/useMobile';
 
 type PatternType = 'solid' | 'checkerboard';
 type ColorType = 'white' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'black';
@@ -29,6 +31,7 @@ const UniformityTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
   const isIdle = useIdleCursor(3000);
+  const isMobile = useMobile();
   
   // Persistent State
   const [brightness, setBrightness] = useLocalStorage('uniformity-brightness', 50);
@@ -60,6 +63,25 @@ const UniformityTest: React.FC = () => {
     setShowCrosshair(false);
   };
 
+  // Helper: Cycle Colors
+  const nextColor = useCallback(() => {
+    const currentIndex = COLORS.findIndex(c => c.id === selectedColor);
+    const nextIndex = (currentIndex + 1) % COLORS.length;
+    setSelectedColor(COLORS[nextIndex].id);
+  }, [selectedColor, setSelectedColor]);
+
+  const prevColor = useCallback(() => {
+    const currentIndex = COLORS.findIndex(c => c.id === selectedColor);
+    const prevIndex = (currentIndex - 1 + COLORS.length) % COLORS.length;
+    setSelectedColor(COLORS[prevIndex].id);
+  }, [selectedColor, setSelectedColor]);
+
+  // Swipe Hook
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: nextColor,
+    onSwipeRight: prevColor,
+  });
+
   // Helper to calculate RGB based on brightness and selected base color
   const getFillColor = useCallback((overrideBrightness?: number) => {
     const b = overrideBrightness !== undefined ? overrideBrightness : brightness;
@@ -68,7 +90,7 @@ const UniformityTest: React.FC = () => {
 
     switch (selectedColor) {
       case 'white': return `rgb(${val}, ${val}, ${val})`;
-      case 'black': return `rgb(0, 0, 0)`; // Black is always black regardless of brightness slider usually, but kept for logic consistency
+      case 'black': return `rgb(0, 0, 0)`; 
       case 'red': return `rgb(${val}, 0, 0)`;
       case 'green': return `rgb(0, ${val}, 0)`;
       case 'blue': return `rgb(0, 0, ${val})`;
@@ -92,16 +114,10 @@ const UniformityTest: React.FC = () => {
           setBrightness(prev => Math.max(0, prev - 5));
           break;
         case 'ArrowUp':
-          // Cycle colors prev
-          const currIdxUp = COLORS.findIndex(c => c.id === selectedColor);
-          const nextIdxUp = (currIdxUp - 1 + COLORS.length) % COLORS.length;
-          setSelectedColor(COLORS[nextIdxUp].id);
+          prevColor();
           break;
         case 'ArrowDown':
-          // Cycle colors next
-          const currIdxDown = COLORS.findIndex(c => c.id === selectedColor);
-          const nextIdxDown = (currIdxDown + 1) % COLORS.length;
-          setSelectedColor(COLORS[nextIdxDown].id);
+          nextColor();
           break;
         case 'g':
         case 'G':
@@ -119,16 +135,13 @@ const UniformityTest: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, selectedColor, stopTest, setBrightness, setSelectedColor, setPatternType]);
+  }, [isActive, stopTest, setBrightness, setPatternType, nextColor, prevColor]);
 
   if (isActive) {
     const mainColor = getFillColor();
-    const secondaryColor = 'rgb(0,0,0)'; // In checkerboard, secondary is usually black
-    
-    // Logic for checkerboard inversion
+    const secondaryColor = 'rgb(0,0,0)'; 
     const colorA = checkerInvert ? secondaryColor : mainColor;
     const colorB = checkerInvert ? mainColor : secondaryColor;
-
     const checkerSize = '120px'; 
     
     const backgroundStyle = patternType === 'solid' 
@@ -145,17 +158,15 @@ const UniformityTest: React.FC = () => {
           backgroundSize: `${checkerSize} ${checkerSize}`
         };
 
-    // Determine UI contrast color based on brightness
     const isDark = brightness < 40 || (patternType === 'checkerboard');
     const gridColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
-
-    // Determine if UI should be hidden
     const uiHidden = isIdle && !isSidebarOpen;
 
     return (
       <div 
-        className={`fixed inset-0 z-50 flex flex-row overflow-hidden select-none font-sans ${uiHidden ? 'cursor-none' : ''}`}
+        className={`fixed inset-0 z-50 flex flex-row overflow-hidden select-none font-sans touch-pan-y ${uiHidden ? 'cursor-none' : ''}`}
         style={backgroundStyle}
+        {...swipeHandlers}
       >
         {/* --- 1. Top-Left Exit Button --- */}
         <div className={`absolute top-6 left-6 z-[60] transition-opacity duration-500 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
@@ -187,9 +198,17 @@ const UniformityTest: React.FC = () => {
           )}
         </div>
 
+        {/* Mobile Swipe Hint */}
+        {isMobile && !isIdle && (
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 pointer-events-none flex flex-col items-center animate-pulse z-0">
+              <Hand size={48} />
+              <span className="text-xs font-bold mt-2">SWIPE</span>
+           </div>
+        )}
+
         {/* --- 3. Right Sidebar Controls --- */}
         <div className={`absolute top-6 right-6 bottom-6 z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}>
-           {/* Sidebar Toggle (If closed) */}
+           {/* Sidebar Toggle */}
            {!isSidebarOpen && (
              <button 
                onClick={() => { setIsSidebarOpen(true); }}
@@ -206,7 +225,6 @@ const UniformityTest: React.FC = () => {
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
                    <div className="flex items-center gap-2">
                      <Sun size={18} className="text-blue-600" />
-                     {/* SEO: Changed H3 to DIV */}
                      <div className="font-bold text-sm tracking-wider text-neutral-800">UNIFORMITY</div>
                    </div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800 p-1 hover:bg-neutral-100 rounded">
@@ -298,9 +316,6 @@ const UniformityTest: React.FC = () => {
                            </button>
                          ))}
                       </div>
-                      <p className="text-[10px] text-neutral-400 leading-tight pt-1">
-                        Use <strong className="text-neutral-600">5%</strong> and <strong className="text-neutral-600">10%</strong> to check for OLED banding and dirty screen effect (DSE).
-                      </p>
                    </div>
 
                    {/* Tools */}
@@ -326,8 +341,7 @@ const UniformityTest: React.FC = () => {
                    <div className="bg-neutral-50 rounded-lg p-3 text-[10px] text-neutral-500 space-y-1 border border-neutral-100">
                       <div className="flex items-center gap-2 font-bold mb-1 text-neutral-400"><Keyboard size={12}/> Shortcuts</div>
                       <div className="flex justify-between"><span>Arrows</span> <span>Brightness / Color</span></div>
-                      <div className="flex justify-between"><span>G</span> <span>Toggle Grid</span></div>
-                      <div className="flex justify-between"><span>C</span> <span>Pattern</span></div>
+                      <div className="flex justify-between"><span>Swipe</span> <span>Next/Prev Color</span></div>
                    </div>
                 </div>
 
@@ -351,7 +365,7 @@ const UniformityTest: React.FC = () => {
     );
   }
 
-  // Fallback / Landing UI (Same as before)
+  // Fallback / Landing UI
   return (
     <>
       <SEO 
