@@ -112,7 +112,13 @@ const Header = () => {
           {/* 1. Left: Logo */}
           <div className="flex items-center justify-start z-20">
             <NavLink to="/" aria-label="DeadPixelTest Home" className="flex items-center gap-3 group opacity-90 hover:opacity-100 transition-opacity">
-              <img src="/logo.svg" alt="DeadPixelTest Logo" className="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.15)]" />
+              <img 
+                src="/logo.svg" 
+                alt="DeadPixelTest Logo" 
+                width="32"
+                height="32"
+                className="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(255,255,255,0.15)]" 
+              />
               <span className="font-bold text-white tracking-tight text-sm hidden sm:inline-block">DeadPixelTest</span>
             </NavLink>
           </div>

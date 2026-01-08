@@ -13,7 +13,13 @@ const Footer: React.FC = () => {
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-white font-bold text-lg">
-              <img src="/logo.svg" alt="DeadPixelTest Logo" className="w-8 h-8 rounded-lg" />
+              <img 
+                src="/logo.svg" 
+                alt="DeadPixelTest Logo" 
+                width="32" 
+                height="32" 
+                className="w-8 h-8 rounded-lg" 
+              />
               DeadPixelTest.cc
             </div>
             <p className="text-neutral-400 leading-relaxed">
