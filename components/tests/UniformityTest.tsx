@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { ChevronLeft, ChevronUp, RotateCcw, Check, Grid, Crosshair, Sun, Palette, Keyboard, HelpCircle, Monitor, AlertTriangle, Layers, Laptop } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -25,6 +26,7 @@ const COLORS: { id: ColorType; label: string; hex: string }[] = [
 const UniformityTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
+  const isIdle = useIdleCursor(3000);
   
   // State
   const [brightness, setBrightness] = useState(50);
@@ -34,21 +36,15 @@ const UniformityTest: React.FC = () => {
   const [showGrid, setShowGrid] = useState(false);
   const [showCrosshair, setShowCrosshair] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [uiVisible, setUiVisible] = useState(true);
-
-  // Refs for auto-hiding UI
-  const uiTimeoutRef = React.useRef<number | null>(null);
 
   const startTest = () => {
     setIsActive(true);
     enterFullscreen();
-    resetUiTimer();
   };
 
   const stopTest = useCallback(() => {
     setIsActive(false);
     exitFullscreen();
-    if (uiTimeoutRef.current) clearTimeout(uiTimeoutRef.current);
   }, [exitFullscreen]);
 
   const resetSettings = () => {
@@ -84,7 +80,6 @@ const UniformityTest: React.FC = () => {
     if (!isActive) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      resetUiTimer();
       switch(e.key) {
         case 'ArrowRight':
           setBrightness(prev => Math.min(100, prev + 5));
@@ -122,19 +117,6 @@ const UniformityTest: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isActive, selectedColor, stopTest]);
 
-  // Auto Hide UI Logic
-  const resetUiTimer = () => {
-    setUiVisible(true);
-    if (uiTimeoutRef.current) clearTimeout(uiTimeoutRef.current);
-    uiTimeoutRef.current = window.setTimeout(() => {
-       if (isActive && !isSidebarOpen) setUiVisible(false);
-    }, 3000);
-  };
-
-  const handleMouseMove = () => {
-    resetUiTimer();
-  };
-
   if (isActive) {
     const mainColor = getFillColor();
     const secondaryColor = 'rgb(0,0,0)'; // In checkerboard, secondary is usually black
@@ -164,15 +146,16 @@ const UniformityTest: React.FC = () => {
     const uiColor = isDark ? 'text-white' : 'text-black';
     const gridColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
 
+    // Determine if UI should be hidden
+    const uiHidden = isIdle && !isSidebarOpen;
+
     return (
       <div 
-        className={`fixed inset-0 z-50 flex flex-row overflow-hidden select-none font-sans ${!uiVisible ? 'cursor-none' : ''}`}
+        className={`fixed inset-0 z-50 flex flex-row overflow-hidden select-none font-sans ${uiHidden ? 'cursor-none' : ''}`}
         style={backgroundStyle}
-        onMouseMove={handleMouseMove}
-        onClick={resetUiTimer}
       >
         {/* --- 1. Top-Left Exit Button --- */}
-        <div className={`absolute top-6 left-6 z-[60] transition-opacity duration-300 ${uiVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`absolute top-6 left-6 z-[60] transition-opacity duration-500 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <button 
             onClick={stopTest}
             className="flex items-center gap-2 bg-neutral-900/90 backdrop-blur text-white px-4 py-2 rounded-full shadow-lg hover:bg-neutral-800 transition-colors border border-white/10 font-medium text-sm group"
@@ -206,8 +189,8 @@ const UniformityTest: React.FC = () => {
            {/* Sidebar Toggle (If closed) */}
            {!isSidebarOpen && (
              <button 
-               onClick={() => { setIsSidebarOpen(true); resetUiTimer(); }}
-               className={`p-3 rounded-full shadow-xl transition-all ${uiVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'} bg-white text-black`}
+               onClick={() => { setIsSidebarOpen(true); }}
+               className={`p-3 rounded-full shadow-xl transition-all duration-500 ${uiHidden ? 'opacity-0 translate-x-10' : 'opacity-100 translate-x-0'} bg-white text-black`}
              >
                <ChevronLeft size={24} />
              </button>
@@ -215,7 +198,7 @@ const UniformityTest: React.FC = () => {
 
            {/* The Panel */}
            {isSidebarOpen && (
-             <div className="flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-2xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20">
+             <div className={`flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-2xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20 transition-opacity duration-500 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                 {/* Header */}
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
                    <div className="flex items-center gap-2">

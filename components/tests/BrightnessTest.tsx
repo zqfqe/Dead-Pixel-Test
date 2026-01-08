@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { ChevronLeft, ChevronUp, RotateCcw, Zap, Eye, LayoutTemplate, MonitorPlay, Ghost } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -9,6 +10,7 @@ type Pattern = 'steps' | 'pluge' | 'logo';
 const BrightnessTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
+  const isIdle = useIdleCursor(3000);
   
   // State
   const [pattern, setPattern] = useState<Pattern>('steps');
@@ -39,9 +41,11 @@ const BrightnessTest: React.FC = () => {
   if (isActive) {
     // Generate squares from RGB 1 to 24 (covering PC 0-255 and Video 16-235 start)
     const squares = Array.from({ length: 24 }, (_, i) => i + 1);
+    
+    const uiHidden = isIdle && !isSidebarOpen;
 
     return (
-      <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-all duration-500 ${showAmbient ? 'p-12 md:p-24 bg-neutral-800' : ''}`}>
+      <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-all duration-500 ${showAmbient ? 'p-12 md:p-24 bg-neutral-800' : ''} ${uiHidden ? 'cursor-none' : ''}`}>
         
         {/* CSS for Pulse */}
         <style>{`
@@ -52,13 +56,15 @@ const BrightnessTest: React.FC = () => {
         `}</style>
 
         {/* Top-Left Exit */}
-        <button 
-          onClick={stopTest}
-          className="absolute top-6 left-6 z-[60] flex items-center gap-2 bg-neutral-900/90 backdrop-blur text-white px-4 py-2 rounded-lg shadow-lg hover:bg-neutral-800 transition-colors border border-neutral-700 font-medium text-sm group"
-        >
-          <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Exit
-        </button>
+        <div className={`absolute top-6 left-6 z-[60] transition-opacity duration-500 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <button 
+            onClick={stopTest}
+            className="flex items-center gap-2 bg-neutral-900/90 backdrop-blur text-white px-4 py-2 rounded-lg shadow-lg hover:bg-neutral-800 transition-colors border border-neutral-700 font-medium text-sm group"
+          >
+            <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            Exit
+          </button>
+        </div>
 
         {/* --- MAIN TEST AREA --- */}
         <div className={`relative w-full h-full bg-black flex items-center justify-center shadow-2xl overflow-hidden ${showAmbient ? 'border border-white/10' : ''}`}>
@@ -147,14 +153,14 @@ const BrightnessTest: React.FC = () => {
            {!isSidebarOpen && (
              <button 
                onClick={() => setIsSidebarOpen(true)}
-               className="bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-colors"
+               className={`bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-all duration-500 ${uiHidden ? 'opacity-0 translate-x-10' : 'opacity-100 translate-x-0'}`}
              >
                <ChevronLeft size={24} />
              </button>
            )}
 
            {isSidebarOpen && (
-             <div className="flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20">
+             <div className={`flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20 transition-opacity duration-500 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
                    <h3 className="font-bold text-sm tracking-wider text-neutral-800">BLACK LEVEL</h3>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">

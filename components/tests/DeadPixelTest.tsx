@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { 
   Play, 
   Pause, 
@@ -7,15 +8,10 @@ import {
   Zap, 
   Palette,
   Waves,
-  Info,
-  AlertTriangle,
-  HelpCircle,
-  BookOpen,
-  Settings,
-  ShieldCheck,
-  Monitor,
   Hand,
-  CheckCircle2,
+  HelpCircle,
+  ShieldCheck,
+  AlertTriangle,
   Smartphone,
   Tv
 } from 'lucide-react';
@@ -49,6 +45,9 @@ const DeadPixelTest: React.FC = () => {
   const isHome = location.pathname === '/';
   const isMobile = useMobile();
   
+  // Immersive Mode Hook
+  const isIdle = useIdleCursor(2500); // Hide UI after 2.5s
+  
   // Context
   const { addResult } = useTestReport();
 
@@ -71,11 +70,9 @@ const DeadPixelTest: React.FC = () => {
   const [customColor, setCustomColor] = useState<string | null>(null);
 
   // UI State
-  const [showControls, setShowControls] = useState(true);
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
   
   // Refs
-  const controlsTimeoutRef = useRef<number | null>(null);
   const autoCycleIntervalRef = useRef<number | null>(null);
   const strobeIntervalRef = useRef<number | null>(null);
   const noiseReqRef = useRef<number | null>(null);
@@ -93,7 +90,6 @@ const DeadPixelTest: React.FC = () => {
     setShowGuide(false);
     setIsActive(true);
     enterFullscreen();
-    resetControlsTimer();
   };
 
   const stopTest = useCallback(() => {
@@ -240,7 +236,6 @@ const DeadPixelTest: React.FC = () => {
   useEffect(() => {
     if (!isActive) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      resetControlsTimer();
       
       if (e.key >= '1' && e.key <= '9') {
           const idx = parseInt(e.key) - 1;
@@ -279,18 +274,9 @@ const DeadPixelTest: React.FC = () => {
   }, [isActive, isAutoCycle, isStrobeMode, isNoiseMode, handleNextColor, handlePrevColor, stopTest]);
 
   // 5. Mouse & Touch
-  const resetControlsTimer = useCallback(() => {
-    setShowControls(true);
-    if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
-    controlsTimeoutRef.current = window.setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
-  }, []);
-
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
-    resetControlsTimer();
-  }, [resetControlsTimer]);
+  }, []);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (isFlashlightMode) {
@@ -301,7 +287,6 @@ const DeadPixelTest: React.FC = () => {
   // --- MOBILE GESTURES ---
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
-    resetControlsTimer();
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
@@ -317,10 +302,6 @@ const DeadPixelTest: React.FC = () => {
     touchStartX.current = null;
   };
 
-  useEffect(() => {
-    return () => { if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current); };
-  }, []);
-
   // --- Render Active Test ---
   if (isActive) {
     const currentColor = COLORS[colorIndex];
@@ -334,7 +315,7 @@ const DeadPixelTest: React.FC = () => {
 
     return (
       <div 
-        className="fixed inset-0 z-[100] cursor-none select-none transition-none touch-pan-y"
+        className={`fixed inset-0 z-[100] select-none transition-none touch-pan-y ${isIdle ? 'cursor-none' : ''}`}
         style={{ backgroundColor: isFlashlightMode ? '#000000' : displayColor }}
         onMouseMove={handleMouseMove}
         onWheel={handleWheel}
@@ -384,7 +365,7 @@ const DeadPixelTest: React.FC = () => {
         )}
 
         {/* Top Right: Status */}
-        <div className={`absolute top-6 right-6 transition-opacity duration-500 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`absolute top-6 right-6 transition-all duration-500 ${!isIdle ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           <div className={`flex flex-col items-end gap-2`}>
              <div className={`px-4 py-2 rounded-full font-mono text-xs font-bold ${buttonClass} flex items-center gap-2`}>
                 {isStrobeMode && <Zap size={12} className="text-yellow-400 fill-current" />}
@@ -400,7 +381,7 @@ const DeadPixelTest: React.FC = () => {
         </div>
 
         {/* Mobile Swipe Hint */}
-        {isMobile && showControls && (
+        {isMobile && !isIdle && (
            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 pointer-events-none flex flex-col items-center animate-pulse">
               <Hand size={48} />
               <span className="text-xs font-bold mt-2">SWIPE</span>
@@ -412,7 +393,7 @@ const DeadPixelTest: React.FC = () => {
           absolute bottom-10 left-1/2 -translate-x-1/2 
           flex flex-col items-center gap-4
           transition-all duration-500 ease-out
-          ${showControls ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}
+          ${!isIdle ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}
         `}>
           
           <div className="flex items-center gap-2 p-2 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl">
@@ -510,7 +491,7 @@ const DeadPixelTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title={isHome ? "Dead Pixel Test - Free Screen Check & Monitor Calibration" : "Dead Pixel Test & Fixer"}
+        title={isHome ? "DeadPixelTest - Free Screen Check & Monitor Calibration" : "Dead Pixel Test & Fixer"}
         description="Instantly check your screen for dead pixels, backlight bleed, and ghosting. The best free online monitor test tool for PC & Mobile. No download needed."
         canonical={isHome ? '/' : '/tests/dead-pixel'}
         breadcrumbs={isHome ? [] : [{ name: 'Home', path: '/' }, { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }]}
