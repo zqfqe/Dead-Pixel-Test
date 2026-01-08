@@ -21,15 +21,11 @@ const generateSitemap = () => {
   // Helper to add URL
   const addUrl = (path: string, priority: string, changefreq: string) => {
     // Remove trailing slash for consistency, but ensure domain has no trailing slash
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    let cleanPath = path.startsWith('/') ? path : `/${path}`;
     const loc = `${DOMAIN}${cleanPath === '/' ? '' : cleanPath}`;
     
-    urls.push(`  <url>
-    <loc>${loc}</loc>
-    <lastmod>${date}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-  </url>`);
+    // Compact format to avoid potential whitespace issues
+    urls.push(`<url><loc>${loc}</loc><lastmod>${date}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`);
   };
 
   console.log('🔍 Scanning routes...');
@@ -64,7 +60,7 @@ const generateSitemap = () => {
     addUrl(page.path, page.priority, page.changefreq);
   });
 
-  // Construct XML
+  // Construct XML - Ensuring no leading whitespace
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.join('\n')}
@@ -72,12 +68,12 @@ ${urls.join('\n')}
 
   // Write file
   try {
-    writeFileSync(OUTPUT_PATH, sitemap);
+    writeFileSync(OUTPUT_PATH, sitemap.trim());
     console.log(`✅ Sitemap generated successfully at ${OUTPUT_PATH}`);
     console.log(`   - Total URLs: ${urls.length}`);
   } catch (error) {
     console.error('❌ Error writing sitemap:', error);
-    (process as any).exit(1);
+    throw error;
   }
 };
 
