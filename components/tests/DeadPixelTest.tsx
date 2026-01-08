@@ -13,9 +13,7 @@ import {
   ShieldCheck,
   AlertTriangle,
   Smartphone,
-  Tv,
-  Maximize,
-  Minimize
+  Tv
 } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -60,7 +58,6 @@ const DeadPixelTest: React.FC = () => {
   // Test State
   const [colorIndex, setColorIndex] = useState(0);
   const [isAutoCycle, setIsAutoCycle] = useState(false);
-  const [hideHud, setHideHud] = useState(false); // Allow manual hiding of HUD
   
   // Modes
   const [isStrobeMode, setIsStrobeMode] = useState(false); 
@@ -82,14 +79,6 @@ const DeadPixelTest: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const touchStartX = useRef<number | null>(null);
-  const lastTapRef = useRef<number>(0);
-
-  // --- Haptics Helper ---
-  const triggerHaptic = useCallback((pattern: number | number[] = 10) => {
-    if (navigator.vibrate) {
-      navigator.vibrate(pattern);
-    }
-  }, []);
 
   // --- Handlers ---
 
@@ -101,7 +90,6 @@ const DeadPixelTest: React.FC = () => {
     setShowGuide(false);
     setIsActive(true);
     enterFullscreen();
-    triggerHaptic(50);
   };
 
   const stopTest = useCallback(() => {
@@ -112,13 +100,11 @@ const DeadPixelTest: React.FC = () => {
     setIsNoiseMode(false);
     setShowGrid(false);
     setCustomColor(null);
-    setHideHud(false);
     exitFullscreen();
-    triggerHaptic([50, 50, 50]); // Success pattern
     
     // Trigger Report Dialog
     setShowReport(true);
-  }, [exitFullscreen, triggerHaptic]);
+  }, [exitFullscreen]);
 
   const handleReport = (status: 'pass' | 'fail') => {
     addResult({
@@ -133,37 +119,31 @@ const DeadPixelTest: React.FC = () => {
   const handleNextColor = useCallback(() => {
     setCustomColor(null);
     setColorIndex((prev) => (prev + 1) % COLORS.length);
-    triggerHaptic(10);
-  }, [triggerHaptic]);
+  }, []);
 
   const handlePrevColor = useCallback(() => {
     setCustomColor(null);
     setColorIndex((prev) => (prev - 1 + COLORS.length) % COLORS.length);
-    triggerHaptic(10);
-  }, [triggerHaptic]);
+  }, []);
 
   const toggleAutoCycle = () => {
-    triggerHaptic(20);
     resetModes();
     setIsAutoCycle(prev => !prev);
   };
 
   const toggleStrobeMode = () => {
     const newVal = !isStrobeMode;
-    triggerHaptic(newVal ? [30, 30, 30] : 20);
     resetModes();
     if (newVal) setIsStrobeMode(true);
   };
 
   const toggleNoiseMode = () => {
     const newVal = !isNoiseMode;
-    triggerHaptic(20);
     resetModes();
     if (newVal) setIsNoiseMode(true);
   };
 
   const toggleFlashlight = () => {
-    triggerHaptic(20);
     setIsStrobeMode(false);
     setIsNoiseMode(false);
     setIsFlashlightMode(prev => !prev);
@@ -310,19 +290,6 @@ const DeadPixelTest: React.FC = () => {
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    // 1. Handle Double Tap
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-        // Double Tap Detected
-        setHideHud(prev => !prev);
-        triggerHaptic([10, 30]); 
-        lastTapRef.current = 0; // Reset
-        return; // Skip swipe logic if double tap
-    }
-    lastTapRef.current = now;
-
-    // 2. Handle Swipe
     if (touchStartX.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX;
@@ -346,11 +313,6 @@ const DeadPixelTest: React.FC = () => {
         ? 'bg-black/40 hover:bg-black/60 backdrop-blur-md text-white'
         : `${uiBgColor} ${uiBaseColor} backdrop-blur-md`;
 
-    // Only hide HUD if explicitly hidden by user (Double Tap) OR if Idle.
-    // If user interacts, idle resets, so HUD appears.
-    // Double Tap overrides everything to force hide.
-    const shouldHideUI = hideHud || isIdle;
-
     return (
       <div 
         className={`fixed inset-0 z-[100] select-none transition-none touch-pan-y ${isIdle ? 'cursor-none' : ''}`}
@@ -366,7 +328,7 @@ const DeadPixelTest: React.FC = () => {
           }
         }}
       >
-        {/* Universal Exit Button (Hover top to show on Desktop, Tap top on Mobile?) */}
+        {/* Universal Exit Button (Hover top to show) */}
         <FullscreenControls onExit={stopTest} title="Dead Pixel Test" visible={!isMobile} />
 
         {/* Noise Canvas */}
@@ -403,7 +365,7 @@ const DeadPixelTest: React.FC = () => {
         )}
 
         {/* Top Right: Status */}
-        <div className={`absolute top-6 right-6 transition-all duration-500 ${!shouldHideUI ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+        <div className={`absolute top-6 right-6 transition-all duration-500 ${!isIdle ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           <div className={`flex flex-col items-end gap-2`}>
              <div className={`px-4 py-2 rounded-full font-mono text-xs font-bold ${buttonClass} flex items-center gap-2`}>
                 {isStrobeMode && <Zap size={12} className="text-yellow-400 fill-current" />}
@@ -419,11 +381,10 @@ const DeadPixelTest: React.FC = () => {
         </div>
 
         {/* Mobile Swipe Hint */}
-        {isMobile && !shouldHideUI && (
+        {isMobile && !isIdle && (
            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 pointer-events-none flex flex-col items-center animate-pulse">
               <Hand size={48} />
               <span className="text-xs font-bold mt-2">SWIPE</span>
-              <span className="text-[10px] opacity-60 mt-1">DOUBLE TAP TO HIDE UI</span>
            </div>
         )}
 
@@ -431,8 +392,8 @@ const DeadPixelTest: React.FC = () => {
         <div className={`
           absolute bottom-10 left-1/2 -translate-x-1/2 
           flex flex-col items-center gap-4
-          transition-all duration-500 ease-out z-[110]
-          ${!shouldHideUI ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}
+          transition-all duration-500 ease-out
+          ${!isIdle ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}
         `}>
           
           <div className="flex items-center gap-2 p-2 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl">
@@ -458,7 +419,6 @@ const DeadPixelTest: React.FC = () => {
                     resetModes();
                     setCustomColor(null);
                     setColorIndex(idx); 
-                    triggerHaptic(10);
                   }}
                   aria-label={`Set color to ${c.name}`}
                   className={`
@@ -511,23 +471,14 @@ const DeadPixelTest: React.FC = () => {
               </button>
             )}
 
-            {/* Mobile Actions */}
+            {/* Mobile Exit (Since no top-hover) */}
             {isMobile && (
-               <>
-                 <button 
-                   onClick={(e) => { e.stopPropagation(); setHideHud(true); triggerHaptic(10); }}
-                   className="p-3 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10"
-                   aria-label="Hide UI"
-                 >
-                   <Maximize size={20} />
-                 </button>
-                 <button 
-                   onClick={(e) => { e.stopPropagation(); stopTest(); }}
-                   className="p-3 bg-red-900/30 rounded-xl text-red-400 hover:text-white hover:bg-red-600 border border-red-500/30 ml-1"
-                 >
-                   Exit
-                 </button>
-               </>
+               <button 
+                 onClick={(e) => { e.stopPropagation(); stopTest(); }}
+                 className="p-3 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10 border-l border-white/10 ml-1"
+               >
+                 Exit
+               </button>
             )}
 
           </div>
@@ -608,7 +559,7 @@ const DeadPixelTest: React.FC = () => {
             "We will cycle through full-screen colors (Black, White, Red, Green, Blue).",
             "On Black screens, look for 'stuck' pixels (tiny red/green/blue dots).",
             "On White screens, look for 'dead' pixels (black dots).",
-            isMobile ? "Swipe Left/Right to change colors. Double tap to hide controls." : "Use Arrow Keys or click to change colors."
+            isMobile ? "Swipe Left/Right to change colors." : "Use Arrow Keys or click to change colors."
           ]}
           onStart={startTest}
         />
@@ -640,7 +591,7 @@ const DeadPixelTest: React.FC = () => {
           <InfoCard title="Dead Pixel Test Controls">
             <ul className="space-y-2 text-sm text-neutral-400 font-mono">
               <li><span className="text-white">{isMobile ? 'SWIPE' : 'CLICK'}</span> : Next Color</li>
-              <li><span className="text-white">{isMobile ? 'DOUBLE TAP' : 'SPACE'}</span> : {isMobile ? 'Hide UI' : 'Auto Cycle'}</li>
+              <li><span className="text-white">{isMobile ? 'DOUBLE TAP' : 'SPACE'}</span> : Auto Cycle</li>
               {!isMobile && <li><span className="text-white">F / G</span> : Flashlight / Grid</li>}
             </ul>
           </InfoCard>
