@@ -41,6 +41,11 @@ const PhysicalRuler = lazy(() => import('./components/tools/PhysicalRuler'));
 const WebcamTest = lazy(() => import('./components/tools/WebcamTest'));
 const RefreshRateTest = lazy(() => import('./components/tests/RefreshRateTest'));
 
+// Lazy Load Pages - Phase 5 (Advanced Tools)
+const BurnInWiper = lazy(() => import('./components/tools/BurnInWiper'));
+const ColorBlindnessTest = lazy(() => import('./components/tools/ColorBlindnessTest'));
+const InputLagTest = lazy(() => import('./components/tools/InputLagTest'));
+
 const ProductPage = lazy(() => import('./components/resources/ProductPage'));
 const BlogIndex = lazy(() => import('./components/blog/BlogIndex'));
 const BlogPost = lazy(() => import('./components/blog/BlogPost'));
@@ -103,6 +108,11 @@ const App: React.FC = () => {
                     <Route path="/tools/speaker-test" element={<SpeakerTest />} />
                     <Route path="/tools/ruler" element={<PhysicalRuler />} />
                     <Route path="/tools/webcam" element={<WebcamTest />} />
+                    
+                    {/* New Tools */}
+                    <Route path="/tools/burn-in-wiper" element={<BurnInWiper />} />
+                    <Route path="/tools/color-blindness" element={<ColorBlindnessTest />} />
+                    <Route path="/tools/input-lag" element={<InputLagTest />} />
 
                     {/* Blog & Resources */}
                     <Route path="/blog" element={<BlogIndex />} />

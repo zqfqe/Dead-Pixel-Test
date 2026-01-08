@@ -16,8 +16,10 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Brightness", path: "/tests/brightness" },
   { title: "Contrast", path: "/tests/contrast" },
   { title: "Matrix Rain", path: "/tests/matrix" },
+  { title: "OLED Burn-in Wiper", path: "/tools/burn-in-wiper" },
   
   { title: "INPUT & GAMING", path: "", isHeader: true },
+  { title: "Input Lag (Camera)", path: "/tools/input-lag" },
   { title: "Reaction Time", path: "/tools/reaction-time" },
   { title: "Mouse Polling Rate", path: "/tools/mouse-polling" },
   { title: "Keyboard Test", path: "/tools/keyboard" },
@@ -25,6 +27,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Touch Screen Test", path: "/tools/touch" },
 
   { title: "AUDIO & UTILS", path: "", isHeader: true },
+  { title: "Color Blindness Sim", path: "/tools/color-blindness" },
   { title: "Webcam & Mic", path: "/tools/webcam" },
   { title: "Speaker / Headphone Test", path: "/tools/speaker-test" },
   { title: "Audio/Video Sync", path: "/tests/audio-sync" },
