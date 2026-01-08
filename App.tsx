@@ -7,8 +7,10 @@ import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
 
+// Eager Load Home Page (Critical for LCP/SEO)
+import DeadPixelTest from './components/tests/DeadPixelTest';
+
 // Lazy Load Pages - Phase 1
-const DeadPixelTest = lazy(() => import('./components/tests/DeadPixelTest'));
 const UniformityTest = lazy(() => import('./components/tests/UniformityTest'));
 const TextClarityTest = lazy(() => import('./components/tests/TextClarityTest'));
 const ColorGradientTest = lazy(() => import('./components/tests/ColorGradientTest'));
@@ -73,6 +75,7 @@ const App: React.FC = () => {
                     {/* Phase 1 Tests */}
                     <Route path="/" element={<DeadPixelTest />} />
                     <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
+                    
                     <Route path="/tests/uniformity" element={<UniformityTest />} />
                     <Route path="/tests/text-clarity" element={<TextClarityTest />} />
                     <Route path="/tests/color-gradient" element={<ColorGradientTest />} />
