@@ -19,8 +19,8 @@ const BurnInWiper: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const reqRef = useRef<number | null>(null);
-  const timerRef = useRef<number | null>(null);
+  const reqRef = useRef<number>();
+  const timerRef = useRef<number>();
 
   const startTest = () => {
     setIsActive(true);

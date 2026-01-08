@@ -50,8 +50,8 @@ const Header = () => {
   const [fps, setFps] = useState(0);
   
   // FPS Logic
-  const requestRef = useRef<number | null>(null);
-  const prevTimeRef = useRef<number | null>(null);
+  const requestRef = useRef<number>();
+  const prevTimeRef = useRef<number>();
   const frameCountRef = useRef(0);
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const Header = () => {
     
     // FPS Loop
     const animate = (time: number) => {
-        if (prevTimeRef.current !== null && prevTimeRef.current !== undefined) {
+        if (prevTimeRef.current !== undefined) {
             frameCountRef.current++;
             const delta = time - prevTimeRef.current;
             if (delta >= 1000) {
