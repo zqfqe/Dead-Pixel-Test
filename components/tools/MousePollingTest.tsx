@@ -17,9 +17,12 @@ const MousePollingTest: React.FC = () => {
   const [currentRate, setCurrentRate] = useState(0);
   const [eventCount, setEventCount] = useState(0);
 
+  // Refs for low-level data collection (avoiding state in event handler)
   const lastTimeRef = useRef<number>(0);
-  const animationRef = useRef<number>();
+  const dataQueueRef = useRef<number[]>([]);
+  const frameRef = useRef<number>();
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastActivityRef = useRef<number>(0);
 
   const reset = () => {
     setHistory([]);
@@ -28,91 +31,110 @@ const MousePollingTest: React.FC = () => {
     setCurrentRate(0);
     setEventCount(0);
     lastTimeRef.current = 0;
+    dataQueueRef.current = [];
   };
 
   useEffect(() => {
     if (isMobile) return;
 
+    // 1. High-frequency Input Handler (No React State here)
     const handlePointerMove = (e: PointerEvent) => {
-      // Use getCoalescedEvents if available to get sub-frame updates (crucial for >60Hz mice)
       const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-      
       const now = performance.now();
-      
-      // We only process if we have valid history to compare diff
+      lastActivityRef.current = now;
+
+      // Only track if we have a baseline
       if (lastTimeRef.current > 0) {
          let lastT = lastTimeRef.current;
-         const rates: number[] = [];
-
+         
          events.forEach(ev => {
              const t = ev.timeStamp;
              if (t > lastT) {
                  const delta = t - lastT;
-                 const hz = 1000 / delta;
-                 // Filter impossible spikes (e.g. <0.1ms)
-                 if (hz < 10000) {
-                    rates.push(hz);
+                 // Hz = 1000ms / delta_ms
+                 // Filter tiny deltas (<0.1ms) which cause infinite spikes
+                 if (delta > 0.1) {
+                    const hz = 1000 / delta;
+                    if (hz < 10000) { // Sanity check max 10kHz
+                        dataQueueRef.current.push(hz);
+                    }
                  }
                  lastT = t;
              }
          });
-
-         if (rates.length > 0) {
-             // Average the rates in this frame for display stability
-             const frameAvg = rates.reduce((a,b) => a+b, 0) / rates.length;
-             setCurrentRate(frameAvg);
-             
-             // Update Stats
-             setEventCount(prev => prev + events.length);
-             setMaxRate(prev => Math.max(prev, ...rates));
-             setHistory(prev => {
-                 const next = [...prev, ...rates];
-                 return next.slice(-GRAPH_POINTS); // Keep last N points
-             });
-         }
       }
       
-      // Update last time to the latest event in the list
       if (events.length > 0) {
           lastTimeRef.current = events[events.length - 1].timeStamp;
       }
-      
-      setIsActive(true);
-      
-      // Reset active state if no motion for a while
-      if (animationRef.current) clearTimeout(animationRef.current);
-      animationRef.current = window.setTimeout(() => {
-          setIsActive(false);
-          setCurrentRate(0);
-          lastTimeRef.current = 0;
-      }, 100);
+    };
+
+    // 2. Render Loop (Updates React State max 60/144 times per sec)
+    const loop = () => {
+        const now = performance.now();
+        const queue = dataQueueRef.current;
+
+        // Check activity timeout (100ms)
+        const isCurrentlyActive = (now - lastActivityRef.current) < 100;
+        
+        if (queue.length > 0) {
+            // Process queue
+            const frameAvg = queue.reduce((a,b) => a+b, 0) / queue.length;
+            const frameMax = Math.max(...queue);
+            const count = queue.length;
+
+            // Batch update state
+            setIsActive(true);
+            setCurrentRate(frameAvg);
+            setEventCount(prev => prev + count);
+            setMaxRate(prev => Math.max(prev, frameMax));
+            setHistory(prev => {
+                const next = [...prev, ...queue];
+                // Limit history size to keep graph performant
+                return next.slice(-GRAPH_POINTS); 
+            });
+
+            // Clear queue
+            dataQueueRef.current = [];
+        } else if (!isCurrentlyActive) {
+            setIsActive(false);
+            setCurrentRate(0);
+            // Reset timing baseline when stopped
+            lastTimeRef.current = 0; 
+        }
+
+        frameRef.current = requestAnimationFrame(loop);
     };
 
     window.addEventListener('pointermove', handlePointerMove);
+    frameRef.current = requestAnimationFrame(loop);
+
     return () => {
         window.removeEventListener('pointermove', handlePointerMove);
-        if (animationRef.current) clearTimeout(animationRef.current);
+        if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
   }, [isMobile]);
 
-  // Calculate Running Average efficiently
+  // Calculate Running Average (Memoized/Effect for less blocking)
   useEffect(() => {
       if (history.length > 0) {
-          // Average of the last 1000 points or all history
           const subset = history.slice(-1000); 
           setAvgRate(Math.round(subset.reduce((a, b) => a + b, 0) / subset.length));
       }
-  }, [history.length]); // Only update when history grows
+  }, [history.length]); 
 
-  // Generate SVG Path for Graph
+  // Generate SVG Path
   const graphPath = useMemo(() => {
       if (history.length < 2) return '';
-      const w = 100; // viewbox width
-      const h = 50;  // viewbox height
+      const w = 100; 
+      const h = 50;  
       const scaleMax = Math.max(1000, maxRate * 1.1);
       
-      const points = history.map((val, i) => {
-          const x = (i / (GRAPH_POINTS - 1)) * w;
+      // Resample down if history is huge for rendering speed
+      const renderPoints = history.length > GRAPH_POINTS ? history.slice(-GRAPH_POINTS) : history;
+
+      const points = renderPoints.map((val, i) => {
+          const x = (i / (renderPoints.length - 1)) * w;
           const y = h - (val / scaleMax) * h;
           return `${x.toFixed(1)},${y.toFixed(1)}`;
       });
@@ -186,7 +208,6 @@ const MousePollingTest: React.FC = () => {
         }}
       />
       <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
-        {/* ... (Rest of component remains unchanged) ... */}
         {/* Header */}
         <div className="text-center mb-12">
            <div className="inline-flex items-center justify-center p-4 bg-green-500/10 text-green-500 rounded-2xl mb-4">

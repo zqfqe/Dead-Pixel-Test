@@ -185,37 +185,50 @@ const DeadPixelTest: React.FC = () => {
     return () => { if (strobeIntervalRef.current) clearInterval(strobeIntervalRef.current); };
   }, [isStrobeMode]);
 
-  // 3. Noise Logic
+  // 3. Noise Logic (Optimized for Main Thread Performance)
   useEffect(() => {
     if (isNoiseMode && canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d');
-      const resize = () => {
-          if (canvasRef.current) {
-             canvasRef.current.width = window.innerWidth;
-             canvasRef.current.height = window.innerHeight;
-          }
-      };
-      window.addEventListener('resize', resize);
-      resize();
-
+      const ctx = canvasRef.current.getContext('2d', { alpha: false }); // Disable alpha for speed
       if (!ctx) return;
 
-      const drawNoise = () => {
-         const w = ctx.canvas.width;
-         const h = ctx.canvas.height;
-         const idata = ctx.createImageData(w, h);
-         const buffer32 = new Uint32Array(idata.data.buffer);
-         const len = buffer32.length;
+      // Reusable buffers to prevent Garbage Collection spikes
+      let idata: ImageData | null = null;
+      let buffer32: Uint32Array | null = null;
 
+      const resize = () => {
+          if (canvasRef.current) {
+             const w = window.innerWidth;
+             const h = window.innerHeight;
+             canvasRef.current.width = w;
+             canvasRef.current.height = h;
+             
+             // Allocate buffer once on resize
+             idata = ctx.createImageData(w, h);
+             buffer32 = new Uint32Array(idata.data.buffer);
+          }
+      };
+      
+      window.addEventListener('resize', resize);
+      resize(); // Initial alloc
+
+      const drawNoise = () => {
+         if (!idata || !buffer32) return;
+
+         const len = buffer32.length;
+         // Unrolling loop slightly or just simple iteration
+         // 0xFF000000 is Opaque Alpha (Little Endian: ABGR -> A=FF)
          for (let i = 0; i < len; i++) {
              const val = Math.random() < 0.5 ? 0 : 255; 
+             // Bitwise calc is faster than creating objects
              buffer32[i] = 0xFF000000 | (val << 16) | (val << 8) | val;
          }
+         
          ctx.putImageData(idata, 0, 0);
          noiseReqRef.current = requestAnimationFrame(drawNoise);
       };
 
       drawNoise();
+      
       return () => {
          window.removeEventListener('resize', resize);
          if (noiseReqRef.current) cancelAnimationFrame(noiseReqRef.current);

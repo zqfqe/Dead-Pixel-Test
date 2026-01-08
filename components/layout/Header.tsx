@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Monitor, Maximize2, Activity, Command, ClipboardCheck } from 'lucide-react';
 import { MENU_ITEMS } from '../../data/menu';
@@ -7,31 +7,33 @@ import { useTestReport } from '../../contexts/TestReportContext';
 import { ReportDashboard } from '../common/ReportDashboard';
 
 const useGroupedMenu = () => {
-  const grouped: { title: string; items: MenuItem[] }[] = [];
-  let currentGroup: { title: string; items: MenuItem[] } | null = null;
+  return useMemo(() => {
+    const grouped: { title: string; items: MenuItem[] }[] = [];
+    let currentGroup: { title: string; items: MenuItem[] } | null = null;
 
-  MENU_ITEMS.forEach((item) => {
-    if (item.isHeader) {
-      if (currentGroup) grouped.push(currentGroup);
-      currentGroup = { title: item.title, items: [] };
-    } else if (currentGroup) {
-      currentGroup.items.push(item);
-    }
-  });
-  if (currentGroup) grouped.push(currentGroup);
-  
-  return grouped.map(g => {
-    // Cleaner labels for the top navigation
-    let cleanTitle = g.title
-      .replace('CALIBRATION ', '')
-      .replace('DISPLAY ', '')
-      .replace('INPUT ', '');
-      
-    return {
-      ...g,
-      title: cleanTitle
-    };
-  });
+    MENU_ITEMS.forEach((item) => {
+      if (item.isHeader) {
+        if (currentGroup) grouped.push(currentGroup);
+        currentGroup = { title: item.title, items: [] };
+      } else if (currentGroup) {
+        currentGroup.items.push(item);
+      }
+    });
+    if (currentGroup) grouped.push(currentGroup);
+    
+    return grouped.map(g => {
+      // Cleaner labels for the top navigation
+      let cleanTitle = g.title
+        .replace('CALIBRATION ', '')
+        .replace('DISPLAY ', '')
+        .replace('INPUT ', '');
+        
+      return {
+        ...g,
+        title: cleanTitle
+      };
+    });
+  }, []);
 };
 
 const Header = () => {
@@ -57,7 +59,12 @@ const Header = () => {
   }, [location]);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+        const isScrolled = window.scrollY > 10;
+        if (isScrolled !== scrolled) {
+            setScrolled(isScrolled);
+        }
+    };
     const handleResize = () => {
         setWindowSize({ w: window.innerWidth, h: window.innerHeight });
         setPixelRatio(window.devicePixelRatio);
@@ -88,7 +95,7 @@ const Header = () => {
         window.removeEventListener('resize', handleResize);
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
     }
-  }, []);
+  }, [scrolled]); // Dependencies optimized
 
   return (
     <>
