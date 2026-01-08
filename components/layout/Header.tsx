@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Monitor, Maximize2, Activity, Command, ClipboardCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, Monitor, Maximize2, Activity, Command, ClipboardCheck, WifiOff, Download } from 'lucide-react';
 import { MENU_ITEMS } from '../../data/menu';
 import { MenuItem } from '../../types';
 import { useTestReport } from '../../contexts/TestReportContext';
 import { ReportDashboard } from '../common/ReportDashboard';
+import { usePWA } from '../../hooks/usePWA';
 
 const useGroupedMenu = () => {
   return useMemo(() => {
@@ -43,6 +44,7 @@ const Header = () => {
   const menuGroups = useGroupedMenu();
   const location = useLocation();
   const { results } = useTestReport();
+  const { isOnline, isInstallable, install } = usePWA();
 
   // Telemetry State
   const [windowSize, setWindowSize] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -158,6 +160,25 @@ const Header = () => {
           {/* 3. Right: Report, Telemetry & Mobile Toggle */}
           <div className="flex items-center justify-end gap-3 z-20">
             
+            {/* PWA Install Button */}
+            {isInstallable && (
+              <button 
+                onClick={install}
+                className="hidden md:flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full text-xs font-bold transition-all animate-in fade-in"
+              >
+                <Download size={14} />
+                <span className="hidden lg:inline">Install App</span>
+              </button>
+            )}
+
+            {/* Offline Indicator */}
+            {!isOnline && (
+              <div className="flex items-center gap-2 bg-red-900/20 border border-red-500/30 text-red-400 px-3 py-1.5 rounded-full text-[10px] font-bold animate-pulse">
+                <WifiOff size={12} />
+                <span className="hidden sm:inline">OFFLINE MODE</span>
+              </div>
+            )}
+
             {/* Report Button (Visible if results exist) */}
             {results.length > 0 && (
                 <button 
@@ -181,10 +202,6 @@ const Header = () => {
                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Viewport Size">
                   <Monitor size={10} />
                   <span>{windowSize.w}x{windowSize.h}</span>
-               </div>
-               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Pixel Ratio">
-                  <Maximize2 size={10} />
-                  <span>DPI:{pixelRatio.toFixed(1)}</span>
                </div>
                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border bg-white/5 transition-colors cursor-default ${fps < 30 ? 'text-red-500 border-red-900/30' : fps > 100 ? 'text-green-500 border-green-900/30' : 'text-blue-500 border-blue-900/30'}`} title="Real-time Refresh Rate">
                   <Activity size={10} />
@@ -215,6 +232,16 @@ const Header = () => {
         `}
       >
         <div className="space-y-8 pb-12">
+          {/* Mobile Install Button */}
+          {isInstallable && (
+            <button 
+              onClick={install}
+              className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-xl font-bold shadow-lg"
+            >
+              <Download size={20} /> Install App for Offline Use
+            </button>
+          )}
+
           {menuGroups.map((group, idx) => (
             <div key={idx} className="space-y-2">
               <h3 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest border-b border-white/10 pb-2 mb-3">
@@ -225,10 +252,11 @@ const Header = () => {
                   <NavLink
                     key={item.path}
                     to={item.path}
+                    onClick={() => setIsMobileOpen(false)}
                     className={({ isActive }) => `
                       block py-3 px-4 rounded-lg text-sm
                       ${isActive 
-                        ? 'bg-white text-black font-bold' 
+                        ? 'bg-white/10 text-white font-bold' 
                         : 'text-neutral-400 hover:text-white hover:bg-white/5'}
                     `}
                   >
