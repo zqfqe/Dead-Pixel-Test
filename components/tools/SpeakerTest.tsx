@@ -16,7 +16,7 @@ const SpeakerTest: React.FC = () => {
   const gainNodeRef = useRef<GainNode | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const pannerRef = useRef<StereoPannerNode | null>(null);
-  const sweepIntervalRef = useRef<number>();
+  const sweepIntervalRef = useRef<number | undefined>(undefined);
 
   const initAudio = () => {
     if (!audioCtxRef.current) {

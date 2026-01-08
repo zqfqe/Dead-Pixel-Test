@@ -23,7 +23,7 @@ const AudioSyncTest: React.FC = () => {
 
   // Engine Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const nextNoteTimeRef = useRef<number>(0);
 

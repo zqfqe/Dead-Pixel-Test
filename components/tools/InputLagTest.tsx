@@ -11,7 +11,7 @@ const InputLagTest: React.FC = () => {
   const [frameData, setFrameData] = useState<{ count: number, time: number }>({ count: 0, time: 0 });
   const [isFlashed, setIsFlashed] = useState(false);
   
-  const reqRef = useRef<number>();
+  const reqRef = useRef<number | null>(null);
   const startRef = useRef<number>(0);
 
   const startTest = () => {
