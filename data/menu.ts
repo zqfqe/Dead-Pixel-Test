@@ -21,6 +21,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "INPUT & GAMING", path: "", isHeader: true },
   { title: "Input Lag (Camera)", path: "/tools/input-lag" },
   { title: "Reaction Time", path: "/tools/reaction-time" },
+  { title: "Mouse Double Click", path: "/tools/double-click-test" },
   { title: "Mouse Polling Rate", path: "/tools/mouse-polling" },
   { title: "Keyboard Test", path: "/tools/keyboard" },
   { title: "Controller Test", path: "/tools/controller" },

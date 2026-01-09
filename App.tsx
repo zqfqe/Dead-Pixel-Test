@@ -33,6 +33,7 @@ const PPICalculator = lazy(() => import('./components/tools/PPICalculator'));
 
 // Lazy Load Pages - Phase 3 (Input Expansion)
 const MousePollingTest = lazy(() => import('./components/tools/MousePollingTest'));
+const DoubleClickTest = lazy(() => import('./components/tools/DoubleClickTest'));
 const TouchTest = lazy(() => import('./components/tools/TouchTest'));
 
 // Lazy Load Pages - Phase 4 (Audio & Utils)
@@ -104,6 +105,7 @@ const App: React.FC = () => {
                     <Route path="/tools/reaction-time" element={<ReactionTimeTest />} />
                     <Route path="/tools/ppi-calculator" element={<PPICalculator />} />
                     <Route path="/tools/mouse-polling" element={<MousePollingTest />} />
+                    <Route path="/tools/double-click-test" element={<DoubleClickTest />} />
                     <Route path="/tools/touch" element={<TouchTest />} />
                     <Route path="/tools/speaker-test" element={<SpeakerTest />} />
                     <Route path="/tools/ruler" element={<PhysicalRuler />} />
