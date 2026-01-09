@@ -39,7 +39,9 @@ export const SEO: React.FC<SEOProps> = ({
   const fullImage = image.startsWith('http') ? image : `${DOMAIN}${image}`;
 
   // Construct Breadcrumb Schema
-  const breadcrumbSchema = breadcrumbs ? {
+  // Fix: Check if breadcrumbs array exists AND has items. 
+  // An empty array [] creates an invalid Schema with empty itemListElement.
+  const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": breadcrumbs.map((item, index) => ({
