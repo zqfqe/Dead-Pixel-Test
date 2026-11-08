@@ -46,9 +46,10 @@ const locale = newPage?.lang ?? 'en';
 const inspectionMode=newPage?.mode==='guide'?'pixels':newPage?.mode==='resolution'?'pixels':newPage?.mode??'pixels';
 const others=SEO_LANDING_PAGES.filter(p=>p.lang===locale && p.path!==newPage?.path).slice(0,7);
 const docType=newPage?.mode==='guide'?'WebPage':'WebApplication';
+const publicSiteUrl=import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
 const structuredData=newPage?{
  '@context':'https://schema.org','@type':docType,name:newPage.h1,
- url:'https://deadpixeltest.cc'+newPage.path.replace(/\/$/,''),description:newPage.description,
+ ...(publicSiteUrl?{url:publicSiteUrl+newPage.path.replace(/\/$/,'')}:{}),description:newPage.description,
  ...(docType==='WebApplication'?{applicationCategory:'UtilitiesApplication',operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}:{})
 }:undefined;
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
