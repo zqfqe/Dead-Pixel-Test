@@ -3,6 +3,7 @@ export type InspectionMode = 'pixels' | 'fixer' | 'lines' | 'retention' | 'resol
 export interface SeoLandingPage {
   path: string;
   lang: 'en' | 'pt-BR';
+  indexable?: boolean; // Explicitly false until SERP and unique-value gates pass.
   title: string;
   description: string;
   h1: string;
@@ -172,5 +173,10 @@ export const LOCALE_PAIRS: Array<[string,string]> = [
 
 export function pageAlternates(path: string): { lang: string; path: string }[] {
   const pair=LOCALE_PAIRS.find(([a,b])=>a===path||b===path);
-  return pair ? [{lang:'en',path:pair[0]},{lang:'pt-BR',path:pair[1]}] : [];
+  if(!pair)return [];
+  const byPath=new Map(SEO_LANDING_PAGES.map(page=>[page.path.replace(/\/$/,'')||'/',page]));
+  const en=byPath.get(pair[0].replace(/\/$/,'')||'/');
+  const pt=byPath.get(pair[1].replace(/\/$/,'')||'/');
+  if(!en?.indexable||!pt?.indexable)return [];
+  return [{lang:'en',path:pair[0]},{lang:'pt-BR',path:pair[1]}];
 }
