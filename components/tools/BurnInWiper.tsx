@@ -15,7 +15,7 @@ const BurnInWiper: React.FC = () => {
   
   // Settings
   const [mode, setMode] = useState<Mode>('cycle');
-  const [durationMinutes, setDurationMinutes] = useState(15);
+  const [durationMinutes, setDurationMinutes] = useState(2);
   const [timeLeft, setTimeLeft] = useState(0);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -93,8 +93,8 @@ const BurnInWiper: React.FC = () => {
       frameCount++;
 
       if (mode === 'cycle') {
-        // Change color every 30 frames (approx 0.5s at 60hz)
-        const colorIdx = Math.floor(frameCount / 30) % colors.length;
+        // Slow transition every 120 frames (~2s at 60 Hz); this is a visual demo, not treatment.
+        const colorIdx = Math.floor(frameCount / 120) % colors.length;
         ctx.fillStyle = colors[colorIdx];
         ctx.fillRect(0, 0, w, h);
       } 
@@ -110,8 +110,8 @@ const BurnInWiper: React.FC = () => {
         if (scanY > h) scanY = -20;
       }
       else if (mode === 'noise') {
-        // Optimized Noise
-        if (noiseCtx && noiseData) {
+        // Generate the noise once; do not strobe a new frame every animation tick.
+        if (frameCount === 1 && noiseCtx && noiseData) {
             const len = buffer32.length;
             for (let i = 0; i < len; i++) {
                 // Random grayscale noise
@@ -152,10 +152,10 @@ const BurnInWiper: React.FC = () => {
   return (
     <>
       <SEO 
-        title="OLED Burn-In Wiper - Screen Fixer Tool" 
-        description="Fix image retention and reduce OLED burn-in with this professional screen conditioning tool. Features color cycling, white noise, and pixel refresh patterns."
+        title="OLED Display Pattern Demo – No Burn-In Repair" 
+        description="Display optional color, noise and moving-line patterns for visual inspection. This browser tool cannot repair temporary image retention or permanent OLED burn-in."
         canonical="/tools/burn-in-wiper"
-        keywords={['oled burn in fix', 'screen wiper', 'image retention fix', 'pixel refresher', 'oled screen repair', 'burn in remover']}
+        keywords={['OLED display pattern demo', 'image retention visual check', 'screen color pattern']}
         breadcrumbs={[
           { name: 'Home', path: '/' },
           { name: 'Burn-in Wiper', path: '/tools/burn-in-wiper' }
@@ -163,19 +163,19 @@ const BurnInWiper: React.FC = () => {
       />
       <div className="flex flex-col min-h-screen">
         <TestIntro
-          title="OLED Burn-in Wiper"
-          description="A specialized tool to condition OLED and Plasma screens. Helps reduce image retention and stuck pixels by exercising all sub-pixels evenly."
-          startButtonText="Launch Wiper"
+          title="OLED Display Pattern Demo"
+          description="An optional browser-based display-pattern demo. It does not condition the panel, repair stuck pixels or reverse OLED burn-in."
+          startButtonText="Launch Pattern Demo"
           onStart={startTest}
         >
-          <InfoCard title="How it Works">
+          <InfoCard title="What this tool does">
             <p>
-              This tool cycles through primary colors and noise patterns to force every pixel to change state rapidly. This can help "wash away" temporary image retention (ghost images) left by static UI elements.
+              It displays optional color transitions, a static noise image or a moving scan bar. These are visual patterns only. There is no reliable evidence that this page can remove temporary retention, repair a stuck pixel or reverse permanent OLED burn-in.
             </p>
           </InfoCard>
-          <InfoCard title="Warning">
+          <InfoCard title="Visual sensitivity warning">
             <p>
-              This tool creates rapidly flashing lights. <strong>Do not use if you have photosensitive epilepsy.</strong> For best results, run for at least 15 minutes.
+              Color transitions and moving high-contrast patterns may be uncomfortable for some people. Do not use if you are sensitive to flashing or moving patterns; stop immediately if you feel discomfort. Keep brightness comfortable and keep sessions brief.
             </p>
           </InfoCard>
         </TestIntro>
@@ -191,7 +191,7 @@ const BurnInWiper: React.FC = () => {
               <div className="space-y-8">
                  {/* Mode Select */}
                  <div className="space-y-3">
-                    <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Repair Pattern</label>
+                    <label className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Display Pattern</label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                        <button 
                          onClick={() => setMode('cycle')}
@@ -199,7 +199,7 @@ const BurnInWiper: React.FC = () => {
                        >
                           <RotateCcw size={24} />
                           <span className="font-bold">Color Cycle</span>
-                          <span className="text-[10px] opacity-70">Best for general maintenance</span>
+                          <span className="text-[10px] opacity-70">Slow color transitions; no repair claim</span>
                        </button>
                        <button 
                          onClick={() => setMode('noise')}
@@ -207,7 +207,7 @@ const BurnInWiper: React.FC = () => {
                        >
                           <Monitor size={24} />
                           <span className="font-bold">Static Noise</span>
-                          <span className="text-[10px] opacity-70">For stuck pixels & retention</span>
+                          <span className="text-[10px] opacity-70">Static noise image; no repair claim</span>
                        </button>
                        <button 
                          onClick={() => setMode('scan')}
@@ -215,7 +215,7 @@ const BurnInWiper: React.FC = () => {
                        >
                           <Play size={24} />
                           <span className="font-bold">Scan Bar</span>
-                          <span className="text-[10px] opacity-70">Horizontal band sweep</span>
+                          <span className="text-[10px] opacity-70">Moving line for visual inspection</span>
                        </button>
                     </div>
                  </div>
@@ -230,16 +230,16 @@ const BurnInWiper: React.FC = () => {
                     </div>
                     <input 
                        type="range" 
-                       min="5" 
-                       max="120" 
-                       step="5"
+                       min="1" 
+                       max="5" 
+                       step="1"
                        value={durationMinutes}
                        onChange={(e) => setDurationMinutes(Number(e.target.value))}
                        className="w-full accent-blue-600 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer"
                     />
                     <div className="flex justify-between text-xs text-neutral-600">
+                       <span>1 min</span>
                        <span>5 min</span>
-                       <span>2 Hours</span>
                     </div>
                  </div>
               </div>
@@ -251,7 +251,7 @@ const BurnInWiper: React.FC = () => {
               <div>
                  <h4 className="text-red-400 font-bold text-sm mb-1">Important Note</h4>
                  <p className="text-red-200/70 text-xs leading-relaxed">
-                    Permanent "Burn-in" (where organic pixels have degraded) cannot be fully fixed by software. This tool is effective for "Image Retention" (temporary ghosting). Running this tool for extended periods consumes power and screen life; use moderately.
+                    Permanent OLED burn-in is uneven panel aging and cannot be reversed by a browser page. Temporary image retention may fade after content changes or time, but this tool is not a proven treatment. Avoid long sessions and follow the display manufacturer’s panel-care guidance.
                  </p>
               </div>
            </div>
