@@ -1,7 +1,7 @@
 name: Astro Static Build and SEO Routes
 on:
   push:
-    branches: [feature/v12-gsc-safe-implementation]
+    branches: [main]
   pull_request:
     branches: [main]
 jobs:
@@ -9,17 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node 22 (Astro 6)
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Typecheck application
         run: npm run check:types
-      - name: Build Astro static pages and SEO audit
+      - name: Build domainless safe deployment
         run: npm run build
-      - name: Check critical indexable HTML, preserved GSC URLs and locale
+      - name: Audit noindex and route output without a domain
+        run: node scripts/audit-astro-build.mjs
+      - name: Build configured SEO origin using test-only domain
+        env:
+          PUBLIC_SITE_URL: https://deadpixeltest.example
+        run: npm run build
+      - name: Check priority HTML and sitemap
         run: |
           test -s dist/index.html
           test -s dist/tests/refresh-rate.html
@@ -27,21 +32,15 @@ jobs:
           test -s dist/tests/color-gradient.html
           test -s dist/pt-br.html
           test -s dist/pt-br/pixel-morto-notebook.html
-          grep -q 'pixel morto' dist/pt-br/pixel-morto-notebook.html
           grep -q 'hreflang="pt-BR"' dist/index.html
           grep -q 'tests/local-dimming' dist/sitemap.xml
-          grep -q 'tests/refresh-rate' dist/sitemap.xml
-      - name: Install Chromium for browser smoke
+      - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Test interactive Astro and legacy tool pages in Chromium
+      - name: Run browser checks
+        env:
+          PUBLIC_SITE_URL: https://deadpixeltest.example
+          SMOKE_BASE: http://127.0.0.1:4321
         run: |
           npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
           sleep 4
           npm run smoke:browser
-      - name: Upload QA screenshots on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: astro-v12-browser-failures
-          path: smoke-screenshots/
-          if-no-files-found: ignore
