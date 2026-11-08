@@ -139,6 +139,18 @@ await check('/tools/webcam',async page=>{
  await page.evaluate(()=>window.__smokeAudioContext.close());
 },{media:true});
 await check('/tools/color-blindness',async page=>{
+ await page.getByRole('button',{name:/Use Camera/i}).click();
+ await page.waitForFunction(()=>{
+  const video=document.querySelector('video');
+  return video&&video.videoWidth===320&&video.videoHeight===240;
+ },null,{timeout:10000});
+ await page.getByRole('button',{name:/Change Source/i}).click();
+ await page.getByRole('button',{name:/Use Camera/i}).waitFor({timeout:5000});
+ const stopped=await page.evaluate(()=>window.__smokeMediaStream.getTracks().every(t=>t.readyState==='ended'));
+ if(!stopped)throw Error('Color vision camera did not stop tracks');
+ await page.evaluate(()=>window.__smokeAudioContext.close());
+},{media:true});
+await check('/tools/color-blindness',async page=>{
  await page.getByRole('button',{name:/Use Camera/i}).waitFor({timeout:10000});
  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="#e34b4b"/></svg>';
  await page.locator('input[type="file"]').setInputFiles({name:'local-test.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
@@ -150,4 +162,4 @@ await check('/tools/color-blindness',async page=>{
 });
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+15+' browser smoke scenarios including local-only network and media checks');
+console.log('PASS all '+16+' browser smoke scenarios including local-only network and media checks');
