@@ -59,6 +59,20 @@ const Header = () => {
   }, [location]);
 
   useEffect(() => {
+    if (!isMobileOpen) return;
+    const oldOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMobileOpen(false);
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => {
+      document.body.style.overflow = oldOverflow;
+      document.removeEventListener('keydown', onEscape);
+    };
+  }, [isMobileOpen]);
+
+  useEffect(() => {
     const handleScroll = () => {
         const isScrolled = window.scrollY > 10;
         if (isScrolled !== scrolled) {
@@ -99,6 +113,7 @@ const Header = () => {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <header 
         className={`
           fixed top-0 left-0 w-full z-40 transition-all duration-500 border-b
@@ -127,13 +142,13 @@ const Header = () => {
           <nav className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 z-10">
             {menuGroups.map((group, idx) => (
               <div key={idx} className="relative group/dropdown px-3 py-4">
-                <button className="flex items-center gap-1.5 text-[11px] font-medium text-neutral-400 group-hover/dropdown:text-white transition-colors uppercase tracking-widest">
+                <button aria-haspopup="true" className="flex items-center gap-1.5 text-[11px] font-medium text-neutral-400 group-hover/dropdown:text-white group-focus-within/dropdown:text-white transition-colors uppercase tracking-widest">
                   {group.title}
                   <ChevronDown size={10} className="opacity-50 group-hover/dropdown:rotate-180 transition-transform duration-300" />
                 </button>
                 
                 {/* Dropdown Menu */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-56 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/dropdown:opacity-100 group-hover/dropdown:translate-y-0 group-hover/dropdown:pointer-events-auto transition-all duration-200 ease-out">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-56 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/dropdown:opacity-100 group-hover/dropdown:translate-y-0 group-hover/dropdown:pointer-events-auto group-focus-within/dropdown:opacity-100 group-focus-within/dropdown:translate-y-0 group-focus-within/dropdown:pointer-events-auto transition-all duration-200 ease-out">
                   <div className="bg-[#050505] border border-white/10 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden p-1.5 backdrop-blur-3xl">
                     {group.items.map((item) => (
                       <NavLink
@@ -197,6 +212,8 @@ const Header = () => {
               className="lg:hidden text-white p-2 opacity-70 hover:opacity-100"
               onClick={() => setIsMobileOpen(!isMobileOpen)}
               aria-label={isMobileOpen ? "Close Menu" : "Open Menu"}
+              aria-expanded={isMobileOpen}
+              aria-controls="mobile-site-menu"
             >
               {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -208,10 +225,13 @@ const Header = () => {
       <ReportDashboard isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
 
       {/* Mobile Menu Overlay */}
-      <div 
+      <nav
+        id="mobile-site-menu"
+        aria-label="Mobile navigation"
+        aria-hidden={!isMobileOpen}
         className={`
           fixed inset-0 z-30 bg-black pt-24 px-6 overflow-y-auto transition-transform duration-300 lg:hidden
-          ${isMobileOpen ? 'translate-x-0' : 'translate-x-full'}
+          ${isMobileOpen ? 'translate-x-0 visible' : 'translate-x-full invisible pointer-events-none'}
         `}
       >
         <div className="space-y-8 pb-12">
@@ -239,7 +259,7 @@ const Header = () => {
             </div>
           ))}
         </div>
-      </div>
+      </nav>
     </>
   );
 };
