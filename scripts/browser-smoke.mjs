@@ -1,6 +1,7 @@
 import {chromium, devices} from 'playwright';
 import {mkdirSync} from 'node:fs';
 const base=process.env.SMOKE_BASE || 'http://127.0.0.1:4321';
+const canonicalOrigin=process.env.PUBLIC_SITE_URL ? new URL(process.env.PUBLIC_SITE_URL).origin : '';
 mkdirSync('smoke-screenshots',{recursive:true});
 const browser=await chromium.launch({headless:true});
 const failures=[];
@@ -27,7 +28,8 @@ const expectedTitle=(needle)=>async page=>{
  const count=await canonicalLinks.count();
  if(count!==1)throw Error('Expected exactly one canonical; got '+count);
  const canon=await canonicalLinks.first().getAttribute('href');
- if(!canon?.startsWith('https://deadpixeltest.cc/'))throw Error('Canonical '+canon);
+ if(canonicalOrigin && !canon?.startsWith(canonicalOrigin+'/'))throw Error('Canonical '+canon);
+ if(!canonicalOrigin && count!==0)throw Error('Domainless build must not emit a canonical');
 };
 await check('/',async page=>{
  await expectedTitle('Dead Pixel Test')(page);
