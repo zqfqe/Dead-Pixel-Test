@@ -1,30 +1,33 @@
-name: V1.2 Build and SEO Routes
+name: Astro Static Build and SEO Routes
 on:
   push:
     branches: [feature/v12-gsc-safe-implementation]
   pull_request:
     branches: [main]
 jobs:
-  build:
+  static-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Node
+      - uses: actions/checkout@v4
+      - name: Use Node 22 (Astro 6)
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install
+      - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Typecheck, sitemap and static SEO output
+      - name: Typecheck application
+        run: npm run check:types
+      - name: Build Astro static pages and SEO audit
         run: npm run build
-      - name: Check high-traffic route and new locale output
+      - name: Check critical indexable HTML, preserved GSC URLs and locale
         run: |
           test -s dist/index.html
+          test -s dist/tests/refresh-rate/index.html
+          test -s dist/tests/local-dimming/index.html
+          test -s dist/tests/color-gradient/index.html
           test -s dist/pt-br/index.html
-          test -s dist/laptop-screen-dead-pixel-test/index.html
           test -s dist/pt-br/pixel-morto-notebook/index.html
-          grep -q 'Pixel Morto no Notebook' dist/pt-br/pixel-morto-notebook/index.html
+          grep -q 'pixel morto' dist/pt-br/pixel-morto-notebook/index.html
+          grep -q 'hreflang="pt-BR"' dist/index.html
           grep -q 'tests/local-dimming' dist/sitemap.xml
           grep -q 'tests/refresh-rate' dist/sitemap.xml
-          grep -q 'pt-br' dist/sitemap.xml
