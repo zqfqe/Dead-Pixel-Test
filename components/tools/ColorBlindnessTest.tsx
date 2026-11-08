@@ -23,6 +23,8 @@ const ColorBlindnessTest: React.FC = () => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const imageUrlRef = useRef<string | null>(null);
+  const requestTokenRef = useRef(0);
 
   // SVG Filters Definitions (Standard matrices for CVD simulation)
   // Source: libdaltonia / color-blindness-simulation research
@@ -69,39 +71,80 @@ const ColorBlindnessTest: React.FC = () => {
     </svg>
   );
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 } } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      streamRef.current = stream;
-      setSourceType('camera');
-      setError(null);
-    } catch (err) {
-      setError("Could not access camera. Please allow permissions or try uploading an image.");
-    }
-  };
-
   const stopCamera = () => {
+    requestTokenRef.current += 1;
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(t => t.stop());
       streamRef.current = null;
     }
+    if (videoRef.current) videoRef.current.srcObject = null;
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      stopCamera();
-      const url = URL.createObjectURL(file);
-      setImageSrc(url);
-      setSourceType('image');
+  const clearImage = () => {
+    if (imageUrlRef.current) {
+      URL.revokeObjectURL(imageUrlRef.current);
+      imageUrlRef.current = null;
+    }
+    setImageSrc(null);
+  };
+
+  const startCamera = async () => {
+    stopCamera();
+    clearImage();
+    const token = requestTokenRef.current;
+    setError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 } }, audio: false });
+      if (token !== requestTokenRef.current) {
+        stream.getTracks().forEach(t => t.stop());
+        return;
+      }
+      streamRef.current = stream;
+      setSourceType('camera');
+    } catch {
+      if (token !== requestTokenRef.current) return;
+      setError('Could not access camera. Please allow permission or try a local image.');
     }
   };
 
+  // Attach only after React has rendered the conditional <video> element.
   useEffect(() => {
-    return () => stopCamera();
+    if (sourceType !== 'camera' || !streamRef.current || !videoRef.current) return;
+    const video = videoRef.current;
+    const media = streamRef.current;
+    video.srcObject = media;
+    void video.play().catch(() => {});
+    return () => {
+      if (video.srcObject === media) video.srcObject = null;
+    };
+  }, [sourceType, splitView]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/') || file.size > 15 * 1024 * 1024) {
+      setError('Please choose an image smaller than 15 MB.');
+      e.target.value = '';
+      return;
+    }
+    stopCamera();
+    clearImage();
+    const url = URL.createObjectURL(file);
+    imageUrlRef.current = url;
+    setImageSrc(url);
+    setSourceType('image');
+    setError(null);
+    e.target.value = '';
+  };
+
+  useEffect(() => {
+    return () => {
+      requestTokenRef.current += 1;
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+      if (imageUrlRef.current) URL.revokeObjectURL(imageUrlRef.current);
+      imageUrlRef.current = null;
+    };
   }, []);
 
   return (
@@ -187,7 +230,7 @@ const ColorBlindnessTest: React.FC = () => {
                        <SplitSquareHorizontal size={20} />
                     </button>
                     <button 
-                      onClick={() => { stopCamera(); setSourceType(null); }}
+                      onClick={() => { stopCamera(); clearImage(); setSourceType(null); }}
                       className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg text-sm font-bold"
                     >
                        Change Source
@@ -274,7 +317,11 @@ const ColorBlindnessTest: React.FC = () => {
 const VideoMirror = ({ stream }: { stream: MediaStream | null }) => {
     const ref = useRef<HTMLVideoElement>(null);
     useEffect(() => {
-        if (ref.current && stream) ref.current.srcObject = stream;
+        if (!ref.current || !stream) return;
+        const video = ref.current;
+        video.srcObject = stream;
+        void video.play().catch(() => {});
+        return () => { if (video.srcObject === stream) video.srcObject = null; };
     }, [stream]);
     return <video ref={ref} autoPlay playsInline muted className="w-full h-full object-contain" />;
 };
