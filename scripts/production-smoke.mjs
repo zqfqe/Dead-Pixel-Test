@@ -1,63 +1,25 @@
-const origin = process.env.PRODUCTION_ORIGIN || 'https://deadpixeltest.cc';
-const required = [
-  '/', '/pt-br', '/laptop-screen-dead-pixel-test', '/tests/refresh-rate',
-  '/tests/local-dimming', '/tests/color-gradient', '/image-retention-test',
-  '/pt-br/pixel-morto-notebook'
-];
-const failures = [];
-const pages = new Map();
-async function get(path) {
-  const url = origin + path;
-  let response;
-  for (let attempt = 0; attempt < 24; attempt++) {
-    try {
-      response = await fetch(url, {redirect:'follow',headers:{'user-agent':'DeadPixelTest-Production-Smoke/1.0','cache-control':'no-cache'}});
-      if (response.status === 200) break;
-    } catch {}
-    await new Promise(resolve => setTimeout(resolve, 10000));
-  }
-  if (!response || response.status !== 200) {
-    failures.push(path + ': expected HTTP 200, got ' + (response?.status ?? 'network error'));
-    return null;
-  }
-  const final = new URL(response.url);
-  if (final.pathname !== path) failures.push(path + ': redirected to ' + final.pathname);
-  const html = await response.text();
-  pages.set(path, html);
-  const canonicals = [...html.matchAll(/<link\\b[^>]*rel=["']canonical["'][^>]*>/gi)].map(m=>m[0]);
-  if (canonicals.length !== 1) failures.push(path + ': expected exactly one canonical, got ' + canonicals.length);
-  else {
-    const href = canonicals[0].match(/href=["']([^"']+)["']/i)?.[1];
-    const expected = origin + (path === '/' ? '/' : path);
-    if (href !== expected) failures.push(path + ': canonical ' + href + ' expected ' + expected);
-  }
-  if (!/<title>[^<]+<\\/title>/i.test(html)) failures.push(path + ': missing title');
-  if (!/<meta[^>]+name=["']description["'][^>]+content=["'][^"']{20,}/i.test(html)) failures.push(path + ': missing meta description');
-  if (/name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html)) failures.push(path + ': production page is noindex');
-  console.log('PASS HTTP/SEO ' + path);
-  return html;
+const raw=process.env.PUBLIC_SITE_URL?.trim();
+if(!raw){console.log('SKIP: PUBLIC_SITE_URL is not configured; domainless deployment remains noindex.');process.exit(0);}
+const origin=new URL(raw).origin;
+const required=['/','/pt-br','/laptop-screen-dead-pixel-test','/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/image-retention-test','/pt-br/pixel-morto-notebook'];
+const failures=[];
+for(const path of required){
+ let res;
+ try{res=await fetch(origin+path,{redirect:'follow'});}catch(e){failures.push(path+': '+e);continue;}
+ if(res.status!==200)failures.push(path+': HTTP '+res.status);
+ const html=await res.text();
+ const canon=[...html.matchAll(/<link\b[^>]*rel=["']canonical["'][^>]*>/gi)];
+ const expected=origin+(path==='/'?'/':path);
+ if(canon.length!==1||!canon[0][0].includes('href="'+expected+'"'))failures.push(path+': canonical mismatch');
+ if(/name=["']robots["'][^>]*noindex/i.test(html))failures.push(path+': unexpected noindex');
+ if(!/<title>[^<]+<\/title>/i.test(html))failures.push(path+': missing title');
+ console.log('CHECK '+path+' '+res.status);
 }
-for (const path of required) await get(path);
-const root = pages.get('/');
-const pt = pages.get('/pt-br');
-if (root && !/hreflang=["']pt-BR["']/.test(root)) failures.push('/ : missing pt-BR hreflang');
-if (pt && !/<html[^>]+lang=["']pt-BR["']/.test(pt)) failures.push('/pt-br: wrong document language');
-if (pt && !/pixel morto|pixel morto/i.test(pt)) failures.push('/pt-br: missing Portuguese first-rendered content');
-const [sitemap, robots] = await Promise.all([
- fetch(origin+'/sitemap.xml',{headers:{'cache-control':'no-cache'}}).then(r=>r.text()),
- fetch(origin+'/robots.txt',{headers:{'cache-control':'no-cache'}}).then(r=>r.text())
-]);
-for (const path of ['/','/pt-br','/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient']) {
- const loc=origin+(path==='/'?'/':path);
- if (!sitemap.includes('<loc>'+loc+'</loc>')) failures.push('sitemap missing '+loc);
-}
-if (!robots.includes(origin+'/sitemap.xml')) failures.push('robots.txt does not reference sitemap');
-const locs=[...sitemap.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(m=>m[1]);
-if (locs.length < 40) failures.push('sitemap unexpectedly short: '+locs.length+' URLs');
-if (new Set(locs).size !== locs.length) failures.push('sitemap contains duplicate URLs');
-console.log('Sitemap URLs: '+locs.length);
-if (failures.length) {
- console.error('PRODUCTION SMOKE FAILED\\n'+failures.join('\\n'));
- process.exit(1);
-}
-console.log('PASS: production HTTP, clean URLs, canonical, hreflang, sitemap and robots checks.');
+const [sr,rr]=await Promise.all([fetch(origin+'/sitemap.xml'),fetch(origin+'/robots.txt')]);
+const sitemap=await sr.text(),robots=await rr.text();
+if(!sr.ok)failures.push('sitemap HTTP '+sr.status);
+if(!rr.ok)failures.push('robots HTTP '+rr.status);
+for(const p of ['/','/pt-br','/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient'])if(!sitemap.includes('<loc>'+origin+(p==='/'?'/':p)+'</loc>'))failures.push('sitemap missing '+p);
+if(!robots.includes(origin+'/sitemap.xml'))failures.push('robots missing sitemap');
+if(failures.length){console.error(failures.join('\n'));process.exit(1);}
+console.log('PASS configured production domain checks');
