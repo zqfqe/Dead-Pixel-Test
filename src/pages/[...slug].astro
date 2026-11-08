@@ -54,7 +54,7 @@ const structuredData=newPage?{
 }:undefined;
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 ---
-<BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} schema={structuredData}>
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean(newPage && !newPage.indexable)} schema={structuredData}>
 {newPage ? (
   <main class="max-w-6xl mx-auto px-4 pt-8 md:px-8">
     <nav aria-label="Breadcrumb" class="text-sm text-neutral-400 mb-7"><a href="/" class="hover:text-blue-400">Home</a> / {newPage.h1}</nav>
