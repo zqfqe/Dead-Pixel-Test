@@ -17,8 +17,10 @@ for(const path of required){
  if(!/<title>[^<]+<\/title>/.test(html))errors.push('Missing title: '+path);
  if(!/rel="canonical"/.test(html))errors.push('Missing canonical: '+path);
  if(!/<meta name="description"/.test(html))errors.push('Missing description: '+path);
- const expected=origin+path;
- if(!urls.includes(expected))errors.push('Missing sitemap entry: '+expected);
+ const expected=origin+(path==='/'?'/':path.replace(/\/$/,''));
+ if(!urls.includes('<loc>'+expected+'</loc>'))errors.push('Missing sitemap entry: '+expected);
+ const canon=html.match(/<link rel="canonical" href="([^"]+)"/);
+ if(canon && canon[1]!==expected)errors.push('Canonical does not match Cloudflare clean URL for '+path+': '+canon[1]);
  if(path.startsWith('/pt-br/')&&!/lang="pt-BR"/.test(html))errors.push('Missing pt-BR HTML lang: '+path);
  if(path.startsWith('/pt-br/') && !/<h1/.test(html))errors.push('Missing static H1: '+path);
 }
