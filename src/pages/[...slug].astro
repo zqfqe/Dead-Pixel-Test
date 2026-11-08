@@ -17,7 +17,7 @@ export function getStaticPaths() {
    ...BLOG_POSTS.map(post=>'/blog/'+post.slug),
    ...SEO_LANDING_PAGES.filter(p=>p.path!=='/').map(p=>p.path)
  ])];
- return allPaths.map(path=>({params:{slug:path.replace(/^\\/|\\/$/g,'')},props:{routePath:path}}));
+ return allPaths.map(path=>({params:{slug:path.split('/').filter(Boolean).join('/')},props:{routePath:path}}));
 }
 const {routePath} = Astro.props;
 const route=String(routePath);
