@@ -7,6 +7,7 @@ on:
 jobs:
   static-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,8 +35,8 @@ jobs:
           test -s dist/pt-br/pixel-morto-notebook.html
           grep -q 'tests/local-dimming' dist/sitemap.xml
           ! grep -q 'laptop-screen-dead-pixel-test' dist/sitemap.xml
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium, Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Run browser checks
         env:
           PUBLIC_SITE_URL: https://deadpixeltest.example
@@ -44,6 +45,7 @@ jobs:
           npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/astro-preview.log 2>&1 &
           sleep 4
           npm run smoke:browser
+          npm run smoke:crossbrowser
       - name: Print Astro preview logs on failure
         if: failure()
         run: cat /tmp/astro-preview.log || true
@@ -52,6 +54,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: failed-browser-screenshots
-          path: smoke-screenshots/failure-*.png
+          path: |
+            smoke-screenshots/failure-*.png
+            smoke-screenshots/cross-*.png
           if-no-files-found: ignore
           retention-days: 7
