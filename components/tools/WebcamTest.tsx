@@ -23,6 +23,8 @@ const WebcamTest: React.FC = () => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const animationRef = useRef<number | null>(null);
+  const activeStreamRef = useRef<MediaStream | null>(null);
+  const requestTokenRef = useRef(0);
 
   // FPS Calculation
   const lastFrameTime = useRef<number>(0);
@@ -45,57 +47,88 @@ const WebcamTest: React.FC = () => {
     getDevices();
   }, []);
 
-  // Start Camera Stream
-  const startCamera = async () => {
+  // Stop resources by reference, not by a stale React state closure.
+  const releaseMedia = () => {
+    if (animationRef.current !== null) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    if (activeStreamRef.current) {
+      activeStreamRef.current.getTracks().forEach(track => track.stop());
+      activeStreamRef.current = null;
+    }
+    if (videoRef.current) videoRef.current.srcObject = null;
+    sourceRef.current?.disconnect();
+    sourceRef.current = null;
+    analyserRef.current = null;
+    if (audioContextRef.current) {
+      void audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+  };
+
+  const stopCamera = () => {
+    requestTokenRef.current += 1; // Invalidate pending permission prompts.
+    releaseMedia();
+    setStream(null);
+    setAudioLevel(0);
+    setResolution(null);
+    setFrameRate(0);
+    frameCount.current = 0;
+    lastFrameTime.current = 0;
+  };
+
+  const startCamera = async (requestedDeviceId?: string) => {
     stopCamera();
+    const requestToken = requestTokenRef.current;
     setError(null);
     try {
       const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-            deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
-            width: { ideal: 1920 }, // Request HD by default
-            height: { ideal: 1080 } 
+        video: {
+          deviceId: (requestedDeviceId ?? selectedDeviceId)
+            ? { exact: requestedDeviceId ?? selectedDeviceId }
+            : undefined,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         },
         audio: true
       });
-      
-      setStream(newStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = newStream;
+      if (requestToken !== requestTokenRef.current) {
+        newStream.getTracks().forEach(track => track.stop());
+        return;
       }
-
-      // Init Audio Analysis
+      activeStreamRef.current = newStream;
+      // The video element is conditionally rendered only AFTER stream becomes non-null.
+      // Attach srcObject in the stream effect, after React commits the element.
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const analyser = audioCtx.createAnalyser();
       const source = audioCtx.createMediaStreamSource(newStream);
       source.connect(analyser);
       analyser.fftSize = 256;
-      
       audioContextRef.current = audioCtx;
       analyserRef.current = analyser;
       sourceRef.current = source;
-
+      setStream(newStream);
       updateLoop();
-
     } catch (err: any) {
-      setError(err.message || 'Could not access camera/microphone. Please allow permissions.');
+      if (requestToken !== requestTokenRef.current) return;
+      releaseMedia();
+      setStream(null);
+      setError(err?.message || 'Could not access camera/microphone. Please allow permissions.');
     }
   };
 
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-    }
-    if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
-    }
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    setAudioLevel(0);
-    setResolution(null);
-    setFrameRate(0);
-  };
+  useEffect(() => {
+    if (!stream || !videoRef.current) return;
+    const video = videoRef.current;
+    video.srcObject = stream;
+    void video.play().catch(() => {
+      // Some browsers require a second user gesture; the video retains controls.
+    });
+    return () => {
+      if (video.srcObject === stream) video.srcObject = null;
+    };
+  }, [stream]);
 
   const updateLoop = () => {
       // 1. Audio Level
@@ -154,14 +187,17 @@ const WebcamTest: React.FC = () => {
   };
 
   useEffect(() => {
-      return () => stopCamera();
+    return () => {
+      requestTokenRef.current += 1;
+      releaseMedia();
+    };
   }, []);
 
   return (
     <>
       <SEO 
         title="Webcam Test Online - Check Camera, Mic & FPS" 
-        description="Securely test your webcam and microphone online. Check resolution, frame rate, and audio levels. Troubleshoot black screens and mirroring issues."
+        description="Securely test your webcam and microphone online. Check resolution, approximate browser preview frame cadence, and audio levels. Troubleshoot black screens and mirroring issues."
         canonical="/tools/webcam"
         keywords={['webcam test', 'mic test', 'online camera check', 'zoom camera test', 'webcam mirror', 'camera fps test', 'video resolution check']}
         breadcrumbs={[
@@ -241,7 +277,7 @@ const WebcamTest: React.FC = () => {
                       <div className="text-neutral-500 flex flex-col items-center gap-4">
                           <VideoOff size={48} />
                           <span>Camera is off</span>
-                          <Button onClick={startCamera}>Start Camera</Button>
+                          <Button onClick={() => void startCamera()}>Start Camera</Button>
                       </div>
                   ) : (
                       <>
@@ -267,7 +303,7 @@ const WebcamTest: React.FC = () => {
                              <div className="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-xs font-mono text-white border border-white/10 flex items-center gap-3">
                                  <span>{resolution.w} × {resolution.h}</span>
                                  <span className="text-neutral-500">|</span>
-                                 <span className={frameRate < 20 ? 'text-yellow-500' : 'text-green-500'}>{frameRate} FPS</span>
+                                 <span className={frameRate < 20 ? 'text-yellow-500' : 'text-green-500'}>{frameRate} Preview FPS</span>
                              </div>
                          )}
                       </>
@@ -278,7 +314,7 @@ const WebcamTest: React.FC = () => {
                       <div className="absolute inset-0 bg-neutral-900/90 flex flex-col items-center justify-center p-8 text-center">
                           <div className="text-red-500 mb-2 font-bold">Access Denied / Error</div>
                           <p className="text-sm text-neutral-400">{error}</p>
-                          <Button onClick={startCamera} className="mt-4" variant="outline">Retry</Button>
+                          <Button onClick={() => void startCamera()} className="mt-4" variant="outline">Retry</Button>
                       </div>
                   )}
               </div>
@@ -313,7 +349,7 @@ const WebcamTest: React.FC = () => {
                       <div className="relative">
                           <select 
                               value={selectedDeviceId}
-                              onChange={(e) => { setSelectedDeviceId(e.target.value); if(stream) startCamera(); }}
+                              onChange={(e) => { const id=e.target.value; setSelectedDeviceId(id); if(activeStreamRef.current) void startCamera(id); }}
                               className="w-full bg-neutral-950 border border-white/10 rounded-lg p-3 text-sm text-white appearance-none outline-none focus:border-blue-500"
                               disabled={videoDevices.length === 0}
                           >
@@ -356,7 +392,7 @@ const WebcamTest: React.FC = () => {
                           Stop Camera
                       </Button>
                   ) : (
-                      <Button onClick={startCamera} className="w-full" icon={RefreshCw}>
+                      <Button onClick={() => void startCamera()} className="w-full" icon={RefreshCw}>
                           Start Camera
                       </Button>
                   )}
