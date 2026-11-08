@@ -137,17 +137,7 @@ const DeadPixelTest: React.FC = () => {
     setIsAutoCycle(prev => !prev);
   };
 
-  const toggleStrobeMode = () => {
-    const newVal = !isStrobeMode;
-    resetModes();
-    if (newVal) setIsStrobeMode(true);
-  };
 
-  const toggleNoiseMode = () => {
-    const newVal = !isNoiseMode;
-    resetModes();
-    if (newVal) setIsNoiseMode(true);
-  };
 
   const toggleFlashlight = () => {
     setIsStrobeMode(false);
@@ -176,67 +166,6 @@ const DeadPixelTest: React.FC = () => {
     }
     return () => { if (autoCycleIntervalRef.current) clearInterval(autoCycleIntervalRef.current); };
   }, [isAutoCycle, handleNextColor]);
-
-  // 2. Strobe Logic
-  useEffect(() => {
-    if (isStrobeMode) {
-      strobeIntervalRef.current = window.setInterval(() => {
-        setColorIndex((prev) => (prev + 1) % COLORS.length);
-      }, 40); 
-    }
-    return () => { if (strobeIntervalRef.current) clearInterval(strobeIntervalRef.current); };
-  }, [isStrobeMode]);
-
-  // 3. Noise Logic (Optimized for Main Thread Performance)
-  useEffect(() => {
-    if (isNoiseMode && canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d', { alpha: false }); // Disable alpha for speed
-      if (!ctx) return;
-
-      // Reusable buffers to prevent Garbage Collection spikes
-      let idata: ImageData | null = null;
-      let buffer32: Uint32Array | null = null;
-
-      const resize = () => {
-          if (canvasRef.current) {
-             const w = window.innerWidth;
-             const h = window.innerHeight;
-             canvasRef.current.width = w;
-             canvasRef.current.height = h;
-             
-             // Allocate buffer once on resize
-             idata = ctx.createImageData(w, h);
-             buffer32 = new Uint32Array(idata.data.buffer);
-          }
-      };
-      
-      window.addEventListener('resize', resize);
-      resize(); // Initial alloc
-
-      const drawNoise = () => {
-         if (!idata || !buffer32) return;
-
-         const len = buffer32.length;
-         // Unrolling loop slightly or just simple iteration
-         // 0xFF000000 is Opaque Alpha (Little Endian: ABGR -> A=FF)
-         for (let i = 0; i < len; i++) {
-             const val = Math.random() < 0.5 ? 0 : 255; 
-             // Bitwise calc is faster than creating objects
-             buffer32[i] = 0xFF000000 | (val << 16) | (val << 8) | val;
-         }
-         
-         ctx.putImageData(idata, 0, 0);
-         noiseReqRef.current = requestAnimationFrame(drawNoise);
-      };
-
-      drawNoise();
-      
-      return () => {
-         window.removeEventListener('resize', resize);
-         if (noiseReqRef.current) cancelAnimationFrame(noiseReqRef.current);
-      };
-    }
-  }, [isNoiseMode]);
 
   // 4. Keyboard Navigation
   useEffect(() => {
@@ -440,15 +369,7 @@ const DeadPixelTest: React.FC = () => {
 
             <div className="w-px h-8 bg-white/10 mx-1" />
 
-            {/* Tools */}
-            <button 
-              onClick={(e) => { e.stopPropagation(); toggleStrobeMode(); }}
-              aria-label="Toggle Strobe Mode"
-              className={`p-3 rounded-xl transition-all ${isStrobeMode ? 'bg-red-500 text-white animate-pulse' : 'text-neutral-400 hover:text-red-400 hover:bg-white/10'}`}
-            >
-              <Zap size={20} fill={isStrobeMode ? "currentColor" : "none"} />
-            </button>
-
+            {/* Manual static inspection tools: no rapid strobing */}
             {!isMobile && (
               <button 
                 onClick={(e) => { e.stopPropagation(); toggleFlashlight(); }}
@@ -470,7 +391,7 @@ const DeadPixelTest: React.FC = () => {
     <>
       <SEO 
         title={isHome ? "DeadPixelTest - Free Screen Check & Monitor Calibration" : "Dead Pixel Test & Fixer"}
-        description="Instantly check your screen for dead pixels, backlight bleed, and ghosting. The best free online monitor test tool for PC & Mobile. No download needed."
+        description="Instantly check your screen for dead pixels, backlight bleed, and ghosting. No download needed. Manual visual inspection of monitors and phones."
         canonical={isHome ? '/' : '/tests/dead-pixel'}
         breadcrumbs={isHome ? [] : [{ name: 'Home', path: '/' }, { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }]}
         disableSuffix={isHome}
@@ -502,7 +423,7 @@ const DeadPixelTest: React.FC = () => {
                   "name": "What is the difference between a dead pixel and a stuck pixel?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "A dead pixel is black and does not light up. A stuck pixel is frozen on a specific color (red, green, or blue). Stuck pixels can often be fixed, while dead pixels are permanent."
+                    "text": "A dead pixel is black and does not light up. A stuck pixel is frozen on a specific color (red, green, or blue). A stuck pixel may behave differently across colors; a damaged physical pixel cannot be repaired by this webpage."
                   }
                 },
                 {
@@ -510,7 +431,7 @@ const DeadPixelTest: React.FC = () => {
                   "name": "How to fix a stuck pixel?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Use our 'Strobe' or 'Static Noise' tools to rapidly cycle colors on the affected area. This can stimulate the liquid crystal to unstuck itself. You can also try gently massaging the area with a soft cloth while the screen is off."
+                    "text": "Inspect the spot on several static colors and contact the device manufacturer if the problem remains. Avoid rapid flashing, heat and pressure."
                   }
                 }
               ]
@@ -554,7 +475,7 @@ const DeadPixelTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Dead Pixel Test"
-          description="The #1 industry-standard Dead Pixel Test tool. Accurately detect screen defects on any monitor or smartphone. Our comprehensive Dead Pixel Test includes solid color patterns, Flashlight inspection, and specialized repair tools."
+          description="Free visual dead pixel test with static color patterns for monitors and phones. Inspect your screen yourself; this tool does not automatically detect physical faults."
           onStart={initiateTest}
           footerText="Press F11 for Best Experience"
         >
@@ -690,7 +611,7 @@ const DeadPixelTest: React.FC = () => {
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to fix a stuck pixel?</h4>
-                    <p className="text-neutral-400 text-sm">Use our "Strobe" or "Static Noise" tools to rapidly cycle colors on the affected area. This can stimulate the liquid crystal to unstuck itself. You can also try gently massaging the area with a soft cloth while the screen is off.</p>
+                    <p className="text-neutral-400 text-sm">Compare the area on several static colors. This website cannot repair a physically damaged pixel. Avoid flashing, heat and pressure.</p>
                  </div>
               </div>
            </div>
