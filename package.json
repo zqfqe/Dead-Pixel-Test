@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && npm run sitemap && npm run audit:routes",
+    "build": "npm run sitemap && astro build && npm run audit:routes",
     "preview": "astro preview",
     "sitemap": "tsx scripts/generate-sitemap.ts",
     "audit:routes": "node scripts/audit-astro-build.mjs",
