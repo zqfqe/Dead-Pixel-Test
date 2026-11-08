@@ -10,7 +10,8 @@
     "sitemap": "tsx scripts/generate-sitemap.ts",
     "audit:routes": "node scripts/audit-astro-build.mjs",
     "check:types": "tsc --noEmit",
-    "smoke:browser": "node scripts/browser-smoke.mjs"
+    "smoke:browser": "node scripts/browser-smoke.mjs",
+    "smoke:crossbrowser": "node scripts/cross-browser-smoke.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
