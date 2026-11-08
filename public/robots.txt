@@ -1,4 +1,2 @@
 User-agent: *
 Allow: /
-
-Sitemap: https://deadpixeltest.cc/sitemap.xml
