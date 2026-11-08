@@ -18,7 +18,7 @@ allPaths.add('/');
 // duplicate path is intentionally excluded from the sitemap.
 allPaths.delete('/tests/dead-pixel');
 const escapeXml=(text:string)=>text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-const canonical=(path:string)=>DOMAIN+(path==='/'?'':path);
+const canonical=(path:string)=>DOMAIN+(path==='/'?'':path.replace(/\/$/,''));
 const entries=[...allPaths].sort().map(path=>{
  const alternates=pageAlternates(path);
  const links=alternates.map(item=>'<xhtml:link rel="alternate" hreflang="'+item.lang+'" href="'+escapeXml(canonical(item.path))+'"/>').join('');
