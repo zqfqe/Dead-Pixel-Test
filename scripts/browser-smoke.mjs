@@ -5,9 +5,10 @@ const canonicalOrigin=process.env.PUBLIC_SITE_URL ? new URL(process.env.PUBLIC_S
 mkdirSync('smoke-screenshots',{recursive:true});
 const browser=await chromium.launch({headless:true});
 const failures=[];
-async function check(url,fn,{mobile=false}={}){
+async function check(url,fn,{mobile=false,denyFullscreen=false}={}){
  const ctx=await browser.newContext(mobile?{...devices['iPhone 13'],browserName:undefined}:{viewport:{width:1366,height:900}});
  const page=await ctx.newPage();
+ if(denyFullscreen)await page.addInitScript(()=>{Element.prototype.requestFullscreen=function(){return Promise.reject(new Error('fullscreen denied by smoke test'));};});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  try{
   const res=await page.goto(base+url,{waitUntil:'domcontentloaded',timeout:15000});
@@ -61,6 +62,17 @@ await check('/tests/local-dimming',async page=>{
 });
 await check('/tests/color-gradient',expectedTitle('Color Banding'));
 await check('/image-retention-test',expectedTitle('Image Retention'));
+await check('/screen-resolution-test',async page=>{
+ await expectedTitle('Screen Resolution')(page);
+ for(const label of ['Screen width (CSS px)','Available screen height (CSS px)','Browser viewport width (CSS px)','Visual viewport width (CSS px)','Device pixel ratio (DPR)','Screen color depth (bits)','Orientation']){
+  await page.getByText(label,{exact:true}).waitFor({timeout:8000});
+ }
+});
+await check('/',async page=>{
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByText(/Native fullscreen was denied or unavailable/i).waitFor({timeout:5000});
+ await page.getByRole('button',{name:/Exit test/i}).click();
+},{denyFullscreen:true});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+8+' browser smoke scenarios');
+console.log('PASS all '+10+' browser smoke scenarios');
