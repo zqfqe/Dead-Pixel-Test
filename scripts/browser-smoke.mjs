@@ -1,5 +1,5 @@
 import {chromium, devices} from 'playwright';
-import {mkdirSync} from 'node:fs';
+import {mkdirSync,readFileSync} from 'node:fs';
 const base=process.env.SMOKE_BASE || 'http://127.0.0.1:4321';
 const canonicalOrigin=process.env.PUBLIC_SITE_URL ? new URL(process.env.PUBLIC_SITE_URL).origin : '';
 const baseOrigin=new URL(base).origin;
@@ -126,6 +126,41 @@ await check('/',async page=>{
  await page.getByText(/Native fullscreen was denied or unavailable/i).waitFor({timeout:5000});
  await page.getByRole('button',{name:/Exit test/i}).click();
 },{denyFullscreen:true});
+await check('/phone-screen-dead-pixel-test',async page=>{
+ await expectedTitle('Phone Screen Dead Pixel Test')(page);
+ const width=await page.evaluate(()=>({viewport:innerWidth,documentWidth:document.documentElement.scrollWidth}));
+ if(width.documentWidth>width.viewport+2)throw Error('Mobile landing page horizontally overflows: '+JSON.stringify(width));
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).tap();
+ await page.getByRole('dialog',{name:/Screen inspection/i}).waitFor();
+ await page.getByRole('button',{name:/Next color/i}).tap();
+ await page.getByText('White (2/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:/Exit test/i}).tap();
+},{mobile:true,denyFullscreen:true});
+await check('/dead-pixel-line-test',async page=>{
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByRole('dialog',{name:/Screen inspection/i}).waitFor();
+ await page.keyboard.press('ArrowRight');
+ await page.getByText('White (2/10)',{exact:true}).waitFor();
+ await page.keyboard.press('Escape');
+ await page.getByRole('dialog',{name:/Screen inspection/i}).waitFor({state:'hidden'});
+ await page.waitForFunction(()=>document.activeElement?.textContent?.includes('Start full-screen inspection'),null,{timeout:5000});
+});
+await check('/',async page=>{
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByRole('button',{name:/Mark suspect spot/i}).click();
+ await page.locator('[role="dialog"] [role="presentation"]').click({position:{x:200,y:180}});
+ await page.getByRole('button',{name:/Exit test/i}).click();
+ await page.getByRole('combobox',{name:/Observation/i}).first().selectOption('stuck-color');
+ await page.getByRole('textbox',{name:/Notes/i}).first().fill('Visible only on red and white');
+ const downloadPromise=page.waitForEvent('download');
+ await page.getByRole('button',{name:/Export self-check JSON/i}).click();
+ const download=await downloadPromise;
+ const body=readFileSync(await download.path(),'utf8');
+ const payload=JSON.parse(body);
+ if(payload.kind!=='user_observed_screen_inspection'||payload.certified!==false)throw Error('Report misrepresents certification');
+ if(payload.marks?.length!==1||payload.marks[0].notes!=='Visible only on red and white'||payload.marks[0].category!=='stuck-color')throw Error('Exported marker data incorrect');
+ if(!(payload.marks[0].xRatio>=0&&payload.marks[0].xRatio<=1))throw Error('Invalid marker coordinate');
+});
 await check('/tools/webcam',async page=>{
  await page.getByRole('button',{name:/Start Camera/i}).first().click();
  await page.waitForFunction(()=>{const video=document.querySelector('video');return !!video&&video.videoWidth===320&&video.videoHeight===240;},null,{timeout:10000});
@@ -164,4 +199,4 @@ await check('/tools/color-blindness',async page=>{
 });
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+16+' browser smoke scenarios including local-only network and media checks');
+console.log('PASS all '+19+' browser smoke scenarios including privacy, exports, mobile and keyboard checks');
