@@ -1,0 +1,33 @@
+name: Production Cloudflare Pages Smoke
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Wait for and verify Cloudflare production deployment
+        run: node scripts/production-smoke.mjs
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test real production pages and interactions
+        env:
+          SMOKE_BASE: https://deadpixeltest.cc
+        run: npm run smoke:browser
+      - name: Upload browser screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-browser-smoke-failures
+          path: smoke-screenshots/
+          if-no-files-found: ignore
