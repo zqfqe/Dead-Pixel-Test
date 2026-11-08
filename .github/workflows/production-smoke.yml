@@ -15,19 +15,19 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Explain safe domainless mode
-        if: \${{ vars.PUBLIC_SITE_URL == '' }}
+        if: ${{ vars.PUBLIC_SITE_URL == '' }}
         run: echo "PUBLIC_SITE_URL is not set. Pages deployment is intentionally noindex; no canonical or sitemap URL is published."
       - name: Verify configured production domain
-        if: \${{ vars.PUBLIC_SITE_URL != '' }}
+        if: ${{ vars.PUBLIC_SITE_URL != '' }}
         env:
-          PUBLIC_SITE_URL: \${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
         run: node scripts/production-smoke.mjs
       - name: Install Chromium
-        if: \${{ vars.PUBLIC_SITE_URL != '' }}
+        if: ${{ vars.PUBLIC_SITE_URL != '' }}
         run: npx playwright install --with-deps chromium
       - name: Test production interactions
-        if: \${{ vars.PUBLIC_SITE_URL != '' }}
+        if: ${{ vars.PUBLIC_SITE_URL != '' }}
         env:
-          PUBLIC_SITE_URL: \${{ vars.PUBLIC_SITE_URL }}
-          SMOKE_BASE: \${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          SMOKE_BASE: ${{ vars.PUBLIC_SITE_URL }}
         run: npm run smoke:browser
