@@ -392,7 +392,8 @@ const DeadPixelTest: React.FC = () => {
       <SEO 
         title={isHome ? "DeadPixelTest - Free Screen Check & Monitor Calibration" : "Dead Pixel Test & Fixer"}
         description="Instantly check your screen for dead pixels, backlight bleed, and ghosting. No download needed. Manual visual inspection of monitors and phones."
-        canonical={isHome ? '/' : '/tests/dead-pixel'}
+        canonical={isHome ? '/' : '/'}
+        alternates={isHome ? [{lang:"en",path:"/"},{lang:"pt-BR",path:"/pt-br/"}] : []}
         breadcrumbs={isHome ? [] : [{ name: 'Home', path: '/' }, { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }]}
         disableSuffix={isHome}
         jsonLd={{
@@ -477,7 +478,7 @@ const DeadPixelTest: React.FC = () => {
           title="Dead Pixel Test"
           description="Free visual dead pixel test with static color patterns for monitors and phones. Inspect your screen yourself; this tool does not automatically detect physical faults."
           onStart={initiateTest}
-          footerText="Press F11 for Best Experience"
+          footerText="Start to check your screen"
         >
           <InfoCard title="Dead Pixel Test: Defects">
             <div className="space-y-3">
@@ -490,7 +491,7 @@ const DeadPixelTest: React.FC = () => {
           <InfoCard title="Dead Pixel Test Controls">
             <ul className="space-y-2 text-sm text-neutral-400 font-mono">
               <li><span className="text-white">{isMobile ? 'SWIPE' : 'CLICK'}</span> : Next Color</li>
-              <li><span className="text-white">{isMobile ? 'DOUBLE TAP' : 'SPACE'}</span> : Auto Cycle</li>
+              <li><span className="text-white">{isMobile ? "SWIPE" : "ARROW KEYS"}</span> : Next / Previous</li>
               {!isMobile && <li><span className="text-white">F / G</span> : Flashlight / Grid</li>}
             </ul>
           </InfoCard>
@@ -509,7 +510,7 @@ const DeadPixelTest: React.FC = () => {
                        A <strong>Dead Pixel</strong> is a picture element (pixel) on a display screen that fails to change color. It appears as a tiny, permanent black dot on your screen, which is most visible against a white background. This occurs when the transistor controlling the pixel receives no power.
                     </p>
                     <p className="text-neutral-400 leading-relaxed">
-                       In contrast, a <strong>Stuck Pixel</strong> is frozen in a specific color (Red, Green, or Blue) because the liquid crystal is stuck in the open position, allowing light to pass through permanently. Stuck pixels are often fixable, while dead pixels are usually permanent hardware failures.
+                       In contrast, a <strong>Stuck Pixel</strong> is frozen in a specific color (Red, Green, or Blue) because the liquid crystal is stuck in the open position, allowing light to pass through permanently. A stuck pixel can behave differently on multiple colors, but the browser cannot guarantee repair of any physical fault.
                     </p>
                  </div>
                  
@@ -542,21 +543,21 @@ const DeadPixelTest: React.FC = () => {
               
               <div className="grid md:grid-cols-3 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
-                    <h4 className="font-bold text-white mb-2">1. Strobe Fix</h4>
+                    <h4 className="font-bold text-white mb-2">1. Visual recheck</h4>
                     <p className="text-sm text-neutral-400">
-                       Rapidly cycles primary colors (RGB) to "massage" the liquid crystal sub-pixels back into a relaxed state. Run this for 10-20 minutes.
+                       Compare suspicious spots across static colors. Avoid pressure, heat or rapidly flashing patterns.
                     </p>
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
-                    <h4 className="font-bold text-white mb-2">2. Static Noise</h4>
+                    <h4 className="font-bold text-white mb-2">2. Static color comparison</h4>
                     <p className="text-sm text-neutral-400">
-                       Displays random white noise snow. This chaotic signal forces every pixel to change state randomly, which can unstick stubborn sub-pixels.
+                       Try white, black, red, green and blue backgrounds. Observe whether a spot remains visible.
                     </p>
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-lg border border-white/5">
-                    <h4 className="font-bold text-white mb-2">3. Manual Massage</h4>
+                    <h4 className="font-bold text-white mb-2">3. Safe next steps</h4>
                     <p className="text-sm text-neutral-400">
-                       Use a soft cloth to gently apply pressure to the stuck pixel while the monitor is off, then turn it on. (Use caution to avoid damage).
+                       Do not press, heat or rub a suspected damaged pixel. Use the manufacturer warranty and service guidance if the symptom persists.
                     </p>
                  </div>
               </div>
@@ -564,7 +565,7 @@ const DeadPixelTest: React.FC = () => {
               <div className="mt-12 p-4 bg-red-900/20 border border-red-900/50 rounded-lg flex gap-4">
                  <AlertTriangle className="text-red-500 shrink-0" />
                  <p className="text-xs text-red-200/80 leading-relaxed">
-                    <strong>Health Warning:</strong> The Strobe and Noise repair tools create rapidly flashing lights. Do not use if you have a history of photosensitive epilepsy.
+                    <strong>Safety:</strong> Avoid high-frequency flashing, heat and physical pressure. This browser test cannot repair physically damaged screen pixels.
                  </p>
               </div>
 
