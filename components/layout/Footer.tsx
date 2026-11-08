@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Twitter, Mail } from 'lucide-react';
+import { Github, MessageSquare } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
                 height="32" 
                 className="w-8 h-8 rounded-lg" 
               />
-              DeadPixelTest.cc
+              DeadPixelTest
             </div>
             <p className="text-neutral-400 leading-relaxed">
               Free browser-based screen checks for displays and phones. All results require visual user assessment; no automatic hardware certification.
@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
             <div className="flex gap-4 pt-2">
               
               <a href="https://github.com/zqfqe/Dead-Pixel-Test" target="_blank" rel="noopener noreferrer" aria-label="GitHub source" className="text-neutral-400 hover:text-white transition-colors"><Github size={18} /></a>
-              <a href="mailto:info@deadpixeltest.cc" aria-label="Email Support" className="text-neutral-400 hover:text-white transition-colors"><Mail size={18} /></a>
+              <Link to="/contact" aria-label="Contact and feedback" className="text-neutral-400 hover:text-white transition-colors"><MessageSquare size={18} /></Link>
             </div>
           </div>
 
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-white mb-4 uppercase tracking-wider text-xs">Core Tests</h3>
             <ul className="space-y-3 text-neutral-400">
-              <li><Link to="/tests/dead-pixel" className="hover:text-blue-400 transition-colors">Dead Pixel Test</Link></li>
+              <li><Link to="/" className="hover:text-blue-400 transition-colors">Dead Pixel Test</Link></li>
               <li><Link to="/tests/uniformity" className="hover:text-blue-400 transition-colors">Uniformity Test</Link></li>
               <li><Link to="/tests/response-time" className="hover:text-blue-400 transition-colors">Ghosting / UFO Test</Link></li>
               <li><Link to="/tests/gamma" className="hover:text-blue-400 transition-colors">Gamma Calibration</Link></li>
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
               <li><Link to="/tools/keyboard" className="hover:text-blue-400 transition-colors">Keyboard Ghosting</Link></li>
               <li><Link to="/tools/controller" className="hover:text-blue-400 transition-colors">Gamepad Tester</Link></li>
               <li><Link to="/about" className="hover:text-blue-400 transition-colors">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Contact Support</Link></li>
+              <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Contact &amp; Feedback</Link></li>
             </ul>
           </div>
 
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
-          <p>&copy; {currentYear} DeadPixelTest.cc. All rights reserved.</p>
+          <p>&copy; {currentYear} DeadPixelTest. All rights reserved.</p>
           <p>Designed for display enthusiasts.</p>
         </div>
       </div>
