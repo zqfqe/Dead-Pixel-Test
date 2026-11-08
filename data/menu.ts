@@ -16,7 +16,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Brightness", path: "/tests/brightness" },
   { title: "Contrast", path: "/tests/contrast" },
   { title: "Matrix Rain", path: "/tests/matrix" },
-  { title: "OLED Burn-in Wiper", path: "/tools/burn-in-wiper" },
+  { title: "OLED Pattern Demo (No Repair)", path: "/tools/burn-in-wiper" },
   
   { title: "INPUT & GAMING", path: "", isHeader: true },
   { title: "Input Lag (Camera)", path: "/tools/input-lag" },
