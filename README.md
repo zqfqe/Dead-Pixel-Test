@@ -1,44 +1,55 @@
-# DeadPixelTest — Browser-based screen diagnostics
+# DeadPixelTest.cc — Astro Static Display Tools
 
-A free collection of monitor, laptop, phone, input and audio-visual inspection tools. This repository powers [deadpixeltest.cc](https://deadpixeltest.cc).
+Free display, monitor and device diagnostics. **Astro 6 is the primary site generator**; interactive legacy tests use React islands. Source: https://github.com/zqfqe/Dead-Pixel-Test.
 
-## Build locally
+## Local build
 
-Requires Node.js 20+ (CI uses 22).
+Node.js 22.12 or newer (see `.nvmrc`).
 
 ```sh
 npm install
+npm run check:types
 npm run build
 npm run preview
 ```
 
-Build output: `dist/`. A build generates the multilingual XML sitemap and static HTML for the new 2026-11 V1.2 SEO intent pages. No Gemini or paid API key is required.
+The build writes `dist/` and a validated sitemap. No paid API, Gemini key or required database.
 
-## Existing site and V1.2 expansion
+## Cloudflare Pages
 
-The original Vite/React routes are retained because they already receive search traffic. V1.2 adds English and Brazilian Portuguese pages without replacing the site's high-traffic routes:
+- Framework: Astro (static)
+- Build command: `npm run build`
+- Output directory: `dist`
+- Node.js: 22.12+ (repository `.nvmrc`)
+- Domain: `deadpixeltest.cc` is the configured canonical public origin.
+- **Do not merge or change production until preview, mobile, direct URL, sitemap and canonical checks pass.**
 
-- Core testing: `/` and the legacy `/tests/*` tools
-- English: laptop, static stuck-pixel check, phone, line faults, image retention, resolution, contrast and pixel explanations
-- Brazilian Portuguese: `/pt-br/`, notebook, iPhone, static stuck-pixel, definition and color comparison
+## Architecture
 
-See [V1.2 implementation and verification notes](docs/V1.2-IMPLEMENTATION.md).
+- `astro.config.mjs`: Astro static output and React integration
+- `src/layouts/BaseLayout.astro`: static SEO metadata, locale navigation, canonical, hreflang
+- `src/pages/index.astro`: native static English homepage with interactive React inspection island
+- `src/pages/[...slug].astro`: generates each existing tool, blog, policy and V1.2 language page as static HTML
+- `components/tests/ScreenInspection.tsx`: shared visual test, static colors/lines, manual marks and JSON export
+- `data/seoLandingPages.ts`: English + Brazilian search-intent landing content
+- `scripts/generate-sitemap.ts`: includes established URLs and language pages
+- `scripts/audit-astro-build.mjs`: checks generated SEO and priority paths
 
-## Important measurement limits
+The original Vite index entrypoint and Vite build configuration were removed. React remains only as a component UI technology.
 
-- A webpage renders patterns; it **cannot automatically detect a defect in the physical display panel**.
-- The report is a **user-observed self-check**, not a certified hardware-health or warranty report.
-- `requestAnimationFrame` measures browser animation cadence. Its FPS reading is not necessarily the physical panel refresh rate.
-- `screen.width` and DPR are browser-exposed CSS/scaling values and do not prove the monitor's physical native resolution.
-- No automatic high-frequency strobe is provided in the dead-pixel inspection tool.
-- Pixel pressure, heat and dangerous flashing are not recommended.
+## SEO continuity
 
-## Deployment
+The old routes `/tests/refresh-rate`, `/tests/local-dimming`, `/tests/color-gradient`, `/tests/audio-sync`, `/tests/test-patterns`, and others are maintained. The original core test URL `/tests/dead-pixel` remains reachable with root canonical.
 
-Configured for Cloudflare Pages with Vite output directory `dist`. The canonical public origin currently configured in metadata and sitemap is `https://deadpixeltest.cc`. Do not promote a preview URL to production unless both canonical configuration and indexability have been verified.
+V1.2 adds 14 dedicated English/pt-BR pages with a native Astro homepage completing the 15-page plan. The 400-record Semrush source is **competitor research** and does not prove future rankings.
 
-## Contribution / QA
+## Accuracy and safety
 
-A GitHub Actions job builds the site and checks that legacy GSC-performing tool URLs remain represented in the sitemap, while the new Brazilian and English landing pages render actual HTML.
+- Screen defects are identified **by the user**; the browser cannot automatically inspect physical pixels.
+- The report is a **self-check**, not a professional diagnosis or manufacturer certification.
+- Browser animation FPS is **not necessarily hardware Hz**. DPR is not physical DPI.
+- Avoid physical pressure, heat and high-frequency flashing; damaged pixels cannot be repaired through software.
 
-Do not merge sitewide URL, redirect, or canonical migrations without reviewing Google Search Console baseline and preserving existing ranking URLs.
+## Verification status
+
+GitHub Actions checks static build and route/SEO output. Browser-based interaction, actual screen equipment, Cloudflare preview and live production remain separate tests. Details: `docs/V1.2-IMPLEMENTATION.md`.
