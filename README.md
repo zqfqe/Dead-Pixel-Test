@@ -44,3 +44,15 @@ Existing GSC routes such as \`/tests/refresh-rate\`, \`/tests/local-dimming\`, \
 ## Verification
 
 GitHub Actions checks domainless and configured builds, static routes, metadata and Chromium interactions. A successful Cloudflare deployment does not by itself prove that a custom domain is configured or that pages are indexed.
+
+
+## Privacy and safety
+
+- No analytics, advertising tags or third-party tracking pixels are included in the current application bundle.
+- The browser smoke suite flags third-party HTTP(S) requests, non-GET/HEAD requests and third-party scripts/frames on the tested routes.
+- Camera and microphone access is user-initiated; the webcam snapshot is generated as a local download.
+- Color-vision image previews use local object URLs. Screen markers and test reports are not uploaded by the application.
+- Existing preferences and report entries may be stored in browser localStorage; users can clear site data to remove them.
+- The privacy policy describes hosting-provider request metadata separately from browser-side test data.
+- A verified private support/privacy contact address remains a pre-launch requirement.
+- Do not enable analytics or advertising until the privacy notice and any required consent controls are reviewed and updated.
