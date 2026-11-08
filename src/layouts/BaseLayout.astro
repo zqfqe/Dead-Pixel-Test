@@ -25,6 +25,7 @@ const navigation = lang==='pt-BR'
       {href:'/tests/refresh-rate',label:'Refresh Rate'}, {href:'/tests/local-dimming',label:'Local Dimming'}
     ];
 const hasSchema=Boolean(schema);
+const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
 ---
 <!doctype html>
 <html lang={lang} data-astro-site="true">
@@ -32,7 +33,7 @@ const hasSchema=Boolean(schema);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#08090c" />
-    <meta name="google-site-verification" content="Hhbf5ZqIXEGRs_NaTldov7TD0zGNRiM43_cX-ywm4mM" />
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
     <meta name="description" content={description} />
     {shouldNoindex && <meta name="robots" content="noindex,nofollow" />}
     <title>{title}</title>
