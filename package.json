@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && npm run sitemap && vite build",
+    "build": "tsc && npm run sitemap && vite build && npm run prerender",
     "preview": "vite preview",
-    "sitemap": "tsx scripts/generate-sitemap.ts"
+    "sitemap": "tsx scripts/generate-sitemap.ts",
+    "prerender": "tsx scripts/prerender-pages.ts"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
