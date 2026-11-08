@@ -23,7 +23,10 @@ const expectedTitle=(needle)=>async page=>{
  await page.waitForTimeout(450);
  const title=await page.title();
  if(!title.toLowerCase().includes(needle.toLowerCase()))throw Error('Title '+title);
- const canon=await page.locator('link[rel="canonical"]').getAttribute('href');
+ const canonicalLinks=page.locator('link[rel="canonical"]');
+ const count=await canonicalLinks.count();
+ if(count!==1)throw Error('Expected exactly one canonical; got '+count);
+ const canon=await canonicalLinks.first().getAttribute('href');
  if(!canon?.startsWith('https://deadpixeltest.cc/'))throw Error('Canonical '+canon);
 };
 await check('/',async page=>{
