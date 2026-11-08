@@ -43,7 +43,7 @@ Existing GSC routes such as \`/tests/refresh-rate\`, \`/tests/local-dimming\`, \
 
 ## Verification
 
-GitHub Actions checks domainless and configured builds, static routes, metadata and Chromium interactions. A successful Cloudflare deployment does not by itself prove that a custom domain is configured or that pages are indexed.
+GitHub Actions checks domainless and configured builds, static routes, metadata and 19 Chromium browser scenarios (including mobile emulation, keyboard access, visual-test reports, camera/media cleanup and same-origin request audit). Failure screenshots are retained for debugging. Production smoke is explicitly skipped when the PUBLIC_SITE_URL GitHub Actions variable is not configured; a deployment or build success does not establish custom-domain availability or Google indexing.
 
 
 ## Privacy and safety
