@@ -103,7 +103,7 @@ await check('/dead-pixel-line-test',async page=>{
  await next.click();
  await page.getByText('Grid (10/10)',{exact:true}).waitFor({timeout:5000});
  const gridCss=await page.locator('[role="dialog"] [role="presentation"]').evaluate(el=>getComputedStyle(el).backgroundImage);
- if(gridCss.match(/repeating-linear-gradient/g)?.length!==2||!gridCss.includes('transparent'))throw Error('Grid pattern lacks independent horizontal and vertical transparent layers');
+ if(gridCss.match(/repeating-linear-gradient/g)?.length!==2||!/(transparent|rgba\(0,\s*0,\s*0,\s*0\))/.test(gridCss))throw Error('Grid pattern lacks independent horizontal and vertical transparent layers: '+gridCss);
  await page.getByRole('button',{name:/Exit test/i}).click();
 });
 await check('/privacy-policy',async page=>{
