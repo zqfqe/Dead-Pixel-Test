@@ -230,6 +230,73 @@ await check('/tests/refresh-rate',async page=>{
  if(await toggle.getAttribute('aria-expanded')!=='false')throw Error('Mobile menu did not close with Escape');
  if(await menu.getAttribute('aria-hidden')!=='true')throw Error('Closed mobile menu remains exposed to accessibility tree');
 },{mobile:true});
+await check('/phone-screen-dead-pixel-test',async page=>{
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).tap();
+ await page.getByText('Black (1/8)',{exact:true}).waitFor();
+ await page.locator('[role="dialog"] [role="presentation"]').evaluate(stage=>{
+   const x=window.innerWidth-40,y=window.innerHeight/2;
+   const from=new Touch({identifier:1,target:stage,clientX:x,clientY:y});
+   const to=new Touch({identifier:1,target:stage,clientX:40,clientY:y});
+   stage.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,touches:[from],targetTouches:[from],changedTouches:[from]}));
+   stage.dispatchEvent(new TouchEvent('touchend',{bubbles:true,touches:[],targetTouches:[],changedTouches:[to]}));
+ });
+ await page.getByText('White (2/8)',{exact:true}).waitFor({timeout:5000});
+ await page.getByRole('button',{name:'Jump to Yellow'}).click();
+ await page.getByText('Yellow (8/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:/Exit test/i}).click();
+},{mobile:true,denyFullscreen:true});
+await check('/pt-br',async page=>{
+ await page.getByRole('button',{name:/Iniciar inspeção em tela cheia/i}).tap();
+ await page.getByText('Preto (1/8)',{exact:true}).waitFor({timeout:5000});
+ await page.getByRole('button',{name:'Ir para Amarelo'}).click();
+ await page.getByText('Amarelo (8/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:/Sair do teste/i}).click();
+},{mobile:true,denyFullscreen:true});
+await check('/what-is-a-dead-pixel',async page=>{
+ await page.getByRole('heading',{name:'Compare what you see'}).waitFor();
+ await page.getByRole('heading',{name:'Dark spot on a bright background'}).waitFor();
+ const href=await page.getByRole('link',{name:'Português (Brasil)'}).getAttribute('href');
+ if(href!=='/pt-br/o-que-e-dead-pixel')throw Error('Guide locale counterpart is incorrect: '+href);
+});
+await check('/pt-br/o-que-e-dead-pixel',async page=>{
+ await page.getByRole('heading',{name:'Compare o que você observa'}).waitFor();
+ await page.getByRole('heading',{name:'Faixa horizontal ou vertical'}).waitFor();
+ const href=await page.getByRole('link',{name:'English'}).getAttribute('href');
+ if(href!=='/what-is-a-dead-pixel')throw Error('pt-BR locale counterpart is incorrect: '+href);
+});
+await check('/screen-resolution-test',async page=>{
+ await page.getByRole('button',{name:'Copy browser metrics'}).click();
+ await page.waitForFunction(()=>{
+   const text=document.querySelector('#copy-screen-status')?.textContent??'';
+   return text.includes('copied')||text.includes('unavailable');
+ },null,{timeout:5000});
+});
+await check('/dead-pixel-fixer',async page=>{
+ await page.getByRole('heading',{name:'How to use the static color patch'}).waitFor();
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ const zone=page.locator('[role="dialog"] [role="presentation"]');
+ await zone.click({position:{x:250,y:280}});
+ const picker=page.getByLabel('Static patch color');
+ await picker.fill('#00ff00');
+ const patch=zone.locator('div[aria-hidden="true"]').first();
+ const style=await patch.getAttribute('style');
+ if(!style?.includes('rgb(0, 255, 0)')&&!style?.includes('#00ff00'))throw Error('Static patch color did not update: '+style);
+ await page.getByRole('button',{name:/Exit test/i}).click();
+});
+await check('/',async page=>{
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByRole('button',{name:/Mark suspect spot/i}).click();
+ await page.locator('[role="dialog"] [role="presentation"]').click({position:{x:240,y:250}});
+ await page.getByRole('button',{name:/Exit test/i}).click();
+ await page.getByRole('textbox',{name:/Notes/i}).first().fill('<img src=x onerror=alert(1)>');
+ const downloadPromise=page.waitForEvent('download',{timeout:10000});
+ await page.getByRole('button',{name:/Download printable HTML report/i}).click();
+ const file=await downloadPromise;
+ const html=readFileSync(await file.path(),'utf8');
+ if(!html.includes('&lt;img src=x onerror=alert(1)&gt;'))throw Error('Printable HTML did not escape user notes');
+ if(html.includes('window.onload=()=>window.print()'))throw Error('Printable report unexpectedly auto-prints');
+ if(!html.includes('window.print()'))throw Error('Printable report has no explicit print control');
+});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+22+' browser smoke scenarios including privacy, exports, responsive navigation and keyboard checks');
+console.log('PASS all '+29+' browser smoke scenarios including gestures, localization, printable reports, device metrics and privacy checks');
