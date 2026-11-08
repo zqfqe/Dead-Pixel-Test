@@ -90,7 +90,7 @@ export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retentio
    window.setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
  const patch=(mode==='fixer');
- return <>
+ return <div ref={ref}>
    <div className="flex flex-wrap gap-3 items-center">
      <button type="button" onClick={start} className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 min-h-[48px]">{copy.start}</button>
      <span className="text-sm text-neutral-400">{copy.noCert}</span>
@@ -100,7 +100,7 @@ export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retentio
       <button type="button" onClick={download} className="rounded border border-white/20 px-3 py-2 hover:bg-white/10">{copy.export}</button>
       <button type="button" onClick={()=>setMarks([])} className="rounded border border-white/20 px-3 py-2 hover:bg-white/10">{copy.clear}</button>
    </div>}
-   {active && <div ref={ref} className="fixed inset-0 z-[110] bg-black text-white" role="dialog" aria-modal="true" aria-label={lang==='pt-BR'?'Inspeção de tela':'Screen inspection'}>
+   {active && <div className="fixed inset-0 z-[110] bg-black text-white" role="dialog" aria-modal="true" aria-label={lang==='pt-BR'?'Inspeção de tela':'Screen inspection'}>
      <div className="absolute inset-0" role="presentation" onClick={onCanvasClick} style={{
        backgroundColor:current.color || '#000',
        backgroundImage:current.background?.split(' 50% /')[0],
@@ -135,6 +135,6 @@ export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retentio
        {marks.length>0 && <div className="flex justify-between items-center pt-2 text-xs text-neutral-300"><span>{copy.marks}: {marks.length}; CSS viewport coordinates, not physical pixel coordinates.</span><button type="button" onClick={download} className="underline text-blue-300">{copy.export}</button></div>}
      </div>
    </div>}
- </>;
+ </div>;
 };
 export default ScreenInspection;
