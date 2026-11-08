@@ -21,8 +21,9 @@ interface SEOProps {
   disableSuffix?: boolean;
 }
 
-const configuredOrigin = import.meta.env.PUBLIC_SITE_URL?.trim();
-const ORIGIN = configuredOrigin ? new URL(configuredOrigin).origin : '';
+// Canonical URLs are emitted only by Astro's BaseLayout after PUBLIC_SITE_URL is configured.
+// Legacy React SEO must not guess a preview or unverified origin.
+const ORIGIN = '';
 
 export const SEO: React.FC<SEOProps> = ({
   title,
