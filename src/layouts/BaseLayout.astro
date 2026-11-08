@@ -8,7 +8,8 @@ interface Props {
 }
 const {title,description,canonicalPath,lang='en',legacy=false,noindex=false,image='/logo.svg',schema}=Astro.props;
 const origin = 'https://deadpixeltest.cc';
-const canonical = new URL(canonicalPath, origin).toString();
+const normalizePath = (path: string) => path === '/' ? '/' : path.replace(/\/$/, '');
+const canonical = new URL(normalizePath(canonicalPath), origin).toString();
 const alternates = pageAlternates(canonicalPath);
 const navigation = lang==='pt-BR'
   ? [
@@ -34,8 +35,8 @@ const hasSchema=Boolean(schema);
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="canonical" href={canonical} />
-    {alternates.map(a => <link rel="alternate" hreflang={a.lang} href={new URL(a.path,origin).toString()} />)}
-    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={new URL(alternates.find(a=>a.lang==='en')?.path ?? canonicalPath,origin).toString()} />}
+    {alternates.map(a => <link rel="alternate" hreflang={a.lang} href={new URL(normalizePath(a.path),origin).toString()} />)}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={new URL(normalizePath(alternates.find(a=>a.lang==='en')?.path ?? canonicalPath),origin).toString()} />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -50,7 +51,7 @@ const hasSchema=Boolean(schema);
           <img src="/logo.svg" alt="" width="28" height="28" /><span>DeadPixelTest</span>
         </a>
         <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-neutral-300 ml-auto">
-          {navigation.map(n=><a href={n.href} class="hover:text-white rounded-md px-1 py-3">{n.label}</a>)}
+          {navigation.map(n=><a href={normalizePath(n.href)} class="hover:text-white rounded-md px-1 py-3">{n.label}</a>)}
         </nav>
         <div class="shrink-0 flex gap-2 text-xs border-l border-white/20 pl-3">
           <a href="/" lang="en" class={lang==='en'?'font-bold text-blue-400':'hover:text-white'}>EN</a>
