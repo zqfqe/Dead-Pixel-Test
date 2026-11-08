@@ -221,7 +221,7 @@ await check('/tests/refresh-rate',async page=>{
 await check('/tests/refresh-rate',async page=>{
  const toggle=page.getByRole('button',{name:'Open Menu'});
  await toggle.waitFor({timeout:10000});
- const menu=page.getByRole('navigation',{name:'Mobile navigation'});
+ const menu=page.locator('#mobile-site-menu');
  if(await toggle.getAttribute('aria-expanded')!=='false')throw Error('Mobile menu open by default');
  await toggle.click();
  if(await toggle.getAttribute('aria-expanded')!=='true')throw Error('Mobile menu toggle state mismatch');
