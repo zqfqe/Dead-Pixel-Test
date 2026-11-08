@@ -1,0 +1,30 @@
+name: V1.2 Build and SEO Routes
+on:
+  push:
+    branches: [feature/v12-gsc-safe-implementation]
+  pull_request:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Typecheck, sitemap and static SEO output
+        run: npm run build
+      - name: Check high-traffic route and new locale output
+        run: |
+          test -s dist/index.html
+          test -s dist/pt-br/index.html
+          test -s dist/laptop-screen-dead-pixel-test/index.html
+          test -s dist/pt-br/pixel-morto-notebook/index.html
+          grep -q 'Pixel Morto no Notebook' dist/pt-br/pixel-morto-notebook/index.html
+          grep -q 'tests/local-dimming' dist/sitemap.xml
+          grep -q 'tests/refresh-rate' dist/sitemap.xml
+          grep -q 'pt-br' dist/sitemap.xml
