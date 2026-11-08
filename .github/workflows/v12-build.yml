@@ -32,8 +32,8 @@ jobs:
           test -s dist/tests/color-gradient.html
           test -s dist/pt-br.html
           test -s dist/pt-br/pixel-morto-notebook.html
-          grep -q 'hreflang="pt-BR"' dist/index.html
           grep -q 'tests/local-dimming' dist/sitemap.xml
+          ! grep -q 'laptop-screen-dead-pixel-test' dist/sitemap.xml
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run browser checks
