@@ -9,24 +9,25 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node 22
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Wait for and verify Cloudflare production deployment
+      - name: Explain safe domainless mode
+        if: \${{ vars.PUBLIC_SITE_URL == '' }}
+        run: echo "PUBLIC_SITE_URL is not set. Pages deployment is intentionally noindex; no canonical or sitemap URL is published."
+      - name: Verify configured production domain
+        if: \${{ vars.PUBLIC_SITE_URL != '' }}
+        env:
+          PUBLIC_SITE_URL: \${{ vars.PUBLIC_SITE_URL }}
         run: node scripts/production-smoke.mjs
       - name: Install Chromium
+        if: \${{ vars.PUBLIC_SITE_URL != '' }}
         run: npx playwright install --with-deps chromium
-      - name: Test real production pages and interactions
+      - name: Test production interactions
+        if: \${{ vars.PUBLIC_SITE_URL != '' }}
         env:
-          SMOKE_BASE: https://deadpixeltest.cc
+          PUBLIC_SITE_URL: \${{ vars.PUBLIC_SITE_URL }}
+          SMOKE_BASE: \${{ vars.PUBLIC_SITE_URL }}
         run: npm run smoke:browser
-      - name: Upload browser screenshots on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: production-browser-smoke-failures
-          path: smoke-screenshots/
-          if-no-files-found: ignore
