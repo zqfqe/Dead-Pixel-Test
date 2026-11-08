@@ -11,7 +11,7 @@ const required=[
 const errors=[];
 const urls=readFileSync('dist/sitemap.xml','utf8');
 for(const path of required){
- const output=join('dist',path==='/'?'index.html':path.replace(/^\//,'').replace(/\/$/,'')+'/index.html');
+ const output=join('dist',path==='/'?'index.html':path.split('/').filter(Boolean).join('/')+'.html');
  if(!existsSync(output)){errors.push('Missing static HTML: '+output);continue;}
  const html=readFileSync(output,'utf8');
  if(!/<title>[^<]+<\/title>/.test(html))errors.push('Missing title: '+path);
