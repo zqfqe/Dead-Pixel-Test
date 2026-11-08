@@ -182,13 +182,13 @@ const Header = () => {
                   <Monitor size={10} />
                   <span>{windowSize.w}x{windowSize.h}</span>
                </div>
-               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Pixel Ratio">
+               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 transition-colors cursor-default" title="Device pixel ratio (not physical DPI)">
                   <Maximize2 size={10} />
-                  <span>DPI:{pixelRatio.toFixed(1)}</span>
+                  <span>DPR:{pixelRatio.toFixed(1)}</span>
                </div>
-               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border bg-white/5 transition-colors cursor-default ${fps < 30 ? 'text-red-500 border-red-900/30' : fps > 100 ? 'text-green-500 border-green-900/30' : 'text-blue-500 border-blue-900/30'}`} title="Real-time Refresh Rate">
+               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border bg-white/5 transition-colors cursor-default ${fps < 30 ? 'text-red-500 border-red-900/30' : fps > 100 ? 'text-green-500 border-green-900/30' : 'text-blue-500 border-blue-900/30'}`} title="Estimated browser animation FPS, not physical panel refresh Hz">
                   <Activity size={10} />
-                  <span>{fps} Hz</span>
+                  <span>{fps} FPS</span>
                </div>
             </div>
 

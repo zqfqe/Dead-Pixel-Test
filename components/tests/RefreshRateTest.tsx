@@ -113,7 +113,7 @@ const RefreshRateTest: React.FC = () => {
                 <div className="bg-black/60 backdrop-blur border border-white/20 px-6 py-4 rounded-xl text-center">
                     <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1">Browser FPS</div>
                     <div className="text-6xl font-mono font-bold text-green-400">{fps}</div>
-                    <div className="text-xs text-neutral-600 mt-2">Target: {window.screen.width > 0 ? 'Max' : '60'} Hz</div>
+                    <div className="text-xs text-neutral-600 mt-2">Browser FPS estimate</div>
                 </div>
             </div>
         </div>
@@ -131,7 +131,7 @@ const RefreshRateTest: React.FC = () => {
     <>
       <SEO 
         title="Refresh Rate & Frame Skipping Test (Hz Check)" 
-        description="Check your monitor's real refresh rate (Hz) and detect frame skipping. Essential for overclocked monitors to ensure they aren't dropping frames."
+        description="Estimate browser animation FPS and investigate possible frame skipping with an external camera; this is not a direct measurement of hardware Hz."
         canonical="/tests/refresh-rate"
         keywords={['refresh rate test', 'hz test', 'frame skipping test', 'monitor overclock test', 'fps test', 'vsync test']}
         breadcrumbs={[
@@ -195,7 +195,7 @@ const RefreshRateTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Refresh Rate & Frame Skipping"
-          description="Validate your monitor's true refresh rate and check for dropped frames (common in overclocked monitors). Requires a smartphone camera for the Skipping Test."
+          description="Observe browser animation FPS and use an external camera to investigate frame skipping. Browser FPS is not hardware Hz."
           onStart={startTest}
         >
           <InfoCard title="How to Check Frame Skipping">
@@ -209,7 +209,7 @@ const RefreshRateTest: React.FC = () => {
           </InfoCard>
           <InfoCard title="Hz vs FPS">
             <p>
-              This tool measures <strong>Browser FPS</strong>. On a 144Hz monitor, this should read 144. If it's capped at 60, check your Windows Display Settings or Browser Hardware Acceleration settings.
+              This tool measures <strong>Browser FPS</strong>, not guaranteed hardware Hz. Browser throttling, power settings, and the operating system can affect the result.
             </p>
           </InfoCard>
         </TestIntro>
@@ -257,7 +257,7 @@ const RefreshRateTest: React.FC = () => {
                  <Layers className="text-green-500" /> V-Sync & G-Sync Interaction
               </h2>
               <p className="text-neutral-400 leading-relaxed mb-6">
-                 This test runs using `requestAnimationFrame`, which naturally syncs to your monitor's refresh rate (V-Sync).
+                 This test uses requestAnimationFrame, whose cadence is affected by the browser, operating system and display pipeline. It is not a direct hardware refresh-rate measurement.
               </p>
               <div className="flex gap-4 p-4 bg-yellow-900/10 border border-yellow-500/20 rounded-lg">
                  <AlertTriangle className="text-yellow-500 shrink-0" />

@@ -23,11 +23,11 @@ const Footer: React.FC = () => {
               DeadPixelTest.cc
             </div>
             <p className="text-neutral-400 leading-relaxed">
-              The industry standard for display diagnostics. We help gamers, designers, and professionals achieve pixel perfection through advanced browser-based calibration tools.
+              Free browser-based screen checks for displays and phones. All results require visual user assessment; no automatic hardware certification.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="#" aria-label="Twitter" className="text-neutral-400 hover:text-white transition-colors"><Twitter size={18} /></a>
-              <a href="#" aria-label="GitHub" className="text-neutral-400 hover:text-white transition-colors"><Github size={18} /></a>
+              
+              <a href="https://github.com/zqfqe/Dead-Pixel-Test" target="_blank" rel="noopener noreferrer" aria-label="GitHub source" className="text-neutral-400 hover:text-white transition-colors"><Github size={18} /></a>
               <a href="mailto:info@deadpixeltest.cc" aria-label="Email Support" className="text-neutral-400 hover:text-white transition-colors"><Mail size={18} /></a>
             </div>
           </div>

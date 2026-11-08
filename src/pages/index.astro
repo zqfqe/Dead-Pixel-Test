@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ScreenInspection from '../../components/tests/ScreenInspection';
+import { SEO_LANDING_PAGES } from '../../data/seoLandingPages';
+const page={description:'Free online dead pixel test for monitors, laptops and phones. Check dead and stuck pixels with solid colors; no download or automatic diagnosis.'};
+const topLinks=[
+ {path:'/laptop-screen-dead-pixel-test/',name:'Laptop Dead Pixel Test',sub:'Check your built-in display'},
+ {path:'/dead-pixel-fixer/',name:'Stuck Pixel Check',sub:'Static comparison, no flashing'},
+ {path:'/dead-pixel-line-test/',name:'Screen Line Test',sub:'Horizontal and vertical lines'},
+ {path:'/image-retention-test/',name:'Image Retention Test',sub:'Temporary persistence and burn-in'},
+ {path:'/screen-contrast-test/',name:'Screen Contrast Test',sub:'Grayscale and gradients'},
+ {path:'/tests/refresh-rate',name:'Frame Skipping Test',sub:'Browser FPS and external camera'},
+ {path:'/tests/local-dimming',name:'Local Dimming Test',sub:'Look for halo effects and blooming'},
+ {path:'/tests/color-gradient',name:'Color Banding Test',sub:'Inspect smooth gradient transitions'},
+ {path:'/tests/audio-sync',name:'Audio / Video Sync',sub:'Check apparent sound synchronization'}
+];
+const schema={
+ '@context':'https://schema.org','@type':'WebApplication',
+ name:'Dead Pixel Test — Screen Visual Inspection',url:'https://deadpixeltest.cc/',
+ description:page.description,applicationCategory:'UtilitiesApplication',
+ operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}
+};
+---
+<BaseLayout title="Dead Pixel Test – Free Online Screen Check | DeadPixelTest"
+  description={page.description} canonicalPath="/" lang="en" schema={schema}>
+  <main class="mx-auto max-w-7xl px-4 pt-12 md:px-8 md:pt-16">
+    <div class="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(260px,.8fr)] gap-10 items-start">
+      <section class="space-y-5">
+        <p class="text-blue-400 text-sm font-bold tracking-[.13em] uppercase">Free browser-based display inspection</p>
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.08]">Dead Pixel Test</h1>
+        <p class="text-lg text-neutral-300 leading-8 max-w-3xl">Check your monitor, laptop, or phone with full-screen colors. Look for dead pixels, bright dots, and stuck subpixels. All observations are made by you — the browser cannot automatically detect physical panel damage.</p>
+        <div class="rounded-2xl border border-white/10 bg-neutral-950 px-5 py-6 md:px-8 md:py-8">
+          <p class="font-semibold text-white mb-4">Start your screen check</p>
+          <ScreenInspection client:only="react" mode="pixels" lang="en" />
+          <p class="text-sm text-neutral-400 mt-5">Black, white, red, green, blue and more. Keyboard arrows and touch-friendly controls. Record suspect spots for manual rechecks.</p>
+        </div>
+      </section>
+      <aside class="rounded-2xl border border-white/10 bg-neutral-900/50 p-6">
+        <h2 class="font-semibold text-xl mb-4">Before you start</h2>
+        <ol class="list-decimal pl-5 space-y-4 text-neutral-300 leading-7">
+          <li>Gently clean the screen and remove reflections or marks on the glass.</li>
+          <li>Confirm the browser is on the display you want to inspect.</li>
+          <li>Inspect each static color from different angles, without pressing the panel.</li>
+          <li>Record suspicious spots and recheck on additional colors.</li>
+          <li>Refer to your seller or manufacturer for warranty decisions.</li>
+        </ol>
+        <p class="text-xs text-amber-200/80 border-t border-white/10 pt-4 mt-5">This is a visual self-check, not a certified diagnosis.</p>
+      </aside>
+    </div>
+    <section class="mt-16">
+      <h2 class="text-2xl md:text-3xl font-bold mb-6">More display and device tests</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {topLinks.map(link => <a href={link.path.replace(/\/$/,'') || '/'} class="rounded-xl border border-white/10 bg-neutral-900/50 p-5 transition-colors hover:border-blue-500/70 hover:bg-white/5">
+          <h3 class="text-lg font-semibold text-white">{link.name}</h3>
+          <p class="mt-2 text-sm text-neutral-400">{link.sub}</p>
+        </a>)}
+      </div>
+    </section>
+    <section class="mt-16 grid md:grid-cols-2 gap-10">
+      <article>
+        <h2 class="text-2xl font-bold mb-4">How to identify a dead pixel</h2>
+        <p class="text-neutral-300 leading-8">A dead pixel does not produce the expected light output. It may appear as a consistently dark spot, particularly against white. A stuck subpixel may remain red, green or blue, while dust and protective-film marks can look similar. Compare several backgrounds before drawing conclusions.</p>
+        <a href="/what-is-a-dead-pixel" class="inline-block mt-5 text-blue-400 hover:text-blue-300">Understand dead and stuck pixels →</a>
+      </article>
+      <article>
+        <h2 class="text-2xl font-bold mb-4">Why test several colors?</h2>
+        <p class="text-neutral-300 leading-8">The same defect can look different on a black, white or primary-color field. Static color screens help you locate an abnormal spot, but cannot measure monitor luminance, native refresh rate or physical panel health. Never press or heat the display in an attempt to fix a pixel.</p>
+        <a href="/pt-br" class="inline-block mt-5 text-blue-400 hover:text-blue-300">Teste de pixel morto em português →</a>
+      </article>
+    </section>
+    <section class="mt-16 pb-8">
+      <h2 class="text-2xl font-bold mb-5">Common questions</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <article class="border border-white/10 rounded-xl p-5"><h3 class="font-semibold text-lg mb-2">Can a webpage detect dead pixels automatically?</h3><p class="text-neutral-300 leading-7">No. The test displays patterns; you inspect the physical screen. A browser cannot read the panel's actual damaged pixels.</p></article>
+        <article class="border border-white/10 rounded-xl p-5"><h3 class="font-semibold text-lg mb-2">Can a dead pixel be fixed online?</h3><p class="text-neutral-300 leading-7">A physically damaged pixel cannot be repaired by a webpage. Avoid rapid flashing, heat and pressure. Ask the manufacturer about warranty options.</p></article>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+import '../../index.css';
+import { SEO_LANDING_PAGES, pageAlternates } from '../../data/seoLandingPages';
+interface Props {
+  title: string; description: string; canonicalPath: string;
+  lang?: 'en' | 'pt-BR'; legacy?: boolean; noindex?: boolean;
+  image?: string; schema?: Record<string, unknown>;
+}
+const {title,description,canonicalPath,lang='en',legacy=false,noindex=false,image='/logo.svg',schema}=Astro.props;
+const origin = 'https://deadpixeltest.cc';
+const normalizePath = (path: string) => path === '/' ? '/' : path.replace(/\/$/, '');
+const canonical = new URL(normalizePath(canonicalPath), origin).toString();
+const alternates = pageAlternates(canonicalPath);
+const navigation = lang==='pt-BR'
+  ? [
+      {href:'/pt-br/',label:'Teste de pixel'}, {href:'/pt-br/pixel-morto-notebook/',label:'Notebook'},
+      {href:'/pt-br/pixel-morto-iphone/',label:'iPhone'}, {href:'/pt-br/teste-de-cores/',label:'Cores'},
+      {href:'/pt-br/reparar-pixel-preso/',label:'Pixel preso'},
+    ]
+  : [
+      {href:'/',label:'Dead Pixel Test'}, {href:'/laptop-screen-dead-pixel-test/',label:'Laptop'},
+      {href:'/dead-pixel-line-test/',label:'Screen Lines'}, {href:'/image-retention-test/',label:'Retention'},
+      {href:'/tests/refresh-rate',label:'Refresh Rate'}, {href:'/tests/local-dimming',label:'Local Dimming'}
+    ];
+const hasSchema=Boolean(schema);
+---
+<!doctype html>
+<html lang={lang} data-astro-site="true">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#08090c" />
+    <meta name="google-site-verification" content="Hhbf5ZqIXEGRs_NaTldov7TD0zGNRiM43_cX-ywm4mM" />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="canonical" href={canonical} />
+    {alternates.map(a => <link rel="alternate" hreflang={a.lang} href={new URL(normalizePath(a.path),origin).toString()} />)}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={new URL(normalizePath(alternates.find(a=>a.lang==='en')?.path ?? canonicalPath),origin).toString()} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image,origin).toString()} />
+    {hasSchema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g,'\\u003c')} />}
+  </head>
+  <body class="min-h-screen bg-[#08090c] text-white antialiased">
+    {!legacy && <header class="sticky top-0 z-40 border-b border-white/10 bg-[#08090c]/95 backdrop-blur-lg">
+      <div class="mx-auto max-w-7xl flex min-h-16 items-center gap-4 px-4 md:px-8">
+        <a href={lang==='pt-BR'?'/pt-br/':'/'} class="flex items-center gap-2 font-bold text-white shrink-0">
+          <img src="/logo.svg" alt="" width="28" height="28" /><span>DeadPixelTest</span>
+        </a>
+        <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-neutral-300 ml-auto">
+          {navigation.map(n=><a href={normalizePath(n.href)} class="hover:text-white rounded-md px-1 py-3">{n.label}</a>)}
+        </nav>
+        <div class="shrink-0 flex gap-2 text-xs border-l border-white/20 pl-3">
+          <a href="/" lang="en" class={lang==='en'?'font-bold text-blue-400':'hover:text-white'}>EN</a>
+          <a href="/pt-br/" lang="pt-BR" class={lang==='pt-BR'?'font-bold text-blue-400':'hover:text-white'}>PT-BR</a>
+        </div>
+      </div>
+    </header>}
+    <slot />
+    {!legacy && <footer class="mt-20 border-t border-white/10 bg-black/50 px-4 py-10 text-sm text-neutral-400">
+      <div class="mx-auto max-w-7xl flex flex-wrap justify-between gap-5">
+        <p>© {new Date().getUTCFullYear()} DeadPixelTest.cc — {lang==='pt-BR'?'Inspeção visual, não laudo técnico.':'Visual self-check, not a hardware certificate.'}</p>
+        <nav class="flex gap-5"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a></nav>
+      </div>
+    </footer>}
+  </body>
+</html>

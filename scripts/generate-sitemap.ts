@@ -1,80 +1,31 @@
-import { writeFileSync } from 'fs';
-import { MENU_ITEMS } from '../data/menu';
-import { BLOG_POSTS } from '../data/blog';
+import {writeFileSync} from 'node:fs';
+import {MENU_ITEMS} from '../data/menu';
+import {BLOG_POSTS} from '../data/blog';
+import {SEO_LANDING_PAGES, pageAlternates} from '../data/seoLandingPages';
 
-// Configuration
-const DOMAIN = 'https://deadpixeltest.cc';
-const OUTPUT_PATH = 'public/sitemap.xml';
-
-// Static pages that are not in the main menu but should be indexed
-const STATIC_PAGES = [
-  { path: '/about', priority: '0.5', changefreq: 'yearly' },
-  { path: '/contact', priority: '0.5', changefreq: 'yearly' },
-  { path: '/privacy-policy', priority: '0.4', changefreq: 'yearly' },
-  { path: '/terms-of-service', priority: '0.4', changefreq: 'yearly' },
-];
-
-const generateSitemap = () => {
-  const urls: string[] = [];
-  const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-
-  // Helper to add URL
-  const addUrl = (path: string, priority: string, changefreq: string) => {
-    // Remove trailing slash for consistency, but ensure domain has no trailing slash
-    let cleanPath = path.startsWith('/') ? path : `/${path}`;
-    const loc = `${DOMAIN}${cleanPath === '/' ? '' : cleanPath}`;
-    
-    // Compact format to avoid potential whitespace issues
-    urls.push(`<url><loc>${loc}</loc><lastmod>${date}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`);
-  };
-
-  console.log('🔍 Scanning routes...');
-
-  // 1. Core Tools from Menu
-  MENU_ITEMS.forEach(item => {
-    // Skip headers and external links
-    if (item.isHeader || item.path.startsWith('http')) return;
-
-    // Determine priority
-    let priority = '0.8';
-    let changefreq = 'monthly';
-
-    if (item.path === '/') {
-      priority = '1.0';
-      changefreq = 'weekly';
-    } else if (item.path === '/blog') {
-      priority = '0.9';
-      changefreq = 'daily';
-    }
-
-    addUrl(item.path, priority, changefreq);
-  });
-
-  // 2. Blog Posts
-  BLOG_POSTS.forEach(post => {
-    addUrl(`/blog/${post.slug}`, '0.7', 'monthly');
-  });
-
-  // 3. Static Footer Pages
-  STATIC_PAGES.forEach(page => {
-    addUrl(page.path, page.priority, page.changefreq);
-  });
-
-  // Construct XML - Ensuring no leading whitespace
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.join('\n')}
-</urlset>`;
-
-  // Write file
-  try {
-    writeFileSync(OUTPUT_PATH, sitemap.trim());
-    console.log(`✅ Sitemap generated successfully at ${OUTPUT_PATH}`);
-    console.log(`   - Total URLs: ${urls.length}`);
-  } catch (error) {
-    console.error('❌ Error writing sitemap:', error);
-    throw error;
-  }
-};
-
-generateSitemap();
+const DOMAIN='https://deadpixeltest.cc';
+const staticPaths=['/about','/contact','/privacy-policy','/terms-of-service'];
+const allPaths=new Set<string>();
+for(const item of MENU_ITEMS){
+ if(!item.isHeader && item.path.startsWith('/'))allPaths.add(item.path);
+}
+for(const page of SEO_LANDING_PAGES)allPaths.add(page.path);
+for(const post of BLOG_POSTS)allPaths.add('/blog/'+post.slug);
+for(const path of staticPaths)allPaths.add(path);
+allPaths.add('/');
+// Keep existing GSC-performing URLs. The root is the canonical dead-pixel landing
+// page; the same React test is also available at /tests/dead-pixel but that
+// duplicate path is intentionally excluded from the sitemap.
+allPaths.delete('/tests/dead-pixel');
+const escapeXml=(text:string)=>text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const canonical=(path:string)=>DOMAIN+(path==='/'?'/':path.replace(/\/$/,''));
+const entries=[...allPaths].sort().map(path=>{
+ const alternates=pageAlternates(path);
+ const links=alternates.map(item=>'<xhtml:link rel="alternate" hreflang="'+item.lang+'" href="'+escapeXml(canonical(item.path))+'"/>').join('');
+ return '  <url><loc>'+escapeXml(canonical(path))+'</loc>'+links+'</url>';
+});
+const xml='<?xml version="1.0" encoding="UTF-8"?>\n'+
+ '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'+
+ entries.join('\n')+'\n</urlset>\n';
+writeFileSync('public/sitemap.xml',xml,'utf8');
+console.log('Generated sitemap:',entries.length,'canonical routes; no artificial lastmod dates.');

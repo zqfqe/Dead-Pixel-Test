@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { TestReportProvider } from './contexts/TestReportContext';
 import Header from './components/layout/Header';
+import { SEO_LANDING_PAGES } from './data/seoLandingPages';
 import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
@@ -55,6 +56,8 @@ const Contact = lazy(() => import('./components/pages/Contact'));
 const Privacy = lazy(() => import('./components/pages/Privacy'));
 const Terms = lazy(() => import('./components/pages/Terms'));
 const NotFound = lazy(() => import('./components/pages/NotFound'));
+const SeoLandingPage = lazy(() => import('./components/pages/SeoLandingPage'));
+
 
 const PageLoader = () => (
   <div className="h-full w-full flex items-center justify-center min-h-[50vh]">
@@ -78,6 +81,10 @@ const App: React.FC = () => {
               <div className="max-w-7xl mx-auto p-6 lg:p-12">
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
+                    {/* V1.2 search-intent pages: keep legacy /tests/* routes unchanged */}
+                    {SEO_LANDING_PAGES.filter(page => page.path !== '/').map(page => (
+                      <Route key={page.path} path={page.path} element={<SeoLandingPage />} />
+                    ))}
                     {/* Phase 1 Tests */}
                     <Route path="/" element={<DeadPixelTest />} />
                     <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />

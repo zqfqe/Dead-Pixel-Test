@@ -35,6 +35,16 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Physical Ruler", path: "/tools/ruler" },
   { title: "PPI Calculator", path: "/tools/ppi-calculator" },
 
+  { title: "PIXEL GUIDES", path: "", isHeader: true },
+  { title: "Laptop Dead Pixel Test", path: "/laptop-screen-dead-pixel-test/" },
+  { title: "Static Stuck Pixel Check", path: "/dead-pixel-fixer/" },
+  { title: "Phone Screen Pixel Test", path: "/phone-screen-dead-pixel-test/" },
+  { title: "Screen Line Test", path: "/dead-pixel-line-test/" },
+  { title: "Image Retention Test", path: "/image-retention-test/" },
+  { title: "Screen Resolution Checker", path: "/screen-resolution-test/" },
+  { title: "Contrast Test Guide", path: "/screen-contrast-test/" },
+  { title: "What Is a Dead Pixel?", path: "/what-is-a-dead-pixel/" },
+  { title: "Teste de Pixel Morto (Brasil)", path: "/pt-br/" },
   { title: "BLOG", path: "", isHeader: true },
   { title: "Articles & Guides", path: "/blog" },
 ];
