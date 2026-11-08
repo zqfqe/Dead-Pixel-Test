@@ -15,7 +15,7 @@ const PATTERNS:Pattern[]=[
 {name:'Vertical',background:'repeating-linear-gradient(90deg,#000 0 12px,#fff 12px 24px)'},
 {name:'Horizontal fine',background:'repeating-linear-gradient(0deg,#000 0 1px,#fff 1px 2px)'},
 {name:'Vertical fine',background:'repeating-linear-gradient(90deg,#000 0 1px,#fff 1px 2px)'},
-{name:'Grid',background:'repeating-linear-gradient(0deg,#fff 0 15px,#000 15px 16px),repeating-linear-gradient(90deg,#fff 0 15px,#000 15px 16px)'},
+{name:'Grid',color:'#000',background:'repeating-linear-gradient(0deg,transparent 0 15px,#fff 15px 16px),repeating-linear-gradient(90deg,transparent 0 15px,#fff 15px 16px)'},
 {name:'Checkerboard',background:'repeating-conic-gradient(#222 0% 25%,#ddd 0% 50%)',backgroundSize:'64px 64px'},
 {name:'Gradient',background:'linear-gradient(90deg,#000,#444,#888,#ccc,#fff)'}
 ];
