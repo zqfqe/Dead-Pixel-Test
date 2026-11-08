@@ -17,6 +17,9 @@ const RefreshRateTest: React.FC = () => {
   const lastTimeRef = useRef(0);
 
   const startTest = () => {
+    setFps(0);
+    frameCountRef.current = 0;
+    lastTimeRef.current = 0;
     setIsActive(true);
     enterFullscreen();
   };
@@ -42,13 +45,14 @@ const RefreshRateTest: React.FC = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       // Recalculate slots based on width to keep squares roughly 40px
-      slots = Math.floor(canvas.width / 40);
+      slots = Math.max(1, Math.floor(canvas.width / 40));
     };
     window.addEventListener('resize', resize);
     resize();
 
     const render = (time: number) => {
-        // FPS Counter
+        // Browser animation cadence: wait for a full measurement window.
+        if (lastTimeRef.current === 0) lastTimeRef.current = time;
         if (time - lastTimeRef.current >= 1000) {
             setFps(Math.round((frameCountRef.current * 1000) / (time - lastTimeRef.current)));
             frameCountRef.current = 0;
@@ -120,7 +124,7 @@ const RefreshRateTest: React.FC = () => {
 
         <div className="absolute bottom-12 left-0 w-full text-center pointer-events-none">
             <p className="text-white/50 font-mono text-sm bg-black/50 inline-block px-4 py-2 rounded">
-                Take a long exposure photo (1/5s) to check for gaps.
+                Optional: take a manual-exposure photo and compare repeated results; gaps alone are not conclusive.
             </p>
         </div>
       </div>
@@ -144,8 +148,7 @@ const RefreshRateTest: React.FC = () => {
             {
               "@type": "WebApplication",
               "name": "Monitor Refresh Rate Checker",
-              "url": "https://deadpixeltest.cc/tests/refresh-rate",
-              "description": "Test monitor refresh rate (Hz) and check for frame skipping in overclocked displays.",
+              "description": "Estimate browser animation FPS and help investigate possible frame skipping using an external camera; hardware refresh Hz is not directly measured.",
               "applicationCategory": "UtilitiesApplication",
               "operatingSystem": "Web Browser",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -174,7 +177,7 @@ const RefreshRateTest: React.FC = () => {
                   "name": "What is the difference between Hz and FPS?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Hz (Hertz) is how many times per second your monitor refreshes the image. FPS (Frames Per Second) is how many images your computer generates. For smooth motion, FPS should match Hz."
+                    "text": "Hz describes display refreshes per second, whereas FPS describes rendered frames. Browser animation cadence can approximate refresh timing but cannot confirm the panel’s hardware refresh rate; VRR and frame pacing affect the relationship."
                   }
                 }
               ]
@@ -185,7 +188,7 @@ const RefreshRateTest: React.FC = () => {
               "step": [
                 { "@type": "HowToStep", "text": "Close all other browser tabs and applications to ensure maximum performance." },
                 { "@type": "HowToStep", "text": "Start the test. A white block will move across the grid slots." },
-                { "@type": "HowToStep", "text": "Read the 'Browser FPS' counter. It should match your monitor's Hertz (e.g., 60, 144, 240)." },
+                { "@type": "HowToStep", "text": "Read the 'Browser FPS' estimate. Compare it with your operating-system display setting, but do not treat it as a direct measurement of physical refresh Hz." },
                 { "@type": "HowToStep", "text": "To check for frame skipping (on overclocked monitors), take a photo of the screen with a smartphone camera set to 1/10s shutter speed." }
               ]
             }
@@ -204,7 +207,7 @@ const RefreshRateTest: React.FC = () => {
                 <li>Open your phone camera in <strong>Pro/Manual Mode</strong>.</li>
                 <li>Set Shutter Speed to roughly <strong>1/5s</strong> or <strong>1/10s</strong>.</li>
                 <li>Take a photo of the moving block.</li>
-                <li><strong>Result:</strong> If the trail of blocks is continuous, it's perfect. If there are black gaps between blocks, your monitor is skipping frames.</li>
+                <li><strong>Result:</strong> A regular trail can be consistent with stable presentation, but gaps may also come from browser timing or camera exposure. Repeat the test and verify with your display's settings or a dedicated hardware method.</li>
             </ol>
           </InfoCard>
           <InfoCard title="Hz vs FPS">
@@ -226,7 +229,7 @@ const RefreshRateTest: React.FC = () => {
                        When you overclock a monitor (e.g., forcing a 60Hz panel to run at 75Hz), the internal electronics might accept the higher signal but fail to display every frame. Instead, it drops (skips) frames to keep up.
                     </p>
                     <p className="text-neutral-400 leading-relaxed">
-                       This results in stuttery motion, which defeats the purpose of a higher refresh rate. This test helps you verify if your overclock is stable.
+                       This results in stuttery motion, which defeats the purpose of a higher refresh rate. This animation can help you investigate possible irregular frame presentation with an external camera. It cannot certify that an overclock is stable.
                     </p>
                  </div>
                  
