@@ -41,14 +41,14 @@ await check('/',async page=>{
  await page.getByRole('button',{name:/Exit test/i}).click();
  await page.screenshot({path:'smoke-screenshots/home-desktop.png',fullPage:true});
 });
-await check('/pt-br/',async page=>{
+await check('/pt-br',async page=>{
  await page.getByRole('button',{name:/Iniciar inspeção em tela cheia/i}).waitFor({timeout:12000});
  if(await page.locator('html').getAttribute('lang')!=='pt-BR')throw Error('Missing pt-BR language');
  await page.getByRole('button',{name:/Iniciar inspeção em tela cheia/i}).click();
  await page.getByRole('button',{name:/Sair do teste/i}).click();
 },{mobile:true});
-await check('/laptop-screen-dead-pixel-test/',expectedTitle('Laptop Dead Pixel Test'));
-await check('/pt-br/pixel-morto-notebook/',expectedTitle('Pixel Morto'));
+await check('/laptop-screen-dead-pixel-test',expectedTitle('Laptop Dead Pixel Test'));
+await check('/pt-br/pixel-morto-notebook',expectedTitle('Pixel Morto'));
 await check('/tests/refresh-rate',async page=>{
  await expectedTitle('Frame Skipping')(page);
  await page.getByText(/Refresh Rate|Frame Skipping/i).first().waitFor({timeout:15000});
@@ -58,7 +58,7 @@ await check('/tests/local-dimming',async page=>{
  await page.getByText(/Local Dimming/i).first().waitFor({timeout:15000});
 });
 await check('/tests/color-gradient',expectedTitle('Color Banding'));
-await check('/image-retention-test/',expectedTitle('Image Retention'));
+await check('/image-retention-test',expectedTitle('Image Retention'));
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
 console.log('PASS all '+8+' browser smoke scenarios');
