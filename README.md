@@ -43,7 +43,7 @@ Existing GSC routes such as \`/tests/refresh-rate\`, \`/tests/local-dimming\`, \
 
 ## Verification
 
-GitHub Actions checks domainless and configured builds, static routes, metadata and 19 Chromium browser scenarios (including mobile emulation, keyboard access, visual-test reports, camera/media cleanup and same-origin request audit). Failure screenshots are retained for debugging. Production smoke is explicitly skipped when the PUBLIC_SITE_URL GitHub Actions variable is not configured; a deployment or build success does not establish custom-domain availability or Google indexing.
+GitHub Actions checks domainless and configured builds, static routes, metadata and 22 Chromium browser scenarios (including mobile emulation, keyboard access, visual-test reports, camera/media cleanup and same-origin request audit). Failure screenshots are retained for debugging. Production smoke is explicitly skipped when the PUBLIC_SITE_URL GitHub Actions variable is not configured; a deployment or build success does not establish custom-domain availability or Google indexing.
 
 
 ## Privacy and safety
@@ -56,3 +56,14 @@ GitHub Actions checks domainless and configured builds, static routes, metadata 
 - The privacy policy describes hosting-provider request metadata separately from browser-side test data.
 - A verified private support/privacy contact address remains a pre-launch requirement.
 - Do not enable analytics or advertising until the privacy notice and any required consent controls are reviewed and updated.
+
+## V1.2 P1 follow-up: accessibility, performance and established SEO routes (2026-11-09)
+
+- Added first-focus skip links and actual `#main-content` targets for Astro pages and legacy React tool pages; the keyboard link is visible on focus.
+- Desktop navigation dropdowns now open on keyboard focus as well as hover. The mobile menu has `aria-expanded`, `aria-controls`, an accessibility-hidden closed state and Escape support. Closed off-screen links are no longer focusable.
+- Added visible `:focus-visible` outlines and a `prefers-reduced-motion` CSS override. The legacy header only samples browser FPS while the desktop viewport is visible and reduced-motion is not requested, cutting background/mobile animation work.
+- Removed an unverified `.cc` support mailto address and domain claim in the legacy footer; the primary dead-pixel link points to the canonical homepage.
+- Established GSC test paths (refresh rate, local dimming, color gradients, audio sync, test patterns) now contain unique, crawlable Astro-rendered practical instructions and limitations even before the React tool hydrates; static-route build assertions protect these blocks against regression.
+- Refresh-rate tool now guards against zero slots on narrow viewports, resets sampling on start, and clearly distinguishes browser FPS from physical panel Hz. Long-exposure photos are not described as conclusive evidence by themselves.
+- Automated browser suite now covers 22 scenarios, including skip navigation, mobile closed-menu focus behavior and reduced-motion treatment. These are Chromium checks, not NVDA, VoiceOver or real Safari tests.
+- The production-domain smoke workflow still skips without a configured GitHub Actions `PUBLIC_SITE_URL`. This does not independently establish the Cloudflare deployment or indexing status.
