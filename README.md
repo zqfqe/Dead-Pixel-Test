@@ -1,55 +1,46 @@
-# DeadPixelTest.cc — Astro Static Display Tools
+# Dead Pixel Test — Astro Static Display Tools
 
-Free display, monitor and device diagnostics. **Astro 6 is the primary site generator**; interactive legacy tests use React islands. Source: https://github.com/zqfqe/Dead-Pixel-Test.
+Astro 6 static site with React islands for browser-based screen diagnostics.
 
-## Local build
+## Build
 
-Node.js 22.12 or newer (see `.nvmrc`).
+Node.js 22.12+.
 
-```sh
+\`\`\`sh
 npm install
 npm run check:types
 npm run build
 npm run preview
-```
-
-The build writes `dist/` and a validated sitemap. No paid API, Gemini key or required database.
+\`\`\`
 
 ## Cloudflare Pages
 
-- Framework: Astro (static)
-- Build command: `npm run build`
-- Output directory: `dist`
-- Node.js: 22.12+ (repository `.nvmrc`)
-- Domain: `deadpixeltest.cc` is the configured canonical public origin.
-- **Do not merge or change production until preview, mobile, direct URL, sitemap and canonical checks pass.**
+- Build command: \`npm run build\`
+- Output directory: \`dist\`
+- Node.js: 22.12+
+- The V1.2 project brief did not specify a purchased production domain.
+- Do not use the competitor's \`.org\` domain or guess a \`pages.dev\` hostname as canonical.
+- Once the real domain is purchased and connected, set \`PUBLIC_SITE_URL\` in Cloudflare Pages production and preview build environments to the HTTPS origin only (for example, \`https://your-domain.com\`).
+
+Without \`PUBLIC_SITE_URL\`, builds deliberately:
+- add \`noindex,nofollow\` to every page;
+- omit canonical and hreflang tags;
+- emit an empty sitemap;
+- omit a guessed Sitemap URL from robots.txt.
 
 ## Architecture
 
-- `astro.config.mjs`: Astro static output and React integration
-- `src/layouts/BaseLayout.astro`: static SEO metadata, locale navigation, canonical, hreflang
-- `src/pages/index.astro`: native static English homepage with interactive React inspection island
-- `src/pages/[...slug].astro`: generates each existing tool, blog, policy and V1.2 language page as static HTML
-- `components/tests/ScreenInspection.tsx`: shared visual test, static colors/lines, manual marks and JSON export
-- `data/seoLandingPages.ts`: English + Brazilian search-intent landing content
-- `scripts/generate-sitemap.ts`: includes established URLs and language pages
-- `scripts/audit-astro-build.mjs`: checks generated SEO and priority paths
-
-The original Vite index entrypoint and Vite build configuration were removed. React remains only as a component UI technology.
+- Astro owns static HTML, routing and SEO metadata.
+- React islands provide the interactive visual tests.
+- The primary dead-pixel workflow is exactly eight static colors in this order: black, white, red, green, blue, cyan, magenta, yellow.
+- Separate grayscale, near-black, near-white, line and checkerboard patterns support additional inspection modes.
+- Markers are user-entered viewport ratios, with categories, notes and cross-color rechecks.
+- JSON and printable HTML exports are user-observed records, not a diagnosis or certification.
 
 ## SEO continuity
 
-The old routes `/tests/refresh-rate`, `/tests/local-dimming`, `/tests/color-gradient`, `/tests/audio-sync`, `/tests/test-patterns`, and others are maintained. The original core test URL `/tests/dead-pixel` remains reachable with root canonical.
+Existing GSC routes such as \`/tests/refresh-rate\`, \`/tests/local-dimming\`, \`/tests/color-gradient\`, \`/tests/audio-sync\` and \`/tests/test-patterns\` are preserved. Planned EN/pt-BR pages are not automatically proven indexable; follow the V1.2 SERP and content-quality gates.
 
-V1.2 adds 14 dedicated English/pt-BR pages with a native Astro homepage completing the 15-page plan. The 400-record Semrush source is **competitor research** and does not prove future rankings.
+## Verification
 
-## Accuracy and safety
-
-- Screen defects are identified **by the user**; the browser cannot automatically inspect physical pixels.
-- The report is a **self-check**, not a professional diagnosis or manufacturer certification.
-- Browser animation FPS is **not necessarily hardware Hz**. DPR is not physical DPI.
-- Avoid physical pressure, heat and high-frequency flashing; damaged pixels cannot be repaired through software.
-
-## Verification status
-
-GitHub Actions checks static build and route/SEO output. Browser-based interaction, actual screen equipment, Cloudflare preview and live production remain separate tests. Details: `docs/V1.2-IMPLEMENTATION.md`.
+GitHub Actions checks domainless and configured builds, static routes, metadata and Chromium interactions. A successful Cloudflare deployment does not by itself prove that a custom domain is configured or that pages are indexed.
