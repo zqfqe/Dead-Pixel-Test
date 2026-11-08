@@ -42,6 +42,12 @@ export const SEO: React.FC<SEOProps> = ({
   const url = canonical ? `${DOMAIN}${canonical}` : DOMAIN;
   const fullImage = image.startsWith('http') ? image : `${DOMAIN}${image}`;
 
+  // Astro provides static SEO metadata for every real URL; do not duplicate
+  // canonicals and titles when old React tools hydrate inside Astro islands.
+  if (typeof document !== 'undefined' && document.documentElement.hasAttribute('data-astro-site')) {
+    return null;
+  }
+
   // Construct Breadcrumb Schema
   // Fix: Check if breadcrumbs array exists AND has items. 
   // An empty array [] creates an invalid Schema with empty itemListElement.
