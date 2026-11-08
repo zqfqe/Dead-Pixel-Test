@@ -145,6 +145,89 @@ const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];li
   ]
  }
 };
+const specificGuidance: Record<string,{heading:string;intro:string;checks:{title:string;body:string}[]}> = {
+ '/laptop-screen-dead-pixel-test':{
+  heading:'Laptop-specific troubleshooting before requesting repair',
+  intro:'The internal laptop panel, a connected external monitor and the graphics path can behave differently. Record which display actually shows the suspected defect before making a warranty request.',
+  checks:[
+   {title:'Internal panel versus external monitor',body:'Move the test to each physical display in turn. A clean external image and an abnormal laptop panel narrow the investigation, but do not by themselves identify the failed part.'},
+   {title:'Before Windows or macOS loads',body:'If your laptop provides a safe manufacturer boot logo, diagnostics screen or firmware display, note whether the same line or spot appears there. Avoid changing firmware settings or opening the case.'},
+   {title:'Angle and power changes',body:'If a line changes with lid angle, charging or brightness, record those conditions without forcing the hinge. This is supporting information for service, not proof of a cable fault.'},
+   {title:'Document for support',body:'Record the background colors that reveal the spot and whether it appears on the built-in display only. Review the manufacturer’s individual pixel-defect and return policy.'}
+  ]
+ },
+ '/pt-br/pixel-morto-notebook':{
+  heading:'Como comparar a tela interna do notebook com outra tela',
+  intro:'Um ponto anormal na tela do notebook pode ter causas distintas. Faça a comparação no próprio aparelho e, se possível, em outro monitor, sem desmontar o equipamento.',
+  checks:[
+   {title:'Tela interna e monitor externo',body:'Mova a janela do teste para cada tela. O comportamento diferente ajuda na investigação, mas não determina sozinho qual componente falhou.'},
+   {title:'Imagem antes do sistema iniciar',body:'Se houver uma tela de inicialização ou diagnóstico do fabricante que você consiga visualizar sem mudar configurações, veja se a anomalia também aparece nela.'},
+   {title:'Ângulo da tampa e brilho',body:'Anote se uma linha muda com a posição normal da tampa ou o brilho, sem forçar a dobradiça. Não pressione o painel.'},
+   {title:'Informações para a assistência',body:'Registre em quais cores o ponto aparece e consulte a política de pixels defeituosos e garantia do fabricante.'}
+  ]
+ },
+ '/phone-screen-dead-pixel-test':{
+  heading:'Phone-screen checks that are different from a monitor test',
+  intro:'Touch, screen protectors, browser fullscreen restrictions and adaptive display features can all affect the way a suspicious spot looks on a phone.',
+  checks:[
+   {title:'Glass, protector and camera cutout',body:'Check the same location with the screen off. Dust, a bubble under a protector or a front-camera cutout can be mistaken for a bad pixel.'},
+   {title:'iPhone Safari fullscreen fallback',body:'On iPhones, native fullscreen support depends on the browser and device. The test stays usable in an overlay, with a clearly visible Exit button.'},
+   {title:'Rotation and screen controls',body:'Repeat the static fields in portrait and landscape as needed. Use the on-screen buttons or horizontal swipes; avoid pressing the panel.'},
+   {title:'Why screenshots may look normal',body:'A screenshot records rendered image data. Defects confined to the physical panel can be invisible in a screenshot. Describe your observation to the seller instead.'}
+  ]
+ },
+ '/pt-br/pixel-morto-iphone':{
+  heading:'Verificações específicas para iPhone e celular',
+  intro:'No celular, película, recorte da câmera, brilho automático e limitações do navegador precisam ser considerados antes de concluir que existe um pixel defeituoso.',
+  checks:[
+   {title:'Vidro e película',body:'Confira se o mesmo ponto aparece com a tela apagada. Uma bolha, poeira ou recorte da câmera pode parecer um defeito.'},
+   {title:'Safari e tela cheia',body:'Quando o Safari não permite tela cheia nativa, o teste continua em uma sobreposição com botão de saída sempre disponível.'},
+   {title:'Orientação e brilho',body:'Compare as cores estáticas nas orientações vertical e horizontal, com brilho confortável. Não pressione a tela.'},
+   {title:'Captura de tela não é laudo',body:'Uma captura digital normalmente não registra falhas que ocorrem apenas na camada física do painel. Anote o comportamento para a assistência.'}
+  ]
+ },
+ '/dead-pixel-line-test':{
+  heading:'What to check when an entire row or column looks abnormal',
+  intro:'A continuous line requires a different approach from one isolated dot. Use the line patterns to describe the symptom and then compare alternative signals.',
+  checks:[
+   {title:'Solid backgrounds',body:'If the line remains at exactly the same position on black, white and RGB fields, record that. Some signal errors may appear only with particular tones or motion.'},
+   {title:'Change input source',body:'On a monitor, compare another cable or input if available. On a laptop, compare a separate external display. Avoid opening the housing.'},
+   {title:'System-level display',body:'If visible and safe, check whether the symptom is present in the manufacturer boot logo or a built-in diagnostics screen, not only in one application.'},
+   {title:'When to contact a professional',body:'Persistent lines, rapidly spreading artifacts or flickering should be reviewed by the manufacturer or a qualified repair provider. This webpage does not identify a panel or cable fault.'}
+  ]
+ },
+ '/image-retention-test':{
+  heading:'Temporary retention and permanent OLED burn-in are not interchangeable',
+  intro:'Residual outlines can come from several display behaviors. This neutral-gray check records what you see at the moment, not the rate of wear or whether the issue is reversible.',
+  checks:[
+   {title:'Before the check',body:'Close or change the previously static application. Use comfortable brightness; do not intentionally leave static bright content displayed just to create a mark.'},
+   {title:'Neutral gray first',body:'Look for faint outlines on a neutral gray screen, then briefly compare near-black, near-white and plain primary colors.'},
+   {title:'Recheck under similar conditions',body:'Return to varied normal content and recheck later. Note brightness, temperature and HDR settings so the observations can be compared.'},
+   {title:'Interpreting persistence',body:'Temporary persistence may fade. Permanent OLED burn-in involves uneven aging. A browser cannot definitively distinguish either or reverse hardware aging.'}
+  ]
+ },
+ '/screen-contrast-test':{
+  heading:'Read the 14 contrast and color patterns',
+  intro:'Use each pattern for the purpose it was designed for. These are browser-generated visuals rather than calibrated light measurements.',
+  checks:[
+   {title:'Black and white levels',body:'Near-black and near-white steps show whether nearby shades remain visually distinguishable. Crushing or clipping may also depend on display settings.'},
+   {title:'Smooth RGB gradients',body:'Red, green and blue ramps help reveal visible banding and abrupt transitions; the browser does not measure sRGB or DCI-P3 coverage.'},
+   {title:'Seven color bars',body:'Compare basic color presentation and obvious tint differences. Correct-looking bars do not establish color accuracy.'},
+   {title:'Record the environment',body:'Viewing angle, room lighting, HDR, display profiles and operating-system color settings may alter the result. A colorimeter is required for quantitative calibration.'}
+  ]
+ },
+ '/pt-br/teste-de-cores':{
+  heading:'Como interpretar os 14 padrões de cores e contraste',
+  intro:'Os padrões são desenhados pelo navegador para comparação visual. Eles não medem brilho em nits, relação de contraste ou espaço de cor do painel.',
+  checks:[
+   {title:'Níveis próximos de preto e branco',body:'As faixas mostram se você consegue diferenciar tons muito escuros ou muito claros; brilho e HDR também alteram a aparência.'},
+   {title:'Gradientes vermelho, verde e azul',body:'Observe transições que deveriam parecer suaves e registre faixas abruptas. O resultado não comprova cobertura de sRGB ou DCI-P3.'},
+   {title:'Barras de cores',body:'Compare as cores principais e possíveis diferenças visíveis, sem considerar esta observação uma calibração de cor.'},
+   {title:'Condições do teste',body:'Anote perfil de cores, luz do ambiente, ângulo da tela e configurações do sistema. Medições quantitativas exigem instrumentos.'}
+  ]
+ }
+};
+const taskGuide=specificGuidance[normalized];
 const legacyGuide=legacyGuides[normalized];
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 ---
@@ -206,6 +289,14 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         <p class="text-neutral-300 leading-7">{isBR?'Limpe a tela, evite reflexos e confira filtros de luz azul ou HDR.':'Clean the screen, reduce reflections, and note HDR, zoom and adaptive brightness settings.'}</p>
       </aside>
     </section>
+    {taskGuide && <section class="mt-12">
+      <h2 class="text-2xl font-bold mb-3">{taskGuide.heading}</h2>
+      <p class="max-w-3xl text-neutral-300 leading-7 mb-6">{taskGuide.intro}</p>
+      <div class="grid gap-4 md:grid-cols-2">{taskGuide.checks.map(check=><article class="rounded-xl border border-white/10 bg-neutral-950 p-5">
+        <h3 class="text-lg font-semibold text-white">{check.title}</h3>
+        <p class="mt-3 leading-7 text-neutral-300">{check.body}</p>
+      </article>)}</div>
+    </section>}
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
       <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="border border-white/10 bg-white/5 p-5 rounded-xl text-neutral-300 leading-7">{note}</p>)}</div>
     </section>
