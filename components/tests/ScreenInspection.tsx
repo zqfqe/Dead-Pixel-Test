@@ -1,140 +1,59 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-type PatternName = 'Black'|'White'|'Red'|'Green'|'Blue'|'Cyan'|'Magenta'|'Yellow'|'Gray'|'Horizontal'|'Vertical'|'Checkerboard'|'Gradient';
-type Marker = { id:number; x:number; y:number; seenOn:string; notes:string };
-const COLOR_PATTERNS: {name:PatternName; color?:string; background?:string}[] = [
-  {name:'Black',color:'#000000'}, {name:'White',color:'#ffffff'},
-  {name:'Red',color:'#ff0000'}, {name:'Green',color:'#00ff00'},
-  {name:'Blue',color:'#0000ff'}, {name:'Cyan',color:'#00ffff'},
-  {name:'Magenta',color:'#ff00ff'}, {name:'Yellow',color:'#ffff00'},
-  {name:'Gray',color:'#808080'},
-  {name:'Horizontal',background:'repeating-linear-gradient(0deg,#000 0px,#000 12px,#fff 12px,#fff 24px)'},
-  {name:'Vertical',background:'repeating-linear-gradient(90deg,#000 0px,#000 12px,#fff 12px,#fff 24px)'},
-  {name:'Checkerboard',background:'repeating-conic-gradient(#222 0% 25%,#ddd 0% 50%) 50% / 64px 64px'},
-  {name:'Gradient',background:'linear-gradient(90deg,#000,#444,#888,#ccc,#fff)'}
+import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
+type Name='Black'|'White'|'Red'|'Green'|'Blue'|'Cyan'|'Magenta'|'Yellow'|'Gray'|'Gray steps'|'Near black'|'Near white'|'Horizontal'|'Vertical'|'Checkerboard'|'Gradient';
+type Pattern={name:Name;color?:string;background?:string;backgroundSize?:string};
+type Category='unclassified'|'dark'|'bright'|'stuck-color'|'line-or-other'|'uncertain';
+type Mark={id:string;x:number;y:number;colors:string[];category:Category;notes:string;viewport:{width:number;height:number;dpr:number;orientation:string}};
+const CORE:Name[]=['Black','White','Red','Green','Blue','Cyan','Magenta','Yellow'];
+const PATTERNS:Pattern[]=[
+{name:'Black',color:'#000'},{name:'White',color:'#fff'},{name:'Red',color:'#f00'},{name:'Green',color:'#0f0'},
+{name:'Blue',color:'#00f'},{name:'Cyan',color:'#0ff'},{name:'Magenta',color:'#f0f'},{name:'Yellow',color:'#ff0'},
+{name:'Gray',color:'#808080'},
+{name:'Gray steps',background:'linear-gradient(90deg,#000 0 12.5%,#101010 12.5% 25%,#202020 25% 37.5%,#404040 37.5% 50%,#808080 50% 62.5%,#b0b0b0 62.5% 75%,#e0e0e0 75% 87.5%,#fff 87.5% 100%)'},
+{name:'Near black',background:'linear-gradient(90deg,#000 0 12.5%,#010101 12.5% 25%,#020202 25% 37.5%,#030303 37.5% 50%,#050505 50% 62.5%,#080808 62.5% 75%,#0c0c0c 75% 87.5%,#101010 87.5% 100%)'},
+{name:'Near white',background:'linear-gradient(90deg,#efefef 0 12.5%,#f2f2f2 12.5% 25%,#f5f5f5 25% 37.5%,#f7f7f7 37.5% 50%,#f9f9f9 50% 62.5%,#fbfbfb 62.5% 75%,#fdfdfd 75% 87.5%,#fff 87.5% 100%)'},
+{name:'Horizontal',background:'repeating-linear-gradient(0deg,#000 0 12px,#fff 12px 24px)'},
+{name:'Vertical',background:'repeating-linear-gradient(90deg,#000 0 12px,#fff 12px 24px)'},
+{name:'Checkerboard',background:'repeating-conic-gradient(#222 0% 25%,#ddd 0% 50%)',backgroundSize:'64px 64px'},
+{name:'Gradient',background:'linear-gradient(90deg,#000,#444,#888,#ccc,#fff)'}
 ];
-const LIMIT = 50;
-const translations = {
- en:{start:'Start full-screen inspection',close:'Exit test',prev:'Previous color',next:'Next color',mark:'Mark suspect spot',stopMark:'Stop marking',show:'Show marks',hide:'Hide marks',undo:'Undo mark',export:'Export self-check JSON',marks:'Suspect spots',hint:'Inspect this static color carefully. Use Next / Previous, or arrow keys. Marking mode records approximate screen locations.',noCert:'User-observed self-check. This is not an automated hardware diagnosis, certification or warranty determination.',fullscreen:'Native fullscreen may be unavailable in this browser; the on-page overlay still works.',patch:'Static comparison patch',clear:'Clear spots'},
- pt:{start:'Iniciar inspeção em tela cheia',close:'Sair do teste',prev:'Cor anterior',next:'Próxima cor',mark:'Marcar ponto suspeito',stopMark:'Parar marcação',show:'Mostrar marcas',hide:'Ocultar marcas',undo:'Desfazer marca',export:'Exportar inspeção JSON',marks:'Pontos suspeitos',hint:'Observe cada cor estática. Use as setas para alternar e marque pontos suspeitos para revisão.',noCert:'Registro visual feito pelo usuário. Não é laudo, diagnóstico automático nem certificado de garantia.',fullscreen:'Se a tela cheia não funcionar neste navegador, a sobreposição continua disponível.',patch:'Área de comparação estática',clear:'Limpar marcas'}
+const TEXT={
+ en:{start:'Start full-screen inspection',exit:'Exit test',prev:'Previous color',next:'Next color',mark:'Mark suspect spot',stop:'Stop marking',show:'Show marks',hide:'Hide marks',undo:'Undo mark',export:'Export self-check JSON',print:'Download printable HTML report',hint:'Inspect this static pattern. Arrow keys move between patterns. Marked positions are approximate CSS viewport ratios, not physical panel pixels.',disclaimer:'User-observed self-check only. Not an automated hardware diagnosis, certification or warranty decision.',fullscreen:'Native fullscreen was denied or unavailable. The on-page overlay remains usable.',device:'Device',monitor:'Monitor',laptop:'Laptop',phone:'Phone',tablet:'Tablet',other:'Other',marks:'Suspect spots',category:'Observation',uncategorized:'Not classified',dark:'Dark / black spot',bright:'Bright spot',stuck:'Color appears stuck',line:'Line or other pattern',unknown:'Not sure',notes:'Notes',remove:'Remove',selected:'Selected spot',recheck:'Record selected spot on this color',none:'No suspect spots recorded.',report:'Screen self-check report',created:'Created',screen:'Browser screen (CSS px)',viewport:'Viewport (CSS px)',dpr:'Device pixel ratio',orientation:'Orientation',colors:'Observed on',position:'Approximate position',clear:'Clear marks'},
+ pt:{start:'Iniciar inspeção em tela cheia',exit:'Sair do teste',prev:'Cor anterior',next:'Próxima cor',mark:'Marcar ponto suspeito',stop:'Parar marcação',show:'Mostrar marcas',hide:'Ocultar marcas',undo:'Desfazer marca',export:'Exportar inspeção JSON',print:'Baixar relatório HTML para impressão',hint:'Observe este padrão estático. Use as setas para alternar. As posições são proporções aproximadas da área CSS visível, não pixels físicos.',disclaimer:'Registro visual do usuário. Não é diagnóstico automático, laudo técnico ou garantia.',fullscreen:'A tela cheia nativa não está disponível. A sobreposição continua funcionando.',device:'Dispositivo',monitor:'Monitor',laptop:'Notebook',phone:'Celular',tablet:'Tablet',other:'Outro',marks:'Pontos suspeitos',category:'Observação',uncategorized:'Não classificado',dark:'Ponto escuro / preto',bright:'Ponto brilhante',stuck:'Cor aparentemente presa',line:'Linha ou outro padrão',unknown:'Não sei',notes:'Observações',remove:'Remover',selected:'Ponto selecionado',recheck:'Registrar este ponto nesta cor',none:'Nenhum ponto suspeito registrado.',report:'Relatório de inspeção visual',created:'Criado em',screen:'Tela do navegador (px CSS)',viewport:'Área visível (px CSS)',dpr:'Proporção de pixels do dispositivo',orientation:'Orientação',colors:'Observado em',position:'Posição aproximada',clear:'Limpar marcas'}
 };
-
-export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retention'|'contrast';lang?:'en'|'pt-BR'}> = ({mode='pixels',lang='en'}) => {
- const copy=lang==='pt-BR'?translations.pt:translations.en;
- const allowedPatterns = useMemo(()=> {
-   if(mode==='lines')return COLOR_PATTERNS;
-   if(mode==='retention'||mode==='contrast')return COLOR_PATTERNS.filter(x=>['Black','White','Gray','Gradient','Checkerboard','Red','Green','Blue'].includes(x.name));
-   if(mode==='fixer')return COLOR_PATTERNS.filter(x=>x.color);
-   return COLOR_PATTERNS.filter(x=>x.color);
- },[mode]);
- const [active,setActive]=useState(false);
- const [patternIndex,setPatternIndex]=useState(0);
- const [markMode,setMarkMode]=useState(false);
- const [showMarks,setShowMarks]=useState(false);
- const [marks,setMarks]=useState<Marker[]>([]);
- const [patchPos,setPatchPos]=useState({x:50,y:50});
- const [patchSize,setPatchSize]=useState(140);
- const [patchColor,setPatchColor]=useState('#ff0000');
- const [fsWarn,setFsWarn]=useState(false);
- const ref=useRef<HTMLDivElement>(null);
- const nativeFullscreen=useRef(false);
- const current=allowedPatterns[patternIndex]??allowedPatterns[0];
- const next=useCallback(()=>setPatternIndex(i=>(i+1)%allowedPatterns.length),[allowedPatterns.length]);
- const prev=useCallback(()=>setPatternIndex(i=>(i-1+allowedPatterns.length)%allowedPatterns.length),[allowedPatterns.length]);
- const exit=useCallback(()=>{
-   setActive(false);setMarkMode(false);
-   if(nativeFullscreen.current && document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
-   nativeFullscreen.current=false;
- },[]);
- useEffect(()=>{
-   if(!active)return;
-   const oldOverflow=document.body.style.overflow;
-   document.body.style.overflow='hidden';
-   const onKey=(e:KeyboardEvent)=>{
-     if(e.key==='Escape'){exit();return;}
-     if(['ArrowRight','ArrowLeft'].includes(e.key)){e.preventDefault();e.key==='ArrowRight'?next():prev();}
-   };
-   const onVisibility=()=>{if(document.visibilityState==='hidden')exit();};
-   const onFullscreen=()=>{if(nativeFullscreen.current && !document.fullscreenElement)exit();};
-   document.addEventListener('keydown',onKey);
-   document.addEventListener('visibilitychange',onVisibility);
-   document.addEventListener('fullscreenchange',onFullscreen);
-   return ()=>{document.body.style.overflow=oldOverflow;document.removeEventListener('keydown',onKey);document.removeEventListener('visibilitychange',onVisibility);document.removeEventListener('fullscreenchange',onFullscreen);};
+const esc=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const save=(body:string,type:string,name:string)=>{const u=URL.createObjectURL(new Blob([body],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);};
+export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retention'|'contrast';lang?:'en'|'pt-BR'}>=({mode='pixels',lang='en'})=>{
+ const t=lang==='pt-BR'?TEXT.pt:TEXT.en;
+ const patterns=useMemo(()=>mode==='lines'?PATTERNS:mode==='retention'?PATTERNS.filter(p=>['Black','White','Gray','Gray steps','Near black','Near white','Gradient','Checkerboard','Red','Green','Blue'].includes(p.name)):mode==='contrast'?PATTERNS.filter(p=>['Black','White','Gray','Gray steps','Near black','Near white','Gradient','Checkerboard'].includes(p.name)):mode==='fixer'?PATTERNS.filter(p=>CORE.includes(p.name)):PATTERNS.filter(p=>CORE.includes(p.name)),[mode]);
+ const [active,setActive]=useState(false),[index,setIndex]=useState(0),[markMode,setMarkMode]=useState(false),[showMarks,setShowMarks]=useState(false),[marks,setMarks]=useState<Mark[]>([]),[selected,setSelected]=useState(''),[device,setDevice]=useState('monitor'),[started,setStarted]=useState(''),[ran,setRan]=useState(false),[warning,setWarning]=useState(false),[patchColor,setPatchColor]=useState('#f00'),[patchSize,setPatchSize]=useState(140),[patchPos,setPatchPos]=useState({x:50,y:50});
+ const root=useRef<HTMLDivElement>(null),dialog=useRef<HTMLDivElement>(null),startButton=useRef<HTMLButtonElement>(null),native=useRef(false);
+ const current=patterns[index]??patterns[0],isFixer=mode==='fixer';
+ const next=useCallback(()=>setIndex(i=>(i+1)%patterns.length),[patterns.length]),prev=useCallback(()=>setIndex(i=>(i-1+patterns.length)%patterns.length),[patterns.length]);
+ const view=()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,orientation:screen.orientation?.type??(innerWidth>=innerHeight?'landscape':'portrait')});
+ const exit=useCallback(()=>{setActive(false);setMarkMode(false);if(native.current&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});native.current=false;requestAnimationFrame(()=>startButton.current?.focus());},[]);
+ useEffect(()=>{if(!active)return;const old=document.body.style.overflow;document.body.style.overflow='hidden';
+ const key=(e:KeyboardEvent)=>{const el=e.target as HTMLElement;const form=['INPUT','SELECT','TEXTAREA'].includes(el?.tagName)||el?.isContentEditable;if(e.key==='Escape'){e.preventDefault();exit();}else if(e.key==='Tab'){const list=dialog.current?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])');if(list?.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}}else if(!form&&e.key==='ArrowRight'){e.preventDefault();next();}else if(!form&&e.key==='ArrowLeft'){e.preventDefault();prev();}};
+ const visibility=()=>{if(document.visibilityState==='hidden')exit();},full=()=>{if(native.current&&!document.fullscreenElement)exit();};
+ document.addEventListener('keydown',key);document.addEventListener('visibilitychange',visibility);document.addEventListener('fullscreenchange',full);dialog.current?.querySelector<HTMLElement>('button')?.focus();
+ return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',key);document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',full);};
  },[active,exit,next,prev]);
- const start=async()=>{
-   setPatternIndex(0);setMarkMode(false);setShowMarks(false);setActive(true);setFsWarn(false);
-   // Always render a fixed viewport overlay, including browsers that reject native fullscreen.
-   if(ref.current && typeof ref.current.requestFullscreen==='function'){
-     try {await ref.current.requestFullscreen();nativeFullscreen.current=true;} catch {setFsWarn(true);}
-   }else{setFsWarn(true);}
- };
- const onCanvasClick=(e:React.MouseEvent<HTMLDivElement>)=>{
-   if(!markMode && mode!=='fixer')return;
-   const b=e.currentTarget.getBoundingClientRect();
-   const x=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width));
-   const y=Math.max(0,Math.min(1,(e.clientY-b.top)/b.height));
-   if(mode==='fixer' && !markMode){setPatchPos({x:x*100,y:y*100});return;}
-   setMarks(items=>items.length>=LIMIT?items:[...items,{id:Date.now()+Math.random(),x,y,seenOn:current.name,notes:''}]);
-   setShowMarks(true);
- };
- const download=()=>{
-   const payload={
-     kind:'user_observed_screen_inspection',certified:false,
-     disclaimer:copy.noCert,createdAt:new Date().toISOString(),
-     mode,locale:lang,viewport:{cssWidth:innerWidth,cssHeight:innerHeight,devicePixelRatio:devicePixelRatio},
-     marks:marks.map(m=>({xRatio:m.x,yRatio:m.y,observedOn:m.seenOn,notes:m.notes}))
-   };
-   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
-   const url=URL.createObjectURL(blob);
-   const a=document.createElement('a');a.href=url;a.download='screen-self-check.json';a.click();
-   window.setTimeout(()=>URL.revokeObjectURL(url),1000);
- };
- const patch=(mode==='fixer');
- return <div ref={ref}>
-   <div className="flex flex-wrap gap-3 items-center">
-     <button type="button" onClick={start} className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 min-h-[48px]">{copy.start}</button>
-     <span className="text-sm text-neutral-400">{copy.noCert}</span>
-   </div>
-   {marks.length>0 && <div className="flex flex-wrap items-center gap-2 mt-3 text-sm">
-      <span className="text-neutral-300">{copy.marks}: {marks.length}</span>
-      <button type="button" onClick={download} className="rounded border border-white/20 px-3 py-2 hover:bg-white/10">{copy.export}</button>
-      <button type="button" onClick={()=>setMarks([])} className="rounded border border-white/20 px-3 py-2 hover:bg-white/10">{copy.clear}</button>
-   </div>}
-   {active && <div className="fixed inset-0 z-[110] bg-black text-white" role="dialog" aria-modal="true" aria-label={lang==='pt-BR'?'Inspeção de tela':'Screen inspection'}>
-     <div className="absolute inset-0" role="presentation" onClick={onCanvasClick} style={{
-       backgroundColor:current.color || '#000',
-       backgroundImage:current.background?.split(' 50% /')[0],
-       backgroundSize:current.background?.includes('50% /')?'64px 64px':undefined,
-       cursor:markMode?'crosshair':patch?'crosshair':'default'
-     }}>
-       {patch && <div aria-hidden="true" className="absolute border-2 border-white shadow-lg pointer-events-none" style={{
-         left:patchPos.x+'%',top:patchPos.y+'%',width:patchSize,height:patchSize,
-         transform:'translate(-50%, -50%)',backgroundColor:patchColor,
-         boxShadow:'0 0 0 2px #000'
-       }}/>}
-       {showMarks && marks.map((m,index)=><div aria-hidden="true" key={m.id} className="absolute h-6 w-6 rounded-full border-[3px] border-orange-500 pointer-events-none" style={{left:m.x*100+'%',top:m.y*100+'%',transform:'translate(-50%,-50%)',boxShadow:'0 0 0 1px #000'}}><span className="absolute bottom-full text-xs bg-black text-white px-1">{index+1}</span></div>)}
-     </div>
-     <div className="absolute left-3 top-3 right-3 flex flex-wrap gap-2 items-center justify-between rounded-lg bg-neutral-950/90 p-2 text-white text-sm border border-white/20">
-       <span className="font-semibold px-2">{current.name} ({patternIndex+1}/{allowedPatterns.length})</span>
-       <button type="button" onClick={exit} className="rounded-md px-4 py-2 min-h-[44px] bg-red-700 hover:bg-red-600">{copy.close} ×</button>
-     </div>
-     <div className="absolute bottom-3 left-3 right-3 rounded-xl bg-neutral-950/95 border border-white/20 text-white p-3">
-       {fsWarn && <p className="text-xs text-amber-300 pb-2">{copy.fullscreen}</p>}
-       <p className="text-xs text-neutral-300 pb-2">{copy.hint}</p>
-       <div className="flex flex-wrap gap-2 items-center justify-center">
-         <button type="button" onClick={prev} className="rounded-md bg-white/15 hover:bg-white/25 px-3 py-2 min-h-[44px]">{copy.prev}</button>
-         <button type="button" onClick={next} className="rounded-md bg-white/15 hover:bg-white/25 px-3 py-2 min-h-[44px]">{copy.next}</button>
-         <button type="button" onClick={()=>setMarkMode(v=>!v)} className={'rounded-md px-3 py-2 min-h-[44px] '+(markMode?'bg-orange-600':'bg-white/15 hover:bg-white/25')}>{markMode?copy.stopMark:copy.mark}</button>
-         <button type="button" onClick={()=>setShowMarks(v=>!v)} aria-pressed={showMarks} className="rounded-md bg-white/15 hover:bg-white/25 px-3 py-2 min-h-[44px]">{showMarks?copy.hide:copy.show} ({marks.length})</button>
-         {marks.length>0 && <button type="button" onClick={()=>setMarks(m=>m.slice(0,-1))} className="rounded-md bg-white/15 hover:bg-white/25 px-3 py-2 min-h-[44px]">{copy.undo}</button>}
-         {patch && <>
-           <label className="text-xs">Patch <input aria-label="Static patch color" type="color" value={patchColor} onChange={e=>setPatchColor(e.target.value)} className="align-middle w-10 h-8"/></label>
-           <label className="text-xs">Size <input aria-label="Patch size" type="range" min={40} max={320} value={patchSize} onChange={e=>setPatchSize(+e.target.value)}/></label>
-         </>}
-       </div>
-       {marks.length>0 && <div className="flex justify-between items-center pt-2 text-xs text-neutral-300"><span>{copy.marks}: {marks.length}; CSS viewport coordinates, not physical pixel coordinates.</span><button type="button" onClick={download} className="underline text-blue-300">{copy.export}</button></div>}
-     </div>
-   </div>}
+ const start=async()=>{setIndex(0);setMarkMode(false);setShowMarks(false);setActive(true);setWarning(false);setRan(true);setStarted(x=>x||new Date().toISOString());if(root.current&&typeof root.current.requestFullscreen==='function'){try{await root.current.requestFullscreen();native.current=true;}catch{setWarning(true);}}else setWarning(true);};
+ const mark=(e:React.MouseEvent<HTMLDivElement>)=>{if(!markMode&&!isFixer)return;const b=e.currentTarget.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y=Math.max(0,Math.min(1,(e.clientY-b.top)/b.height));if(isFixer&&!markMode){setPatchPos({x:x*100,y:y*100});return;}if(marks.length>=50)return;const id=crypto.randomUUID?.()??String(Date.now());setMarks(v=>[...v,{id,x,y,colors:[current.name],category:'unclassified',notes:'',viewport:view()}]);setSelected(id);setShowMarks(true);};
+ const update=(id:string,p:Partial<Mark>)=>setMarks(v=>v.map(m=>m.id===id?{...m,...p}:m));
+ const payload=()=>({kind:'user_observed_screen_inspection',certified:false,disclaimer:t.disclaimer,createdAt:started||new Date().toISOString(),deviceType:device,browserScreen:{cssWidth:screen.width,cssHeight:screen.height},viewport:view(),marks:marks.map(m=>({xRatio:m.x,yRatio:m.y,observedOn:m.colors,category:m.category,notes:m.notes,viewportAtMark:m.viewport}))});
+ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;charset=utf-8','screen-self-check.json');
+ const printReport=()=>{const p=payload(),rows=marks.map((m,i)=>'<tr><td>'+(i+1)+'</td><td>'+(m.x*100).toFixed(1)+'%, '+(m.y*100).toFixed(1)+'%</td><td>'+esc(m.colors.join(', '))+'</td><td>'+esc(m.category)+'</td><td>'+esc(m.notes||'—')+'</td></tr>').join('');const html='<!doctype html><html lang="'+(lang==='pt-BR'?'pt-BR':'en')+'"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>'+t.report+'</title><style>body{font:16px/1.5 system-ui;max-width:900px;margin:32px auto;padding:0 20px;color:#17202c}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccd3dc;padding:8px;text-align:left}.notice{padding:12px;background:#eef2f7}@media print{body{margin:0}}</style><body><h1>'+t.report+'</h1><p class="notice">'+t.disclaimer+'</p><p>'+t.created+': '+esc(p.createdAt)+'</p><p>'+t.device+': '+esc(device)+'</p><p>'+t.screen+': '+screen.width+' × '+screen.height+'</p><p>'+t.viewport+': '+innerWidth+' × '+innerHeight+'</p><p>'+t.dpr+': '+devicePixelRatio+'</p><h2>'+t.marks+': '+marks.length+'</h2>'+(rows?'<table><thead><tr><th>#</th><th>'+t.position+'</th><th>'+t.colors+'</th><th>'+t.category+'</th><th>'+t.notes+'</th></tr></thead><tbody>'+rows+'</tbody></table>':'<p>'+t.none+'</p>')+'<p class="notice">'+t.hint+'</p><small>Coordinates are viewport ratios, not physical pixels. No screen image is captured.</small><script>window.onload=()=>window.print()</script></body></html>';save(html,'text/html;charset=utf-8','screen-self-check-report.html');};
+ return <div ref={root}>
+ <div className="flex flex-wrap items-center gap-3"><button ref={startButton} type="button" onClick={start} className="rounded-lg bg-blue-600 px-6 py-3 min-h-[48px] font-semibold text-white">{t.start}</button><label className="flex items-center gap-2 text-sm">{t.device}<select value={device} onChange={e=>setDevice(e.target.value)} className="rounded border border-white/20 bg-neutral-900 p-2 text-white"><option value="monitor">{t.monitor}</option><option value="laptop">{t.laptop}</option><option value="phone">{t.phone}</option><option value="tablet">{t.tablet}</option><option value="other">{t.other}</option></select></label><span className="text-sm text-neutral-400">{t.disclaimer}</span></div>
+ {ran&&<div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={exportJson} className="rounded border border-white/20 px-3 py-2 text-sm">{t.export}</button><button type="button" onClick={printReport} className="rounded border border-white/20 px-3 py-2 text-sm">{t.print}</button>{marks.length>0&&<button type="button" onClick={()=>{setMarks([]);setSelected('');}} className="rounded border border-white/20 px-3 py-2 text-sm">{t.clear}</button>}</div>}
+ {marks.length>0&&<section className="mt-4 rounded-xl border border-white/10 bg-neutral-950 p-4"><h3 className="mb-3 font-semibold">{t.marks}: {marks.length}</h3>{marks.map((m,i)=><article key={m.id} className="mb-3 rounded-lg border border-white/10 p-3"><div className="flex justify-between gap-2"><strong>{t.selected} {i+1}</strong><button type="button" onClick={()=>{setMarks(v=>v.filter(x=>x.id!==m.id));if(selected===m.id)setSelected('');}} className="text-sm text-red-300 underline">{t.remove}</button></div><p className="mt-1 text-xs text-neutral-400">{t.position}: {(m.x*100).toFixed(1)}%, {(m.y*100).toFixed(1)}% · {t.colors}: {m.colors.join(', ')}</p><label className="mt-3 block text-sm">{t.category}<select value={m.category} onChange={e=>update(m.id,{category:e.target.value as Category})} className="mt-1 block w-full rounded border border-white/20 bg-neutral-900 p-2">{Object.entries({unclassified:t.uncategorized,dark:t.dark,bright:t.bright,'stuck-color':t.stuck,'line-or-other':t.line,uncertain:t.unknown}).map(([v,l])=><option value={v}>{l}</option>)}</select></label><label className="mt-3 block text-sm">{t.notes}<textarea value={m.notes} maxLength={500} rows={2} onChange={e=>update(m.id,{notes:e.target.value})} className="mt-1 block w-full rounded border border-white/20 bg-neutral-900 p-2"/></label></article>)}</section>}
+ {active&&<div ref={dialog} role="dialog" aria-modal="true" aria-label={lang==='pt-BR'?'Inspeção de tela':'Screen inspection'} tabIndex={-1} className="fixed inset-0 z-[110] bg-black text-white">
+ <div role="presentation" onClick={mark} className="absolute inset-0 select-none" style={{backgroundColor:current.color||'#000',backgroundImage:current.background,backgroundSize:current.backgroundSize,cursor:markMode||isFixer?'crosshair':'default',touchAction:markMode||isFixer?'none':'pan-y'}}>
+ {isFixer&&<div aria-hidden="true" className="pointer-events-none absolute border-2 border-white" style={{left:patchPos.x+'%',top:patchPos.y+'%',width:patchSize,height:patchSize,transform:'translate(-50%,-50%)',background:patchColor}}/>}
+ {showMarks&&marks.map((m,i)=><div aria-hidden="true" key={m.id} className="pointer-events-none absolute h-6 w-6 rounded-full border-[3px] border-orange-500" style={{left:m.x*100+'%',top:m.y*100+'%',transform:'translate(-50%,-50%)'}}><span className="absolute bottom-full bg-black px-1 text-xs">{i+1}</span></div>)}</div>
+ <div className="absolute left-3 right-3 top-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/20 bg-neutral-950/95 p-2 text-sm"><span aria-live="polite" className="px-2 font-semibold">{current.name} ({index+1}/{patterns.length})</span><button type="button" onClick={exit} className="min-h-[44px] rounded-md bg-red-700 px-4 py-2">{t.exit} ×</button></div>
+ <div className="absolute bottom-3 left-3 right-3 max-h-[45vh] overflow-y-auto rounded-xl border border-white/20 bg-neutral-950/95 p-3"><p className="pb-2 text-xs text-neutral-300">{warning&&t.fullscreen} {t.hint}</p><div className="flex flex-wrap items-center justify-center gap-2"><button type="button" onClick={prev} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{t.prev}</button><button type="button" onClick={next} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{t.next}</button><button type="button" onClick={()=>setMarkMode(v=>!v)} className="min-h-[44px] rounded bg-orange-700 px-3 py-2">{markMode?t.stop:t.mark}</button><button type="button" onClick={()=>setShowMarks(v=>!v)} aria-pressed={showMarks} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{showMarks?t.hide:t.show} ({marks.length})</button>{marks.length>0&&<button type="button" onClick={()=>{setMarks(v=>v.slice(0,-1));}} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{t.undo}</button>}{marks.length>0&&<label className="text-xs">{t.selected}<select aria-label={t.selected} value={selected} onChange={e=>setSelected(e.target.value)} className="ml-2 rounded bg-neutral-900 p-2">{marks.map((m,i)=><option value={m.id}>{t.selected} {i+1}</option>)}</select></label>}{selected&&<button type="button" onClick={()=>setMarks(v=>v.map(m=>m.id===selected&&!m.colors.includes(current.name)?{...m,colors:[...m.colors,current.name]}:m))} className="min-h-[44px] rounded bg-blue-700 px-3 py-2">{t.recheck}</button>}{isFixer&&<><label className="text-xs">Patch <input aria-label="Static patch color" type="color" value={patchColor} onChange={e=>setPatchColor(e.target.value)} className="h-8 w-10 align-middle"/></label><label className="text-xs">Size <input aria-label="Patch size" type="range" min={40} max={320} value={patchSize} onChange={e=>setPatchSize(Number(e.target.value))}/></label></>}</div><p className="pt-2 text-center text-xs text-neutral-400">{t.disclaimer}</p></div>
+ </div>}
  </div>;
 };
 export default ScreenInspection;
