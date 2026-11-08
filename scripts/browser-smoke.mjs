@@ -2,18 +2,26 @@ import {chromium, devices} from 'playwright';
 import {mkdirSync} from 'node:fs';
 const base=process.env.SMOKE_BASE || 'http://127.0.0.1:4321';
 const canonicalOrigin=process.env.PUBLIC_SITE_URL ? new URL(process.env.PUBLIC_SITE_URL).origin : '';
+const baseOrigin=new URL(base).origin;
 mkdirSync('smoke-screenshots',{recursive:true});
-const browser=await chromium.launch({headless:true});
+const browser=await chromium.launch({headless:true,args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
 const failures=[];
-async function check(url,fn,{mobile=false,denyFullscreen=false}={}){
+async function check(url,fn,{mobile=false,denyFullscreen=false,media=false}={}){
  const ctx=await browser.newContext(mobile?{...devices['iPhone 13'],browserName:undefined}:{viewport:{width:1366,height:900}});
  const page=await ctx.newPage();
+ if(media)await ctx.grantPermissions(['camera','microphone'],{origin:baseOrigin});
+ const networkViolations=[];
+ page.on('request',request=>{try{const u=new URL(request.url());if((u.protocol==='http:'||u.protocol==='https:')&&(u.origin!==baseOrigin||!['GET','HEAD'].includes(request.method())))networkViolations.push(request.method()+' '+request.url());}catch{}});
  if(denyFullscreen)await page.addInitScript(()=>{Element.prototype.requestFullscreen=function(){return Promise.reject(new Error('fullscreen denied by smoke test'));};});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  try{
   const res=await page.goto(base+url,{waitUntil:'domcontentloaded',timeout:15000});
   if(res?.status()!==200)throw Error('HTTP '+res?.status());
   await fn(page);
+  await page.waitForTimeout(250);
+  const remoteResources=await page.locator('script[src],iframe[src]').evaluateAll(nodes=>nodes.map(n=>n.src).filter(src=>src&&new URL(src,location.href).origin!==location.origin));
+  if(remoteResources.length)throw Error('Third-party script/frame resources: '+remoteResources.join(', '));
+  if(networkViolations.length)throw Error('Privacy network audit: '+networkViolations.join('; '));
   if(errors.length)throw Error('JS errors: '+errors.join('; '));
   console.log('PASS browser: '+url+(mobile?' mobile':' desktop'));
  }catch(e){
@@ -61,7 +69,40 @@ await check('/tests/local-dimming',async page=>{
  await page.getByText(/Local Dimming/i).first().waitFor({timeout:15000});
 });
 await check('/tests/color-gradient',expectedTitle('Color Banding'));
-await check('/image-retention-test',expectedTitle('Image Retention'));
+await check('/image-retention-test',async page=>{
+ await expectedTitle('Image Retention')(page);
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByText('Gray (1/8)',{exact:true}).waitFor({timeout:8000});
+ await page.getByRole('button',{name:/Next color/i}).click();
+ await page.getByText('Near black (2/8)',{exact:true}).waitFor({timeout:5000});
+ await page.getByRole('button',{name:/Exit test/i}).click();
+});
+await check('/dead-pixel-line-test',async page=>{
+ await expectedTitle('Dead Pixel Line Test')(page);
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByText('Black (1/10)',{exact:true}).waitFor({timeout:8000});
+ const next=page.getByRole('button',{name:/Next color/i});
+ for(let i=0;i<5;i++)await next.click();
+ await page.getByText('Horizontal (6/10)',{exact:true}).waitFor({timeout:5000});
+ await next.click();
+ await page.getByText('Vertical (7/10)',{exact:true}).waitFor({timeout:5000});
+ await next.click();
+ await page.getByText('Horizontal fine (8/10)',{exact:true}).waitFor({timeout:5000});
+ await next.click();
+ await page.getByText('Vertical fine (9/10)',{exact:true}).waitFor({timeout:5000});
+ await next.click();
+ await page.getByText('Grid (10/10)',{exact:true}).waitFor({timeout:5000});
+ await page.getByRole('button',{name:/Exit test/i}).click();
+});
+await check('/privacy-policy',async page=>{
+ await page.getByRole('heading',{name:'Privacy Policy'}).waitFor({timeout:10000});
+ await page.getByText(/does not include Google Analytics, advertising tags/i).waitFor();
+ await page.getByText(/browser's local storage/i).waitFor();
+});
+await check('/contact',async page=>{
+ await page.getByRole('heading',{name:/Contact & Feedback/i}).waitFor({timeout:10000});
+ await page.getByRole('link',{name:/Open GitHub Issues/i}).waitFor();
+});
 await check('/screen-resolution-test',async page=>{
  await expectedTitle('Screen Resolution')(page);
  for(const label of ['Screen width (CSS px)','Available screen height (CSS px)','Browser viewport width (CSS px)','Visual viewport width (CSS px)','Device pixel ratio (DPR)','Screen color depth (bits)','Orientation']){
@@ -73,6 +114,26 @@ await check('/',async page=>{
  await page.getByText(/Native fullscreen was denied or unavailable/i).waitFor({timeout:5000});
  await page.getByRole('button',{name:/Exit test/i}).click();
 },{denyFullscreen:true});
+await check('/tools/webcam',async page=>{
+ await page.getByRole('button',{name:/Start Camera/i}).first().click();
+ await page.waitForFunction(()=>{const video=document.querySelector('video');return !!video&&video.videoWidth>0&&video.videoHeight>0;},null,{timeout:15000});
+ const downloadPromise=page.waitForEvent('download',{timeout:10000});
+ await page.getByRole('button',{name:/Take Snapshot/i}).click();
+ const download=await downloadPromise;
+ if(!download.suggestedFilename().startsWith('webcam-test-'))throw Error('Webcam snapshot was not a local download');
+ await page.getByRole('button',{name:/Stop Camera/i}).click();
+ await page.getByRole('button',{name:/Start Camera/i}).first().waitFor({timeout:5000});
+},{media:true});
+await check('/tools/color-blindness',async page=>{
+ await page.getByRole('button',{name:/Use Camera/i}).waitFor({timeout:10000});
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="#e34b4b"/></svg>';
+ await page.locator('input[type="file"]').setInputFiles({name:'local-test.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ const img=page.locator('img[alt="Test"]');
+ await img.waitFor({timeout:8000});
+ await page.waitForFunction(()=>{const image=document.querySelector('img[alt="Test"]');return !!image&&image.complete&&image.naturalWidth===32;},null,{timeout:8000});
+ const src=await img.getAttribute('src');
+ if(!src?.startsWith('blob:'))throw Error('Selected image was not loaded from a local object URL');
+});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+10+' browser smoke scenarios');
+console.log('PASS all '+15+' browser smoke scenarios including local-only network and media checks');
