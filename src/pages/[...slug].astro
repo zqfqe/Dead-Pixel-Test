@@ -126,15 +126,25 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
   (function() {
     const el=document.getElementById('screen-metrics');
     if(!el)return;
+    const fmt=(value)=>Number.isFinite(value)?String(Math.round(value*100)/100):'Not reported';
     const update=()=>{
       el.replaceChildren();
+      const s=window.screen;
+      const vv=window.visualViewport;
+      const orientation=s.orientation?.type || (window.innerWidth>=window.innerHeight?'landscape':'portrait');
       const data=[
-        ['Screen width (CSS px)',window.screen.width],
-        ['Screen height (CSS px)',window.screen.height],
-        ['Viewport width (CSS px)',window.innerWidth],
-        ['Viewport height (CSS px)',window.innerHeight],
-        ['Device pixel ratio (DPR)',window.devicePixelRatio],
-        ['Available screen width (CSS px)',window.screen.availWidth]
+        ['Screen width (CSS px)',s.width],
+        ['Screen height (CSS px)',s.height],
+        ['Available screen width (CSS px)',s.availWidth],
+        ['Available screen height (CSS px)',s.availHeight],
+        ['Browser viewport width (CSS px)',window.innerWidth],
+        ['Browser viewport height (CSS px)',window.innerHeight],
+        ['Visual viewport width (CSS px)',vv?fmt(vv.width):'Not supported'],
+        ['Visual viewport height (CSS px)',vv?fmt(vv.height):'Not supported'],
+        ['Device pixel ratio (DPR)',fmt(window.devicePixelRatio)],
+        ['Screen color depth (bits)',s.colorDepth],
+        ['Screen pixel depth (bits)',s.pixelDepth],
+        ['Orientation',orientation]
       ];
       for(const [name,value] of data){
         const dt=document.createElement('dt');dt.textContent=String(name);
@@ -142,7 +152,10 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         el.append(dt,dd);
       }
     };
-    window.addEventListener('resize',update);update();
+    window.addEventListener('resize',update);
+    window.addEventListener('orientationchange',update);
+    window.visualViewport?.addEventListener('resize',update);
+    update();
   })();
   </script>}
 </BaseLayout>
