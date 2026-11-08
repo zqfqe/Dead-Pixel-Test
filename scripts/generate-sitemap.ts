@@ -3,22 +3,32 @@ import {MENU_ITEMS} from '../data/menu';
 import {BLOG_POSTS} from '../data/blog';
 import {SEO_LANDING_PAGES, pageAlternates} from '../data/seoLandingPages';
 
-const DOMAIN='https://deadpixeltest.cc';
-const staticPaths=['/about','/contact','/privacy-policy','/terms-of-service'];
-const allPaths=new Set<string>();
-for(const item of MENU_ITEMS){
- if(!item.isHeader && item.path.startsWith('/'))allPaths.add(item.path);
+const configuredSiteUrl=process.env.PUBLIC_SITE_URL?.trim();
+let origin='';
+if(configuredSiteUrl){
+ const parsed=new URL(configuredSiteUrl);
+ if(parsed.protocol!=='https:'||parsed.username||parsed.password||parsed.pathname!=='/'||parsed.search||parsed.hash){
+  throw new Error('PUBLIC_SITE_URL must be the HTTPS origin only, e.g. https://your-domain.com');
+ }
+ origin=parsed.origin;
 }
-for(const page of SEO_LANDING_PAGES)allPaths.add(page.path);
-for(const post of BLOG_POSTS)allPaths.add('/blog/'+post.slug);
-for(const path of staticPaths)allPaths.add(path);
-allPaths.add('/');
-// Keep existing GSC-performing URLs. The root is the canonical dead-pixel landing
-// page; the same React test is also available at /tests/dead-pixel but that
-// duplicate path is intentionally excluded from the sitemap.
-allPaths.delete('/tests/dead-pixel');
-const escapeXml=(text:string)=>text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-const canonical=(path:string)=>DOMAIN+(path==='/'?'/':path.replace(/\/$/,''));
+
+const escapeXml=(text:string)=>text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const canonical=(path:string)=>origin+(path==='/'?'/':path.replace(/\/+$/,''));
+const allPaths=new Set<string>();
+if(origin){
+ const staticPaths=['/about','/contact','/privacy-policy','/terms-of-service'];
+ for(const item of MENU_ITEMS){
+  if(!item.isHeader&&item.path.startsWith('/'))allPaths.add(item.path);
+ }
+ for(const page of SEO_LANDING_PAGES)allPaths.add(page.path);
+ for(const post of BLOG_POSTS)allPaths.add('/blog/'+post.slug);
+ for(const path of staticPaths)allPaths.add(path);
+ allPaths.add('/');
+ // The old hash/client test route is not a separate index target.
+ allPaths.delete('/tests/dead-pixel');
+}
+
 const entries=[...allPaths].sort().map(path=>{
  const alternates=pageAlternates(path);
  const links=alternates.map(item=>'<xhtml:link rel="alternate" hreflang="'+item.lang+'" href="'+escapeXml(canonical(item.path))+'"/>').join('');
@@ -27,5 +37,11 @@ const entries=[...allPaths].sort().map(path=>{
 const xml='<?xml version="1.0" encoding="UTF-8"?>\n'+
  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'+
  entries.join('\n')+'\n</urlset>\n';
+const robots=origin
+ ? 'User-agent: *\nAllow: /\n\nSitemap: '+origin+'/sitemap.xml\n'
+ : 'User-agent: *\nAllow: /\n';
 writeFileSync('public/sitemap.xml',xml,'utf8');
-console.log('Generated sitemap:',entries.length,'canonical routes; no artificial lastmod dates.');
+writeFileSync('public/robots.txt',robots,'utf8');
+console.log(origin
+ ? 'Generated sitemap for '+entries.length+' canonical routes.'
+ : 'PUBLIC_SITE_URL is not configured: generated an empty sitemap and crawlable robots.txt; page HTML will be noindex until a real domain is configured.');
