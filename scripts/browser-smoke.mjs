@@ -4,12 +4,22 @@ const base=process.env.SMOKE_BASE || 'http://127.0.0.1:4321';
 const canonicalOrigin=process.env.PUBLIC_SITE_URL ? new URL(process.env.PUBLIC_SITE_URL).origin : '';
 const baseOrigin=new URL(base).origin;
 mkdirSync('smoke-screenshots',{recursive:true});
-const browser=await chromium.launch({headless:true,args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
+const browser=await chromium.launch({headless:true});
 const failures=[];
 async function check(url,fn,{mobile=false,denyFullscreen=false,media=false}={}){
  const ctx=await browser.newContext(mobile?{...devices['iPhone 13'],browserName:undefined}:{viewport:{width:1366,height:900}});
  const page=await ctx.newPage();
- if(media)await ctx.grantPermissions(['camera','microphone'],{origin:baseOrigin});
+ if(media)await page.addInitScript(()=>{
+  const canvas=document.createElement('canvas');canvas.width=320;canvas.height=240;
+  const ctx=canvas.getContext('2d');if(ctx){ctx.fillStyle='#2a7';ctx.fillRect(0,0,320,240);}
+  const videoStream=canvas.captureStream(30);
+  const audioContext=new AudioContext();
+  const destination=audioContext.createMediaStreamDestination();
+  const stream=new MediaStream([...videoStream.getVideoTracks(),...destination.stream.getAudioTracks()]);
+  Object.defineProperty(window,'__smokeMediaStream',{value:stream,configurable:true});
+  Object.defineProperty(window,'__smokeAudioContext',{value:audioContext,configurable:true});
+  Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,value:async()=>stream});
+ });
  const networkViolations=[];
  page.on('request',request=>{try{const u=new URL(request.url());if((u.protocol==='http:'||u.protocol==='https:')&&(u.origin!==baseOrigin||!['GET','HEAD'].includes(request.method())))networkViolations.push(request.method()+' '+request.url());}catch{}});
  if(denyFullscreen)await page.addInitScript(()=>{Element.prototype.requestFullscreen=function(){return Promise.reject(new Error('fullscreen denied by smoke test'));};});
@@ -116,13 +126,17 @@ await check('/',async page=>{
 },{denyFullscreen:true});
 await check('/tools/webcam',async page=>{
  await page.getByRole('button',{name:/Start Camera/i}).first().click();
- await page.waitForFunction(()=>{const video=document.querySelector('video');return !!video&&video.videoWidth>0&&video.videoHeight>0;},null,{timeout:15000});
+ await page.waitForFunction(()=>{const video=document.querySelector('video');return !!video&&video.videoWidth===320&&video.videoHeight===240;},null,{timeout:10000});
+ await page.getByText('320 × 240',{exact:true}).waitFor({timeout:5000});
  const downloadPromise=page.waitForEvent('download',{timeout:10000});
  await page.getByRole('button',{name:/Take Snapshot/i}).click();
  const download=await downloadPromise;
  if(!download.suggestedFilename().startsWith('webcam-test-'))throw Error('Webcam snapshot was not a local download');
  await page.getByRole('button',{name:/Stop Camera/i}).click();
  await page.getByRole('button',{name:/Start Camera/i}).first().waitFor({timeout:5000});
+ const tracksEnded=await page.evaluate(()=>window.__smokeMediaStream.getTracks().every(track=>track.readyState==='ended'));
+ if(!tracksEnded)throw Error('Media tracks were not stopped');
+ await page.evaluate(()=>window.__smokeAudioContext.close());
 },{media:true});
 await check('/tools/color-blindness',async page=>{
  await page.getByRole('button',{name:/Use Camera/i}).waitFor({timeout:10000});
