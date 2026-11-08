@@ -390,8 +390,8 @@ const DeadPixelTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title={isHome ? "DeadPixelTest - Free Screen Check & Monitor Calibration" : "Dead Pixel Test & Fixer"}
-        description="Instantly check your screen for dead pixels, backlight bleed, and ghosting. No download needed. Manual visual inspection of monitors and phones."
+        title={isHome ? "Dead Pixel Test – Free Online Screen Check" : "Dead Pixel Test & Fixer"}
+        description="Check your monitor or phone for dead and stuck pixels with free full-screen colors. Manual visual inspection, no download needed."
         canonical={isHome ? '/' : '/'}
         alternates={isHome ? [{lang:"en",path:"/"},{lang:"pt-BR",path:"/pt-br/"}] : []}
         breadcrumbs={isHome ? [] : [{ name: 'Home', path: '/' }, { name: 'Dead Pixel Test', path: '/tests/dead-pixel' }]}
