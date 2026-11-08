@@ -4,7 +4,7 @@ import App from '../../App';
 import ScreenInspection from '../../components/tests/ScreenInspection';
 import { BLOG_POSTS } from '../../data/blog';
 import { MENU_ITEMS } from '../../data/menu';
-import { SEO_LANDING_PAGES, pageAlternates } from '../../data/seoLandingPages';
+import { SEO_LANDING_PAGES, LOCALE_PAIRS } from '../../data/seoLandingPages';
 
 const oldPaths = MENU_ITEMS.filter(item=>!item.isHeader && item.path && item.path!=='/' && item.path.startsWith('/')).map(item=>item.path);
 const additionalPaths=['/tests/dead-pixel','/about','/contact','/privacy-policy','/terms-of-service',
@@ -44,7 +44,23 @@ const description=newPage?.description || article?.excerpt || (
 const isBR=newPage?.lang==='pt-BR';
 const locale = newPage?.lang ?? 'en';
 const inspectionMode=newPage?.mode==='guide'?'pixels':newPage?.mode==='resolution'?'pixels':newPage?.mode??'pixels';
-const others=SEO_LANDING_PAGES.filter(p=>p.lang===locale && p.path!==newPage?.path).slice(0,7);
+const others=SEO_LANDING_PAGES.filter(p=>p.lang===locale && p.path!==newPage?.path)
+ .sort((a,b)=>Number(b.mode===newPage?.mode)-Number(a.mode===newPage?.mode)).slice(0,7);
+const localePair=LOCALE_PAIRS.find(([en,pt])=>[en,pt].some(path=>(path.replace(/\/$/,'')||'/')===normalized));
+const switchLocaleHref=isBR
+ ? (localePair ? (localePair[0].replace(/\/$/,'')||'/') : '/')
+ : (localePair ? (localePair[1].replace(/\/$/,'')||'/') : '/pt-br');
+const pixelDifferences=isBR?[
+ {appearance:'Ponto escuro em fundo claro',meaning:'Pode indicar um pixel que não está emitindo a luz esperada, mas poeira e sujeira podem parecer semelhantes.',action:'Limpe o vidro com cuidado e compare vermelho, verde e azul.'},
+ {appearance:'Ponto colorido em vários fundos',meaning:'Pode envolver um subpixel preso. A aparência depende da tecnologia do painel.',action:'Registre quais cores exibem o ponto sem pressionar ou aquecer a tela.'},
+ {appearance:'Faixa horizontal ou vertical',meaning:'Linhas contínuas podem estar ligadas ao painel, cabo ou sinal, e não apenas a um pixel.',action:'Compare outra entrada, cabo ou monitor quando possível.'},
+ {appearance:'Contorno de uma imagem antiga',meaning:'Pode ser persistência temporária ou desgaste permanente; o navegador não determina a causa.',action:'Volte ao uso normal, siga orientações do fabricante e reavalie mais tarde.'}
+]:[
+ {appearance:'Dark spot on a bright background',meaning:'Could involve a pixel that is not emitting expected light, but dust or surface marks may look similar.',action:'Clean the glass gently and compare red, green and blue backgrounds.'},
+ {appearance:'Colored spot across several patterns',meaning:'Could involve a stuck subpixel. Appearance depends on panel technology.',action:'Record which colors reveal it; do not press or heat the display.'},
+ {appearance:'Entire horizontal or vertical line',meaning:'A continuous line may involve the panel, connector, cable or signal rather than one pixel.',action:'Compare another input, cable or display if practical.'},
+ {appearance:'Faint outline of previous content',meaning:'Could be temporary persistence or permanent aging; a browser cannot identify the cause.',action:'Resume normal varied content, follow manufacturer guidance and recheck later.'}
+];
 const docType=newPage?.mode==='guide'?'WebPage':'WebApplication';
 const publicSiteUrl=import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
 const structuredData=newPage?{
@@ -135,7 +151,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 <BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean(newPage && !newPage.indexable)} schema={structuredData}>
 {newPage ? (
   <main id="main-content" tabindex="-1" class="max-w-6xl mx-auto px-4 pt-8 md:px-8">
-    <nav aria-label="Breadcrumb" class="text-sm text-neutral-400 mb-7"><a href="/" class="hover:text-blue-400">Home</a> / {newPage.h1}</nav>
+    <nav aria-label="Breadcrumb" class="text-sm text-neutral-400 mb-7"><a href={isBR?'/pt-br':'/'} class="hover:text-blue-400">{isBR?'Início':'Home'}</a> / {newPage.h1}</nav>
     <header class="rounded-2xl border border-blue-500/20 bg-neutral-950 p-6 md:p-10">
       <p class="uppercase tracking-widest text-xs text-blue-400 font-bold">{isBR?'Ferramenta online gratuita':'Free browser-based screen check'}</p>
       <h1 class="text-3xl md:text-5xl font-bold mt-3 tracking-tight">{newPage.h1}</h1>
@@ -143,7 +159,11 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       {newPage.mode==='resolution' ? (
          <div class="grid md:grid-cols-2 gap-4">
            <div class="border border-white/10 p-4 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-neutral-300">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
-           <div class="border border-white/10 p-4 rounded-lg"><dl id="screen-metrics" class="font-mono text-sm text-neutral-300">Enable JavaScript for live screen and viewport metrics.</dl></div>
+           <div class="border border-white/10 p-4 rounded-lg">
+             <dl id="screen-metrics" aria-live="off" class="font-mono text-sm text-neutral-300">Enable JavaScript for live screen and viewport metrics.</dl>
+             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white">Copy browser metrics</button>
+             <p id="copy-screen-status" role="status" class="mt-2 text-xs text-neutral-400" aria-live="polite"></p>
+           </div>
          </div>
        ) : (
          <div class="p-5 rounded-xl border border-white/10 bg-black">
@@ -165,9 +185,28 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
       <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="border border-white/10 bg-white/5 p-5 rounded-xl text-neutral-300 leading-7">{note}</p>)}</div>
     </section>
+    {newPage.mode==='guide' && <section class="mt-12">
+      <h2 class="text-2xl font-bold mb-4">{isBR?'Compare o que você observa':'Compare what you see'}</h2>
+      <p class="max-w-3xl text-neutral-300 leading-7 mb-5">{isBR?'Os exemplos abaixo ajudam a escolher o próximo passo. Eles não identificam o defeito automaticamente.':'These examples guide your next visual check; they do not automatically diagnose your display.'}</p>
+      <div class="grid gap-4 md:grid-cols-2">
+        {pixelDifferences.map(item=><article class="rounded-xl border border-white/10 bg-neutral-950 p-5">
+          <h3 class="text-lg font-semibold text-white">{item.appearance}</h3>
+          <p class="mt-3 text-sm leading-7 text-neutral-300">{item.meaning}</p>
+          <p class="mt-3 border-t border-white/10 pt-3 text-sm leading-7 text-blue-200"><strong>{isBR?'Próximo passo':'Next step'}:</strong> {item.action}</p>
+        </article>)}
+      </div>
+    </section>}
+    {newPage.mode==='fixer' && <section class="mt-12 rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 md:p-7">
+      <h2 class="text-2xl font-bold mb-3">{isBR?'Como usar a área de cor estática':'How to use the static color patch'}</h2>
+      <p class="leading-7 text-neutral-300">{isBR?'Abra o teste, toque na região suspeita para posicionar a área estática, escolha a cor e ajuste o tamanho. A comparação é manual, sem flashes rápidos e sem promessa de reparo.':'Start the test, click or tap the suspicious area to position the static patch, choose a patch color and adjust its size. This is a manual comparison, not rapid flashing or a guaranteed repair.'}</p>
+    </section>}
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Perguntas frequentes':'Frequently asked questions'}</h2>
       <div class="space-y-4">{newPage.faq.map(item=><article class="rounded-xl border border-white/10 p-5"><h3 class="font-semibold text-lg">{item.question}</h3><p class="text-neutral-300 leading-7 mt-3">{item.answer}</p></article>)}</div>
     </section>
+    <nav class="mt-10 flex flex-wrap items-center gap-3 border-t border-white/10 pt-6 text-sm" aria-label={isBR?'Mudar idioma':'Switch language'}>
+      <span class="text-neutral-400">{isBR?'Outros idiomas:':'Other language:'}</span>
+      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-white/20 px-4 py-3 text-blue-300 hover:border-blue-400">{isBR?'English':'Português (Brasil)'}</a>
+    </nav>
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Testes relacionados':'Related tests'}</h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="rounded-lg p-4 border border-white/10 hover:border-blue-500/60 text-neutral-200" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>
     </section>
@@ -229,6 +268,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
     const el=document.getElementById('screen-metrics');
     if(!el)return;
     const fmt=(value)=>Number.isFinite(value)?String(Math.round(value*100)/100):'Not reported';
+    let metrics=[];
     const update=()=>{
       el.replaceChildren();
       const s=window.screen;
@@ -248,6 +288,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         ['Screen pixel depth (bits)',s.pixelDepth],
         ['Orientation',orientation]
       ];
+      metrics=data;
       for(const [name,value] of data){
         const dt=document.createElement('dt');dt.textContent=String(name);
         const dd=document.createElement('dd');dd.textContent=String(value);dd.style.marginBottom='0.75rem';
@@ -257,6 +298,17 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
     window.addEventListener('resize',update);
     window.addEventListener('orientationchange',update);
     window.visualViewport?.addEventListener('resize',update);
+    document.getElementById('copy-screen-metrics')?.addEventListener('click',async()=>{
+      const status=document.getElementById('copy-screen-status');
+      const body=metrics.map(([name,value])=>name+': '+value).join('\n')+'\nBrowser-reported CSS metrics only; not native physical panel resolution.';
+      try{
+        if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');
+        await navigator.clipboard.writeText(body);
+        if(status)status.textContent='Browser metrics copied.';
+      }catch{
+        if(status)status.textContent='Clipboard unavailable. Select the values above and copy manually.';
+      }
+    });
     update();
   })();
   </script>}
