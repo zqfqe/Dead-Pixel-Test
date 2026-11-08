@@ -62,22 +62,22 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
   {
     path:'/dead-pixel-line-test/',lang:'en',
     title:'Dead Pixel Line Test – Vertical & Horizontal Screen Lines',
-    description:'Check a horizontal or vertical screen line with solid colors and grid patterns. Separate line symptoms from individual dead pixels.',
-    h1:'Screen Line & Dead Pixel Line Test',lead:'A whole row or column of abnormal pixels is not the same as one isolated dead pixel. Compare static color fields and line patterns to document the symptom.',
+    description:'Inspect horizontal and vertical screen-line symptoms with solid-color fields, coarse stripes and fine CSS-pixel grids. Manual visual check only.',
+    h1:'Screen Line & Dead Pixel Line Test',lead:'A whole row or column of abnormal pixels is different from one isolated dead pixel. Compare solid colors, coarse stripes and fine line patterns, then record the location for follow-up.',
     mode:'lines',intent:'dead line of pixels',
-    steps:['Inspect the same screen area using white, black and gray backgrounds.','Switch to horizontal, vertical and grid patterns to trace the line.','If possible, compare an external display and another input source.','Do not infer the failed hardware component from a single web test.'],
-    notes:['A line can be caused by multiple hardware or signal issues.','Avoid pressing the panel or disassembling the screen.'],
-    faq:[{question:'Can a browser fix a vertical line?',answer:'No. It can help you document the symptom, not repair a panel or signal connection.'},{question:'Is a row of dead pixels the same as one dead pixel?',answer:'No. A continuous row or column warrants broader troubleshooting.'}]
+    steps:['Open the test on the display that shows the suspected line.','Compare black, white, red, green and blue solid fields; note whether the line stays in the same place.','Switch to coarse horizontal and vertical stripes, then the fine-line and grid patterns.','Mark the approximate location and note which patterns show the symptom.','If possible, compare another cable, input source or external display before drawing conclusions.'],
+    notes:['Fine patterns are drawn in CSS pixels; browser zoom, DPR and scaling can make them differ from physical panel pixels.','A line can originate from the panel, cable, connector, graphics hardware or source. This page cannot identify the failed component.','Do not press the panel, apply heat or disassemble the display.'],
+    faq:[{question:'Can a browser fix a vertical or horizontal line?',answer:'No. The page helps you compare and document the symptom; it cannot repair a panel, cable or graphics connection.'},{question:'Is a row of dead pixels the same as one dead pixel?',answer:'No. A continuous row or column is a different symptom and needs broader troubleshooting.'}]
   },
   {
     path:'/image-retention-test/',lang:'en',
     title:'Image Retention Test – Check Screen Persistence',
-    description:'Use static gray, white, black and checkerboard patterns to inspect temporary image retention and possible burn-in.',
-    h1:'Image Retention & Screen Persistence Test',lead:'Image retention is a residual image visible after the content changes. Use neutral static backgrounds to observe whether any previous image remains visible.',
+    description:'Use neutral gray and brief solid-color patterns to visually inspect possible image persistence. Learn the limits of checking temporary retention versus permanent OLED burn-in.',
+    h1:'Image Retention & Screen Persistence Test',lead:'Look for a faint outline of previous content on a neutral gray field after the original content has changed. This is a visual comparison only: a browser cannot diagnose temporary retention or confirm permanent OLED burn-in.',
     mode:'retention',intent:'lcd image persistence',
-    steps:['Display a neutral gray background.','Check for outlines of previously displayed static content.','Compare white and dark gray patterns.','Allow normal use or follow the manufacturer guidance and recheck later.'],
-    notes:['A browser cannot calculate a reliable burn-in percentage or determine panel health automatically.','Temporary image persistence and permanent OLED burn-in are not the same diagnosis.'],
-    faq:[{question:'Can the test measure permanent burn-in?',answer:'No. It shows patterns for manual observation; it cannot quantify panel degradation.'},{question:'Should I run an intense flashing routine?',answer:'No. Use static patterns and follow the display manufacturer guidance.'}]
+    steps:['Set the display to a comfortable brightness and open the neutral gray pattern first.','Look for a faint outline of previously displayed static content; avoid staring at the screen for long periods.','Briefly compare near-black, near-white and solid-color fields to see whether the same outline remains visible.','Close the test and return to normal varied content. Follow the manufacturer’s panel-care or pixel-refresh guidance if available.','Recheck later under similar brightness and viewing conditions. If the mark persists, contact the display manufacturer or a qualified service provider.'],
+    notes:['Temporary image retention may fade after content changes or time; permanent OLED burn-in is persistent uneven panel aging. A web page cannot reliably distinguish or measure the two.','This test does not repair image retention or burn-in. Do not leave static high-contrast patterns running for long periods or use repeated flashing routines as a treatment.','Appearance depends on panel technology, brightness, temperature, HDR, viewing angle and browser/display settings.'],
+    faq:[{question:'How can I tell temporary image retention from permanent burn-in?',answer:'Temporary retention may fade after the image changes or the display rests. Burn-in is persistent uneven panel aging that can remain visible across different content. This browser test cannot confirm the cause; follow the manufacturer’s guidance or seek service if it persists.'},{question:'Can this page fix or measure OLED burn-in?',answer:'No. It only displays brief visual patterns. It cannot reverse pixel wear, measure degradation or guarantee that a retained image will disappear.'}]
   },
   {
     path:'/screen-resolution-test/',lang:'en',
