@@ -1,5 +1,5 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
-type Name='Black'|'White'|'Red'|'Green'|'Blue'|'Cyan'|'Magenta'|'Yellow'|'Gray'|'Gray steps'|'Near black'|'Near white'|'Horizontal'|'Vertical'|'Horizontal fine'|'Vertical fine'|'Grid'|'Checkerboard'|'Gradient';
+type Name='Black'|'White'|'Red'|'Green'|'Blue'|'Cyan'|'Magenta'|'Yellow'|'Gray'|'Gray steps'|'Near black'|'Near white'|'Horizontal'|'Vertical'|'Horizontal fine'|'Vertical fine'|'Grid'|'Checkerboard'|'Gradient'|'Red gradient'|'Green gradient'|'Blue gradient'|'Black levels'|'White levels'|'Color bars';
 type Pattern={name:Name;color?:string;background?:string;backgroundSize?:string};
 type Category='unclassified'|'dark'|'bright'|'stuck-color'|'dust-or-surface'|'line-or-other'|'uncertain';
 type Mark={id:string;x:number;y:number;colors:string[];category:Category;notes:string;viewport:{width:number;height:number;dpr:number;orientation:string}};
@@ -17,7 +17,13 @@ const PATTERNS:Pattern[]=[
 {name:'Vertical fine',background:'repeating-linear-gradient(90deg,#000 0 1px,#fff 1px 2px)'},
 {name:'Grid',color:'#000',background:'repeating-linear-gradient(0deg,transparent 0 15px,#fff 15px 16px),repeating-linear-gradient(90deg,transparent 0 15px,#fff 15px 16px)'},
 {name:'Checkerboard',background:'repeating-conic-gradient(#222 0% 25%,#ddd 0% 50%)',backgroundSize:'64px 64px'},
-{name:'Gradient',background:'linear-gradient(90deg,#000,#444,#888,#ccc,#fff)'}
+{name:'Gradient',background:'linear-gradient(90deg,#000,#444,#888,#ccc,#fff)'},
+{name:'Red gradient',background:'linear-gradient(90deg,#000000,#550000,#aa0000,#ff0000)'},
+{name:'Green gradient',background:'linear-gradient(90deg,#000000,#005500,#00aa00,#00ff00)'},
+{name:'Blue gradient',background:'linear-gradient(90deg,#000000,#000055,#0000aa,#0000ff)'},
+{name:'Black levels',background:'linear-gradient(90deg,#000 0 12.5%,#020202 12.5% 25%,#040404 25% 37.5%,#060606 37.5% 50%,#080808 50% 62.5%,#0b0b0b 62.5% 75%,#0d0d0d 75% 87.5%,#101010 87.5% 100%)'},
+{name:'White levels',background:'linear-gradient(90deg,#efefef 0 12.5%,#f2f2f2 12.5% 25%,#f5f5f5 25% 37.5%,#f8f8f8 37.5% 50%,#fafafa 50% 62.5%,#fcfcfc 62.5% 75%,#fefefe 75% 87.5%,#ffffff 87.5% 100%)'},
+{name:'Color bars',background:'linear-gradient(90deg,#fff 0 14.285%,#ff0 14.285% 28.57%,#0ff 28.57% 42.855%,#0f0 42.855% 57.14%,#f0f 57.14% 71.425%,#f00 71.425% 85.71%,#00f 85.71% 100%)'}
 ];
 const PT_PATTERN_NAMES: Partial<Record<Name,string>>={
  Black:'Preto',White:'Branco',Red:'Vermelho',Green:'Verde',Blue:'Azul',
@@ -25,7 +31,7 @@ const PT_PATTERN_NAMES: Partial<Record<Name,string>>={
  'Gray steps':'Escala de cinza','Near black':'Quase preto','Near white':'Quase branco',
  Horizontal:'Linhas horizontais',Vertical:'Linhas verticais',
  'Horizontal fine':'Linhas horizontais finas','Vertical fine':'Linhas verticais finas',
- Grid:'Grade',Checkerboard:'Xadrez',Gradient:'Gradiente'
+ Grid:'Grade',Checkerboard:'Xadrez',Gradient:'Gradiente','Red gradient':'Gradiente vermelho','Green gradient':'Gradiente verde','Blue gradient':'Gradiente azul','Black levels':'Níveis próximos do preto','White levels':'Níveis próximos do branco','Color bars':'Barras de cores'
 };
 const TEXT={
  en:{start:'Start full-screen inspection',exit:'Exit test',prev:'Previous color',next:'Next color',mark:'Mark suspect spot',stop:'Stop marking',show:'Show marks',hide:'Hide marks',undo:'Undo mark',export:'Export self-check JSON',print:'Download printable HTML report',hint:'Inspect this static pattern. Arrow keys move between patterns. Marked positions are approximate CSS viewport ratios, not physical panel pixels.',disclaimer:'User-observed self-check only. Not an automated hardware diagnosis, certification or warranty decision.',fullscreen:'Native fullscreen was denied or unavailable. The on-page overlay remains usable.',device:'Device',monitor:'Monitor',laptop:'Laptop',phone:'Phone',tablet:'Tablet',other:'Other',marks:'Suspect spots',category:'Observation',uncategorized:'Not classified',dark:'Dark / black spot',bright:'Bright spot',stuck:'Color appears stuck',line:'Line or other pattern',unknown:'Not sure',dust:'Dust / surface mark',notes:'Notes',remove:'Remove',selected:'Selected spot',recheck:'Record selected spot on this color',none:'No suspect spots recorded.',report:'Screen self-check report',created:'Created',screen:'Browser screen (CSS px)',viewport:'Viewport (CSS px)',dpr:'Device pixel ratio',orientation:'Orientation',colors:'Observed on',position:'Approximate position',clear:'Clear marks',patterns:'Patterns',jump:'Jump to',swipe:'Swipe horizontally on the test area to change patterns (or use the arrow keys).',maximum:'Maximum 50 spots. Remove a mark to add another.',preflight:'Before you start',preflightNote:'This checklist is a guide, not a requirement to start. Press Escape or use Exit test at any time.',session:'Session only — no automatic upload or saved account.',progress:'Patterns viewed',newSession:'New empty session',minimal:'Hide controls',controls:'Show controls'},
@@ -53,14 +59,14 @@ export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retentio
  const select=(names:Name[])=>names.map(name=>PATTERNS.find(p=>p.name===name)).filter((p):p is Pattern=>Boolean(p));
  if(mode==='lines')return select(['Black','White','Red','Green','Blue','Horizontal','Vertical','Horizontal fine','Vertical fine','Grid']);
  if(mode==='retention')return select(['Gray','Near black','Near white','White','Black','Red','Green','Blue']);
- if(mode==='contrast')return select(['Black','White','Gray','Gray steps','Near black','Near white','Gradient','Checkerboard']);
+ if(mode==='contrast')return select(['Black','White','Gray','Gray steps','Black levels','White levels','Gradient','Red gradient','Green gradient','Blue gradient','Color bars','Checkerboard','Near black','Near white']);
  return select(CORE);
 },[mode]);
 const modeHint=mode==='lines'
  ? (lang==='pt-BR'?'Compare fundos sólidos e padrões de linhas grossas e finas. Linhas finas são pixels CSS e podem não coincidir com pixels físicos do painel.':'Compare solid-color fields with coarse and fine line patterns. Fine lines are CSS pixels and may not align with physical panel pixels.')
  : mode==='retention'
  ? (lang==='pt-BR'?'Observe um fundo cinza neutro em busca de contornos residuais. Alterne cores por pouco tempo; este teste não distingue nem repara burn-in permanente.':'Look for a ghost outline on neutral gray. Change patterns briefly; this test cannot distinguish or repair permanent burn-in.')
- : t.hint;
+ : mode==='contrast' ? (lang==='pt-BR'?'Compare níveis de preto e branco, gradientes suaves e barras de cor. Isto não mede nits, contraste físico ou cobertura de gama.':'Compare black and white levels, smooth color ramps and color bars. This is not a calibrated measurement of nits, physical contrast or gamut.') : t.hint;
  const [active,setActive]=useState(false),[index,setIndex]=useState(0),[viewed,setViewed]=useState<Name[]>([]),[hideControls,setHideControls]=useState(false),[markMode,setMarkMode]=useState(false),[showMarks,setShowMarks]=useState(false),[marks,setMarks]=useState<Mark[]>([]),[selected,setSelected]=useState(''),[device,setDevice]=useState('monitor'),[started,setStarted]=useState(''),[ran,setRan]=useState(false),[warning,setWarning]=useState(false),[patchColor,setPatchColor]=useState('#f00'),[patchSize,setPatchSize]=useState(140),[patchPos,setPatchPos]=useState({x:50,y:50});
  const root=useRef<HTMLDivElement>(null),dialog=useRef<HTMLDivElement>(null),startButton=useRef<HTMLButtonElement>(null),native=useRef(false);
  const touchStart=useRef<{x:number;y:number}|null>(null);
