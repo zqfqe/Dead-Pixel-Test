@@ -13,22 +13,23 @@ interface SEOProps {
   type?: 'website' | 'article' | 'WebApplication';
   image?: string;
   keywords?: string[];
-  jsonLd?: Record<string, any>; // Custom Structured Data
-  breadcrumbs?: BreadcrumbItem[]; // New prop for breadcrumbs
-  noindex?: boolean; // New prop to prevent indexing
+  jsonLd?: Record<string, any>;
+  breadcrumbs?: BreadcrumbItem[];
+  noindex?: boolean;
   language?: 'en' | 'pt-BR';
   alternates?: {lang:string;path:string}[];
-  disableSuffix?: boolean; // Prevents appending " | DeadPixelTest.cc"
+  disableSuffix?: boolean;
 }
 
-const DOMAIN = 'https://deadpixeltest.cc';
+const configuredOrigin = import.meta.env.PUBLIC_SITE_URL?.trim();
+const ORIGIN = configuredOrigin ? new URL(configuredOrigin).origin : '';
 
-export const SEO: React.FC<SEOProps> = ({ 
-  title, 
-  description, 
-  canonical, 
-  type = 'website', 
-  image = '/og-image.jpg', 
+export const SEO: React.FC<SEOProps> = ({
+  title,
+  description,
+  canonical,
+  type = 'website',
+  image = '/og-image.jpg',
   keywords = [],
   jsonLd,
   breadcrumbs,
@@ -37,71 +38,47 @@ export const SEO: React.FC<SEOProps> = ({
   alternates = [],
   disableSuffix = false
 }) => {
-  const siteTitle = 'DeadPixelTest.cc';
-  const fullTitle = (title === siteTitle || disableSuffix) ? title : `${title} | ${siteTitle}`;
-  const url = canonical ? `${DOMAIN}${canonical}` : DOMAIN;
-  const fullImage = image.startsWith('http') ? image : `${DOMAIN}${image}`;
-
-  // Astro provides static SEO metadata for every real URL; do not duplicate
-  // canonicals and titles when old React tools hydrate inside Astro islands.
+  // Astro owns production metadata. Legacy React islands must not duplicate it.
   if (typeof document !== 'undefined' && document.documentElement.hasAttribute('data-astro-site')) {
     return null;
   }
 
-  // Construct Breadcrumb Schema
-  // Fix: Check if breadcrumbs array exists AND has items. 
-  // An empty array [] creates an invalid Schema with empty itemListElement.
-  const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": breadcrumbs.map((item, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": item.name,
-      "item": `${DOMAIN}${item.path}`
+  const siteTitle = 'DeadPixelTest';
+  const fullTitle = disableSuffix ? title : (title === siteTitle ? title : title + ' | ' + siteTitle);
+  const url = canonical && ORIGIN ? new URL(canonical, ORIGIN).toString() : undefined;
+  const fullImage = image.startsWith('http') ? image : (ORIGIN ? new URL(image, ORIGIN).toString() : undefined);
+  const breadcrumbSchema = ORIGIN && breadcrumbs?.length ? {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: new URL(item.path, ORIGIN).toString()
     }))
   } : null;
 
   return (
     <Helmet>
       {language && <html lang={language} />}
-      {alternates.map(item=><link key={item.lang} rel="alternate" hrefLang={item.lang} href={DOMAIN+item.path} />)}
-      {/* Standard Meta Tags */}
+      {ORIGIN && alternates.map(item=><link key={item.lang} rel="alternate" hrefLang={item.lang} href={new URL(item.path, ORIGIN).toString()} />)}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords.join(', ')} />
-      <link rel="canonical" href={url} />
-      
-      {/* Robots Control */}
+      {url && <link rel="canonical" href={url} />}
       {noindex && <meta name="robots" content="noindex, nofollow" />}
-
-      {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
+      {url && <meta property="og:url" content={url} />}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={fullImage} />
+      {fullImage && <meta property="og:image" content={fullImage} />}
       <meta property="og:site_name" content={siteTitle} />
-
-      {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={fullImage} />
-
-      {/* Structured Data (JSON-LD) */}
-      {jsonLd && (
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
-        </script>
-      )}
-      
-      {/* Breadcrumb Schema */}
-      {breadcrumbSchema && (
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c')}
-        </script>
-      )}
+      {fullImage && <meta name="twitter:image" content={fullImage} />}
+      {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>}
+      {breadcrumbSchema && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c')}</script>}
     </Helmet>
   );
 };
