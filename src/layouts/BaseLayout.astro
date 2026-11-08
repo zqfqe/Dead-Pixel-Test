@@ -48,6 +48,7 @@ const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
     {hasSchema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g,'\\u003c')} />}
   </head>
   <body class="min-h-screen bg-[#08090c] text-white antialiased">
+    {!legacy && <a href="#main-content" class="skip-link">Skip to main content</a>}
     {!legacy && <header class="sticky top-0 z-40 border-b border-white/10 bg-[#08090c]/95 backdrop-blur-lg">
       <div class="mx-auto max-w-7xl flex min-h-16 items-center gap-4 px-4 md:px-8">
         <a href={lang==='pt-BR'?'/pt-br':'/'} class="flex items-center gap-2 font-bold text-white shrink-0">
