@@ -297,6 +297,72 @@ await check('/',async page=>{
  if(html.includes('window.onload=()=>window.print()'))throw Error('Printable report unexpectedly auto-prints');
  if(!html.includes('window.print()'))throw Error('Printable report has no explicit print control');
 });
+await check('/',async page=>{
+ await page.getByText(/Clean the glass gently and check whether dust/i).waitFor();
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByRole('button',{name:'Hide controls'}).click();
+ if(await page.getByRole('button',{name:'Next color'}).count())throw Error('Bottom control bar is visible in minimal mode');
+ await page.getByRole('button',{name:'Show controls'}).click();
+ await page.getByRole('button',{name:'Next color'}).click();
+ await page.getByText('White (2/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Mark suspect spot'}).click();
+ await page.locator('[role="dialog"] [role="presentation"]').click({position:{x:200,y:210}});
+ await page.getByRole('button',{name:/Exit test/i}).click();
+ await page.getByRole('combobox',{name:/Observation/i}).first().selectOption('dust-or-surface');
+ const [d]=await Promise.all([
+   page.waitForEvent('download'),
+   page.getByRole('button',{name:/Export self-check JSON/i}).click()
+ ]);
+ const json=JSON.parse(readFileSync(await d.path(),'utf8'));
+ if(json.observedCount!==2||json.totalPatterns!==8||json.marks[0]?.category!=='dust-or-surface')
+  throw Error('Visit progress or dust category export inaccurate');
+ await page.getByRole('button',{name:'New empty session'}).click();
+ if(await page.getByText(/Suspect spots: 1/).count())throw Error('New session did not clear marks');
+ if(await page.getByRole('button',{name:/Export self-check JSON/i}).count())throw Error('New session retained previous export');
+});
+await check('/screen-resolution-test',async page=>{
+ await page.getByLabel('Native width (physical pixels)').fill('1920');
+ await page.getByLabel('Native height (physical pixels)').fill('1080');
+ await page.getByLabel('Screen diagonal (inches)').fill('24');
+ await page.getByRole('button',{name:'Calculate PPI'}).click();
+ await page.getByText(/Confirm the native physical pixel resolution/i).last().waitFor();
+ await page.getByRole('checkbox',{name:/I checked the native physical resolution/i}).check();
+ await page.getByRole('button',{name:'Calculate PPI'}).click();
+ await page.getByText(/91\.79 PPI/).waitFor();
+ await page.getByLabel('Native width (physical pixels)').fill('-5');
+ await page.getByRole('button',{name:'Calculate PPI'}).click();
+ await page.getByText(/Enter positive native pixel dimensions/i).waitFor();
+});
+await check('/screen-contrast-test',async page=>{
+ await page.getByRole('heading',{name:'Read the 14 contrast and color patterns'}).waitFor();
+ await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
+ await page.getByText('Black (1/14)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Jump to Red gradient'}).click();
+ await page.getByText('Red gradient (8/14)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Jump to Color bars'}).click();
+ await page.getByText('Color bars (11/14)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:/Exit test/i}).click();
+});
+await check('/pt-br/teste-de-cores',async page=>{
+ await page.getByRole('heading',{name:'Como interpretar os 14 padrões de cores e contraste'}).waitFor();
+ await page.getByRole('button',{name:/Iniciar inspeção em tela cheia/i}).click();
+ await page.getByRole('button',{name:'Ir para Gradiente azul'}).click();
+ await page.getByText('Gradiente azul (10/14)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:/Sair do teste/i}).click();
+});
+await check('/laptop-screen-dead-pixel-test',async page=>{
+ await page.getByRole('heading',{name:'Laptop-specific troubleshooting before requesting repair'}).waitFor();
+ await page.getByRole('heading',{name:'Internal panel versus external monitor'}).waitFor();
+ await page.getByRole('heading',{name:'Angle and power changes'}).waitFor();
+});
+await check('/pt-br/pixel-morto-iphone',async page=>{
+ await page.getByRole('heading',{name:'Verificações específicas para iPhone e celular'}).waitFor();
+ await page.getByRole('heading',{name:'Safari e tela cheia'}).waitFor();
+});
+await check('/image-retention-test',async page=>{
+ await page.getByRole('heading',{name:'Temporary retention and permanent OLED burn-in are not interchangeable'}).waitFor();
+ await page.getByRole('heading',{name:'Neutral gray first'}).waitFor();
+});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+29+' browser smoke scenarios including gestures, localization, printable reports, device metrics and privacy checks');
+console.log('PASS all '+36+' browser smoke scenarios covering full planned inspection workflows, PPI, contrast, localized pages and reports');
