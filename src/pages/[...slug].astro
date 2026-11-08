@@ -52,6 +52,84 @@ const structuredData=newPage?{
  ...(publicSiteUrl?{url:publicSiteUrl+newPage.path.replace(/\/$/,'')}:{}),description:newPage.description,
  ...(docType==='WebApplication'?{applicationCategory:'UtilitiesApplication',operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}:{})
 }:undefined;
+const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];limits:string[]}> = {
+ '/tests/refresh-rate':{
+  heading:'How to interpret a frame-skipping and browser FPS check',
+  intro:'This tool animates a repeating sequence of blocks using requestAnimationFrame. The on-screen FPS counter measures how frequently the browser callback fires; it does not directly read your monitor panel’s scan-out or verify its configured refresh rate.',
+  steps:[
+   'Open the test on the monitor you want to investigate. Check the refresh-rate setting in your operating system first.',
+   'Let the browser FPS estimate settle for several seconds, without assuming that the value proves physical display Hz.',
+   'For a frame-skipping investigation, use a separate camera with manual shutter settings and repeat photographs of the moving block.',
+   'If you see irregular spacing, repeat with browser extensions disabled and other applications closed. Compare a different cable or port if relevant.'
+  ],
+  limits:[
+   'Browser animation cadence may be limited by background tabs, battery saving, compositing, variable refresh rate and operating-system scheduling.',
+   'A photo with gaps is a reason to investigate, not a conclusive hardware failure or warranty diagnosis.',
+   'A browser cannot certify an overclocked panel’s actual refresh Hz.'
+  ]
+ },
+ '/tests/local-dimming':{
+  heading:'How to inspect local dimming, halos and blooming',
+  intro:'A display with local dimming may brighten or darken groups of backlight zones around a high-contrast object. The pattern tool makes these effects easier to observe on a dark background; it does not measure zone count or peak luminance.',
+  steps:[
+   'Choose a comfortable brightness in a dim room and confirm whether the monitor’s local-dimming feature is enabled.',
+   'Start with one bright box or circle against black. Move it slowly and observe any soft halo or abrupt brightness changes nearby.',
+   'Compare shapes and sizes, then repeat with local dimming disabled if your display offers that setting.',
+   'Make notes about the conditions. Automatic brightness, HDR processing and viewing angle can change the apparent result.'
+  ],
+  limits:[
+   'Different Mini-LED and OLED technologies respond differently; a halo does not automatically indicate a defective panel.',
+   'The browser does not know the number or hardware behavior of dimming zones.',
+   'Avoid leaving high-brightness static patterns on an OLED panel for extended periods.'
+  ]
+ },
+ '/tests/color-gradient':{
+  heading:'How to identify visible color banding',
+  intro:'Smooth gradients can reveal abrupt steps between tones that would ideally appear continuous. Use gray and primary-color ramps to observe posterization, but distinguish browser rendering from calibrated panel color performance.',
+  steps:[
+   'Display a neutral grayscale gradient and inspect for noticeable bands or colored tints under normal room lighting.',
+   'Compare red, green and blue gradients and switch between horizontal and vertical directions.',
+   'Check HDR mode, display color profile, browser color management and graphics driver settings if the result differs between applications.',
+   'Do not confuse intentional hard-step test patterns with artifacts in the smooth-gradient mode.'
+  ],
+  limits:[
+   'Screenshots capture rendered pixels, not the actual light emitted by the panel.',
+   'Operating-system bit depth, dithering, color profile and compression can introduce visible steps.',
+   'A browser page is not a substitute for a colorimeter or professional calibration.'
+  ]
+ },
+ '/tests/audio-sync':{
+  heading:'How to check perceived audio and video timing',
+  intro:'The interactive test produces a visible event and an audio cue. You can adjust an apparent offset while listening, but your own reaction time and device latency prevent it from being a calibrated end-to-end synchronization measurement.',
+  steps:[
+   'Start with the speakers or headphones and display that you actually use.',
+   'Observe the visual cue alongside the audible click several times at a comfortable volume.',
+   'Adjust the offset only after repeated observations. Compare wired and wireless audio if both are available.',
+   'For objective measurement, record the screen and sound using equipment with a shared timing reference.'
+  ],
+  limits:[
+   'Bluetooth codecs, output buffering, browser scheduling and operating-system mixers can all change apparent latency.',
+   'A manually selected offset is subjective; it is not a certified latency measurement.',
+   'Keep the volume comfortable and stop if the repeating cues cause discomfort.'
+  ]
+ },
+ '/tests/test-patterns':{
+  heading:'Using display patterns for visual checks',
+  intro:'Color bars, grids, ramps and sharpness patterns can help you examine alignment and visible processing effects. These are browser-drawn reference patterns, not calibrated broadcast signals or panel manufacturing tests.',
+  steps:[
+   'Confirm that browser zoom and display scaling are set to known values.',
+   'Use grid and sharpness patterns to look for visible unevenness or scaling artifacts.',
+   'Compare ramps and color bars without assuming the displayed colors are spectrally or luminance calibrated.',
+   'Change only one display setting at a time and record what visibly changes.'
+  ],
+  limits:[
+   'CSS pixels can cover more or fewer than one physical panel pixel depending on DPR, scaling and browser zoom.',
+   'HDR and color-management transforms can change color appearance.',
+   'Browser patterns alone cannot certify a screen’s accuracy or identify which hardware component has failed.'
+  ]
+ }
+};
+const legacyGuide=legacyGuides[normalized];
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 ---
 <BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean(newPage && !newPage.indexable)} schema={structuredData}>
@@ -114,11 +192,35 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 ) : (
   <>
     <App client:only="react" />
-    <section class="mx-auto max-w-5xl px-6 pb-16 pt-5 text-neutral-400 leading-7" aria-label="Display test information">
-      <h2 class="text-xl font-semibold text-white mb-3">About {title}</h2>
-      <p>{description}</p>
-      <p class="mt-3">The interactive tool loads in your browser. This is a user-operated display check; appearance depends on the display, browser and operating-system settings.</p>
-      <p class="mt-4"><a class="text-blue-400" href="/">Dead Pixel Test</a> · <a class="text-blue-400" href="/tests/local-dimming">Local Dimming</a> · <a class="text-blue-400" href="/tests/color-gradient">Color Gradient</a></p>
+    <section class="mx-auto max-w-5xl px-6 pb-16 pt-5 text-neutral-300 leading-7" aria-label="Display test information">
+      {legacyGuide ? (
+        <>
+          <h2 class="text-2xl font-semibold text-white mb-4">{legacyGuide.heading}</h2>
+          <p class="max-w-3xl">{legacyGuide.intro}</p>
+          <div class="mt-8 grid gap-8 md:grid-cols-2">
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-3">Practical inspection steps</h3>
+              <ol class="list-decimal pl-5 space-y-3">{legacyGuide.steps.map(step=><li>{step}</li>)}</ol>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-3">What the result cannot prove</h3>
+              <ul class="list-disc pl-5 space-y-3">{legacyGuide.limits.map(limit=><li>{limit}</li>)}</ul>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 class="text-xl font-semibold text-white mb-3">About {title}</h2>
+          <p>{description}</p>
+          <p class="mt-3">The interactive tool loads in your browser. This is a user-operated visual check, not a hardware certification. Browser and display settings affect results.</p>
+        </>
+      )}
+      <nav aria-label="Related display tests" class="mt-8 flex flex-wrap gap-3">
+        <a class="text-blue-400 hover:underline" href="/">Dead Pixel Test</a>
+        <a class="text-blue-400 hover:underline" href="/tests/local-dimming">Local Dimming</a>
+        <a class="text-blue-400 hover:underline" href="/tests/color-gradient">Color Gradient</a>
+        <a class="text-blue-400 hover:underline" href="/tests/refresh-rate">Browser FPS</a>
+      </nav>
     </section>
   </>
 )}
