@@ -197,6 +197,39 @@ await check('/tools/color-blindness',async page=>{
  const src=await img.getAttribute('src');
  if(!src?.startsWith('blob:'))throw Error('Selected image was not loaded from a local object URL');
 });
+await check('/',async page=>{
+ const skip=page.getByRole('link',{name:/Skip to main content/i});
+ await page.keyboard.press('Tab');
+ if(!await skip.evaluate(el=>el===document.activeElement))throw Error('Skip link is not the first keyboard focus target');
+ await page.keyboard.press('Enter');
+ await page.waitForFunction(()=>location.hash==='#main-content');
+ if(!await page.locator('main#main-content').count())throw Error('Skip target missing');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const duration=await page.locator('a.skip-link').evaluate(el=>getComputedStyle(el).transitionDuration);
+ if(duration==='0s' || duration==='0.01ms')return;
+ const seconds=duration.split(',').map(s=>parseFloat(s));
+ if(seconds.some(s=>s>0.01))throw Error('Reduced-motion transition remains active: '+duration);
+});
+await check('/tests/refresh-rate',async page=>{
+ const skip=page.getByRole('link',{name:/Skip to main content/i});
+ await skip.waitFor({timeout:10000});
+ await skip.focus();
+ await page.keyboard.press('Enter');
+ await page.waitForFunction(()=>location.hash==='#main-content');
+ if(!await page.locator('main#main-content').count())throw Error('Legacy skip target missing');
+});
+await check('/tests/refresh-rate',async page=>{
+ const toggle=page.getByRole('button',{name:'Open Menu'});
+ await toggle.waitFor({timeout:10000});
+ const menu=page.getByRole('navigation',{name:'Mobile navigation'});
+ if(await toggle.getAttribute('aria-expanded')!=='false')throw Error('Mobile menu open by default');
+ await toggle.click();
+ if(await toggle.getAttribute('aria-expanded')!=='true')throw Error('Mobile menu toggle state mismatch');
+ await menu.getByRole('link',{name:'Refresh Rate / Skipping'}).waitFor();
+ await page.keyboard.press('Escape');
+ if(await toggle.getAttribute('aria-expanded')!=='false')throw Error('Mobile menu did not close with Escape');
+ if(await menu.getAttribute('aria-hidden')!=='true')throw Error('Closed mobile menu remains exposed to accessibility tree');
+},{mobile:true});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+19+' browser smoke scenarios including privacy, exports, mobile and keyboard checks');
+console.log('PASS all '+22+' browser smoke scenarios including privacy, exports, responsive navigation and keyboard checks');
