@@ -22,12 +22,12 @@ jobs:
       - name: Check critical indexable HTML, preserved GSC URLs and locale
         run: |
           test -s dist/index.html
-          test -s dist/tests/refresh-rate/index.html
-          test -s dist/tests/local-dimming/index.html
-          test -s dist/tests/color-gradient/index.html
-          test -s dist/pt-br/index.html
-          test -s dist/pt-br/pixel-morto-notebook/index.html
-          grep -q 'pixel morto' dist/pt-br/pixel-morto-notebook/index.html
+          test -s dist/tests/refresh-rate.html
+          test -s dist/tests/local-dimming.html
+          test -s dist/tests/color-gradient.html
+          test -s dist/pt-br.html
+          test -s dist/pt-br/pixel-morto-notebook.html
+          grep -q 'pixel morto' dist/pt-br/pixel-morto-notebook.html
           grep -q 'hreflang="pt-BR"' dist/index.html
           grep -q 'tests/local-dimming' dist/sitemap.xml
           grep -q 'tests/refresh-rate' dist/sitemap.xml
