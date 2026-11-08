@@ -16,6 +16,8 @@ interface SEOProps {
   jsonLd?: Record<string, any>; // Custom Structured Data
   breadcrumbs?: BreadcrumbItem[]; // New prop for breadcrumbs
   noindex?: boolean; // New prop to prevent indexing
+  language?: 'en' | 'pt-BR';
+  alternates?: {lang:string;path:string}[];
   disableSuffix?: boolean; // Prevents appending " | DeadPixelTest.cc"
 }
 
@@ -31,6 +33,8 @@ export const SEO: React.FC<SEOProps> = ({
   jsonLd,
   breadcrumbs,
   noindex = false,
+  language,
+  alternates = [],
   disableSuffix = false
 }) => {
   const siteTitle = 'DeadPixelTest.cc';
@@ -54,6 +58,8 @@ export const SEO: React.FC<SEOProps> = ({
 
   return (
     <Helmet>
+      {language && <html lang={language} />}
+      {alternates.map(item=><link key={item.lang} rel="alternate" hrefLang={item.lang} href={DOMAIN+item.path} />)}
       {/* Standard Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
@@ -80,14 +86,14 @@ export const SEO: React.FC<SEOProps> = ({
       {/* Structured Data (JSON-LD) */}
       {jsonLd && (
         <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
+          {JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
         </script>
       )}
       
       {/* Breadcrumb Schema */}
       {breadcrumbSchema && (
         <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
+          {JSON.stringify(breadcrumbSchema).replace(/</g, '\\u003c')}
         </script>
       )}
     </Helmet>
