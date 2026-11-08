@@ -73,43 +73,63 @@ const Header = () => {
   }, [isMobileOpen]);
 
   useEffect(() => {
-    const handleScroll = () => {
-        const isScrolled = window.scrollY > 10;
-        if (isScrolled !== scrolled) {
-            setScrolled(isScrolled);
-        }
-    };
-    const handleResize = () => {
-        setWindowSize({ w: window.innerWidth, h: window.innerHeight });
-        setPixelRatio(window.devicePixelRatio);
-    };
-    
-    // FPS Loop
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateScroll = () => setScrolled(window.scrollY > 10);
+
     const animate = (time: number) => {
-        if (prevTimeRef.current !== null && prevTimeRef.current !== undefined) {
-            frameCountRef.current++;
-            const delta = time - prevTimeRef.current;
-            if (delta >= 1000) {
-                setFps(Math.round((frameCountRef.current * 1000) / delta));
-                frameCountRef.current = 0;
-                prevTimeRef.current = time;
-            }
-        } else {
-            prevTimeRef.current = time;
+      if (prevTimeRef.current === null) {
+        prevTimeRef.current = time;
+        frameCountRef.current = 0;
+      } else {
+        frameCountRef.current += 1;
+        const elapsed = time - prevTimeRef.current;
+        if (elapsed >= 1000) {
+          setFps(Math.round((frameCountRef.current * 1000) / elapsed));
+          prevTimeRef.current = time;
+          frameCountRef.current = 0;
         }
-        requestRef.current = requestAnimationFrame(animate);
+      }
+      requestRef.current = window.requestAnimationFrame(animate);
     };
-    
-    requestRef.current = requestAnimationFrame(animate);
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleResize);
-    
+
+    const updateTracking = () => {
+      const shouldTrack = desktop.matches && !reducedMotion.matches && document.visibilityState === 'visible';
+      if (shouldTrack && requestRef.current === null) {
+        prevTimeRef.current = null;
+        frameCountRef.current = 0;
+        requestRef.current = window.requestAnimationFrame(animate);
+      } else if (!shouldTrack && requestRef.current !== null) {
+        window.cancelAnimationFrame(requestRef.current);
+        requestRef.current = null;
+        prevTimeRef.current = null;
+        frameCountRef.current = 0;
+        setFps(0);
+      }
+    };
+    const updateSize = () => {
+      setWindowSize({w: window.innerWidth, h: window.innerHeight});
+      setPixelRatio(window.devicePixelRatio);
+      updateTracking();
+    };
+
+    updateScroll();
+    updateTracking();
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    window.addEventListener('resize', updateSize);
+    document.addEventListener('visibilitychange', updateTracking);
+    desktop.addEventListener('change', updateTracking);
+    reducedMotion.addEventListener('change', updateTracking);
     return () => {
-        window.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('resize', handleResize);
-        if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    }
-  }, [scrolled]); // Dependencies optimized
+      window.removeEventListener('scroll', updateScroll);
+      window.removeEventListener('resize', updateSize);
+      document.removeEventListener('visibilitychange', updateTracking);
+      desktop.removeEventListener('change', updateTracking);
+      reducedMotion.removeEventListener('change', updateTracking);
+      if (requestRef.current !== null) window.cancelAnimationFrame(requestRef.current);
+      requestRef.current = null;
+    };
+  }, []);
 
   return (
     <>
