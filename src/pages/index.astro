@@ -50,7 +50,7 @@ const schema={
     <section class="mt-16">
       <h2 class="text-2xl md:text-3xl font-bold mb-6">More display and device tests</h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {topLinks.map(link => <a href={link.path} class="rounded-xl border border-white/10 bg-neutral-900/50 p-5 transition-colors hover:border-blue-500/70 hover:bg-white/5">
+        {topLinks.map(link => <a href={link.path.replace(/\/$/,'') || '/'} class="rounded-xl border border-white/10 bg-neutral-900/50 p-5 transition-colors hover:border-blue-500/70 hover:bg-white/5">
           <h3 class="text-lg font-semibold text-white">{link.name}</h3>
           <p class="mt-2 text-sm text-neutral-400">{link.sub}</p>
         </a>)}
@@ -60,12 +60,12 @@ const schema={
       <article>
         <h2 class="text-2xl font-bold mb-4">How to identify a dead pixel</h2>
         <p class="text-neutral-300 leading-8">A dead pixel does not produce the expected light output. It may appear as a consistently dark spot, particularly against white. A stuck subpixel may remain red, green or blue, while dust and protective-film marks can look similar. Compare several backgrounds before drawing conclusions.</p>
-        <a href="/what-is-a-dead-pixel/" class="inline-block mt-5 text-blue-400 hover:text-blue-300">Understand dead and stuck pixels →</a>
+        <a href="/what-is-a-dead-pixel" class="inline-block mt-5 text-blue-400 hover:text-blue-300">Understand dead and stuck pixels →</a>
       </article>
       <article>
         <h2 class="text-2xl font-bold mb-4">Why test several colors?</h2>
         <p class="text-neutral-300 leading-8">The same defect can look different on a black, white or primary-color field. Static color screens help you locate an abnormal spot, but cannot measure monitor luminance, native refresh rate or physical panel health. Never press or heat the display in an attempt to fix a pixel.</p>
-        <a href="/pt-br/" class="inline-block mt-5 text-blue-400 hover:text-blue-300">Teste de pixel morto em português →</a>
+        <a href="/pt-br" class="inline-block mt-5 text-blue-400 hover:text-blue-300">Teste de pixel morto em português →</a>
       </article>
     </section>
     <section class="mt-16 pb-8">
