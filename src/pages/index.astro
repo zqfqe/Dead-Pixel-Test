@@ -14,9 +14,10 @@ const topLinks=[
  {path:'/tests/color-gradient',name:'Color Banding Test',sub:'Inspect smooth gradient transitions'},
  {path:'/tests/audio-sync',name:'Audio / Video Sync',sub:'Check apparent sound synchronization'}
 ];
+const publicSiteUrl=import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
 const schema={
  '@context':'https://schema.org','@type':'WebApplication',
- name:'Dead Pixel Test — Screen Visual Inspection',url:'https://deadpixeltest.cc/',
+ name:'Dead Pixel Test — Screen Visual Inspection',...(publicSiteUrl?{url:publicSiteUrl+'/'}:{}),
  description:page.description,applicationCategory:'UtilitiesApplication',
  operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}
 };
