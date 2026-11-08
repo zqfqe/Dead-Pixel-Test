@@ -77,7 +77,7 @@ const App: React.FC = () => {
             <CommandPalette />
             
             {/* Main Content Area */}
-            <main className="w-full flex-1 pt-24 transition-all duration-300">
+            <main id="main-content" tabIndex={-1} className="w-full flex-1 pt-24 transition-all duration-300">
               <div className="max-w-7xl mx-auto p-6 lg:p-12">
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
