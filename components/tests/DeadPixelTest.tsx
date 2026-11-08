@@ -592,7 +592,7 @@ const DeadPixelTest: React.FC = () => {
                        For 4K TVs, dead pixels are most noticeable from your couch if they are clustered.
                     </p>
                     <p className="text-neutral-400 text-sm mt-2 leading-relaxed">
-                       Open the browser on your Samsung, LG, or Sony TV and navigate to <strong className="text-white">DeadPixelTest.cc</strong>. Use the remote to enter fullscreen. Stand close to the TV (1-2 feet) to scan, as 4K pixels are too small to see from a distance.
+                       Open the browser on your Samsung, LG, or Sony TV and navigate to <strong className="text-white">DeadPixelTest</strong>. Use the remote to enter fullscreen. Stand close to the TV (1-2 feet) to scan, as 4K pixels are too small to see from a distance.
                     </p>
                  </div>
               </div>
