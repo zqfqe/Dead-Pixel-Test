@@ -977,6 +977,7 @@ await check('/screen-resolution-test',async page=>{
  await page.setViewportSize({width:360,height:780});
  const d=await page.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));
  if(d.scroll>d.w+2)throw Error('Resolution calculator mobile overflow');
+ await page.screenshot({path:'smoke-screenshots/site-resolution-360.png',fullPage:true});
  await page.getByLabel('Native width (physical pixels)').fill('2560');
  await page.getByLabel('Native height (physical pixels)').fill('1440');
  await page.getByLabel('Screen diagonal (inches)').fill('27');
