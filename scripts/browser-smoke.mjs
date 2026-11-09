@@ -836,8 +836,7 @@ await check('/tests/refresh-rate',async page=>{
  await search.waitFor();
  await page.waitForFunction(()=>document.activeElement===document.querySelector('input[aria-label="Search tools"]'),null,{timeout:5000});
  await page.keyboard.press('Shift+Tab');
- if(!await dialog.getByRole('link').last().evaluate(el=>el===document.activeElement))
-  throw Error('Shift+Tab did not wrap to last result');
+ await page.waitForFunction(()=>document.activeElement===Array.from(document.querySelectorAll('[role="dialog"] a[href]')).at(-1),null,{timeout:5000});
  await page.keyboard.press('Tab');
  if(!await search.evaluate(el=>el===document.activeElement))throw Error('Tab did not wrap back to input');
  await search.fill('impossible query 32589');
@@ -863,6 +862,42 @@ await check('/image-retention-test',async page=>{
  if(!await section.getByText(/not features of this website/).count())
   throw Error('Manufacturer maintenance functions not distinguished from web testing');
 });
+
+await check('/',async page=>{
+ const nav=page.getByRole('navigation',{name:'Tools'});
+ const feature=page.locator('a.ui-feature-card').first();
+ if(!await feature.count())throw Error('Homepage tool cards missing');
+ if((await nav.locator('a[aria-current="page"]').count())!==1)throw Error('Homepage has no current tool marker');
+ const hero=page.locator('.ui-hero-intro');
+ const anim=await hero.evaluate(el=>getComputedStyle(el).animationName);
+ if(anim==='none')throw Error('Page entry motion missing without reduced-motion preference');
+ await page.getByRole('button',{name:'Start full-screen inspection'}).click();
+ const surface=page.locator('[role="dialog"] [role="presentation"]');
+ await surface.waitFor();
+ if(await surface.evaluate(el=>getComputedStyle(el).animationName)!=='none')
+  throw Error('Live inspection surface should not auto-animate');
+ await page.getByRole('button',{name:'Exit test'}).click();
+});
+await check('/pt-br/pixel-morto-notebook',async page=>{
+ const details=page.locator('details.ui-disclosure').first();
+ await details.locator('summary').click();
+ if(!await details.evaluate(el=>el.open))throw Error('Native symptom detail failed to expand');
+ if(!await page.locator('.ui-landing-hero').count())throw Error('Published PT landing hero missing');
+});
+await check('/',async page=>{
+ await page.setViewportSize({width:360,height:780});
+ const sizes=await page.evaluate(()=>({screen:innerWidth,document:document.documentElement.scrollWidth}));
+ if(sizes.document>sizes.screen+2)throw Error('Mobile header overflow after visual refinement '+JSON.stringify(sizes));
+ const link=page.getByRole('navigation',{name:'Tools'}).locator('a').first();
+ const rect=await link.boundingBox();
+ if(!rect||rect.height<43)throw Error('Mobile tools navigation tap target too short');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const anim=await page.locator('.ui-hero-intro').evaluate(el=>getComputedStyle(el).animationDuration);
+ if(parseFloat(anim)>0.001)throw Error('Reduced-motion animation not suppressed: '+anim);
+ const transform=await page.locator('a.ui-feature-card').first().evaluate(el=>getComputedStyle(el).transform);
+ if(transform!=='none')throw Error('Reduced-motion feature card moves unexpectedly');
+});
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -880,4 +915,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+80+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+83+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
