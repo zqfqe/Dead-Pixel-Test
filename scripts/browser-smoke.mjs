@@ -74,6 +74,23 @@ await check('/tests/refresh-rate',async page=>{
  await expectedTitle('Frame Skipping')(page);
  await page.getByText(/Refresh Rate|Frame Skipping/i).first().waitFor({timeout:15000});
 });
+await check('/tests/refresh-rate',async page=>{
+  // The timing canvas must be disposed when the user leaves the test.
+  const start=page.getByRole('button',{name:'Start Calibration'});
+  await start.waitFor({timeout:12000});
+  await start.click();
+  await page.getByText('Browser FPS estimate',{exact:true}).waitFor({timeout:8000});
+  await page.keyboard.press('Escape');
+  await start.waitFor({timeout:8000});
+
+  await start.click();
+  await page.getByText('Browser FPS estimate',{exact:true}).waitFor({timeout:8000});
+  await page.evaluate(()=>{
+    Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'hidden'});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await start.waitFor({timeout:8000});
+});
 await check('/tests/local-dimming',async page=>{
  await expectedTitle('Local Dimming')(page);
  await page.getByText(/Local Dimming/i).first().waitFor({timeout:15000});
