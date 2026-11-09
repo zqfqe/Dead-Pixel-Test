@@ -313,3 +313,17 @@ body[data-surface="light"] :is(.ui-landing-hero,.ui-home-stage,.ui-inspection-sh
 @media(max-width:767px){.ui-procedure{padding:22px 20px}.ui-faq-list{grid-template-columns:1fr;gap:12px}}
 @media(max-width:420px){.ui-related-links{gap:9px}.ui-related-link{min-height:64px;padding:13px 14px}}
 @media(prefers-reduced-motion:reduce){.ui-related-link{transition:none!important}}
+
+
+/* Resolution tool: readable light metric panels within the dark hero. */
+.ui-landing-hero .ui-screen-metrics-grid{color:#182820}
+.ui-landing-hero .ui-metrics-panel{background:#FAFDF8;color:#1C2C23;border-color:#CFDFCE!important;box-shadow:0 6px 18px rgba(6,20,12,.06)}
+.ui-landing-hero .ui-metrics-panel h2{color:#172920;font-weight:780}
+.ui-landing-hero .ui-metrics-panel p:not(#ppi-result){color:#4F6155}
+.ui-landing-hero .ui-metrics-panel input[type="number"]{background:#fff;color:#18291D;border-color:#ACC4B0}
+.ui-landing-hero .ui-metrics-panel input[type="checkbox"]{accent-color:#31583F}
+.ui-landing-hero .ui-metrics-panel label{color:#243C2B}
+.ui-metrics-panel #screen-metrics{display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,auto);gap:9px 14px;align-items:baseline;line-height:1.45}
+.ui-metrics-panel #screen-metrics dt{font-size:.76rem;color:#52665A;overflow-wrap:anywhere}
+.ui-metrics-panel #screen-metrics dd{font-size:.79rem;color:#18291D;text-align:right;font-weight:800;margin:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+@media(max-width:390px){.ui-metrics-panel #screen-metrics{grid-template-columns:minmax(0,1fr) minmax(60px,auto);gap:8px 10px}.ui-metrics-panel #screen-metrics dt,.ui-metrics-panel #screen-metrics dd{font-size:.73rem}}

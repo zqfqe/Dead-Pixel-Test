@@ -288,14 +288,14 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       <h1 class="text-3xl md:text-5xl font-bold mt-3 tracking-tight">{newPage.h1}</h1>
       <p class="text-[#344256] max-w-3xl text-lg leading-8 mt-5 mb-7">{newPage.lead}</p>
       {newPage.mode==='resolution' ? (
-         <div class="grid md:grid-cols-2 gap-4">
-           <div class="border border-[#DCE3EA] p-4 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-[#344256]">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
-           <div class="border border-[#DCE3EA] p-4 rounded-lg">
+         <div class="ui-screen-metrics-grid grid md:grid-cols-2 gap-4">
+           <div class="ui-metrics-panel border border-[#DCE3EA] bg-white p-5 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-[#344256]">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
+           <div class="ui-metrics-panel border border-[#DCE3EA] bg-white p-5 rounded-lg">
              <dl id="screen-metrics" aria-live="off" class="font-mono text-sm text-[#344256]">Enable JavaScript for live screen and viewport metrics.</dl>
-             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white">Copy browser metrics</button>
+             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-[#31583F] px-4 py-2 text-sm font-semibold text-white hover:bg-[#244631]">Copy browser metrics</button>
              <p id="copy-screen-status" role="status" class="mt-2 text-xs text-[#475569]" aria-live="polite"></p>
            </div>
-           <div class="md:col-span-2 rounded-xl border border-blue-500/20 bg-white p-5">
+           <div class="ui-metrics-panel md:col-span-2 rounded-xl border border-[#C7DCC6] bg-white p-5">
              <h2 class="text-xl font-semibold mb-2">Optional PPI calculator — user-confirmed panel resolution</h2>
              <p class="text-sm leading-6 text-[#344256]">Use the display's stated <strong>native physical pixel resolution</strong> and measured diagonal size, not the browser-reported CSS width or height above. No value is filled in automatically.</p>
              <form id="manual-ppi" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" novalidate>
@@ -309,14 +309,14 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
                  <input id="native-diagonal" inputmode="decimal" type="number" min="0.1" max="300" step="any" placeholder="e.g. 24" class="mt-2 w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-3 text-[#101827]" />
                </label>
                <div class="flex flex-col justify-end">
-                 <button type="submit" class="min-h-[48px] rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-600">Calculate PPI</button>
+                 <button type="submit" class="min-h-[48px] rounded-lg bg-[#31583F] px-4 py-3 font-semibold text-white hover:bg-[#244631]">Calculate PPI</button>
                </div>
                <label class="sm:col-span-2 lg:col-span-4 flex items-start gap-3 text-sm text-[#101827]">
                  <input id="native-confirmed" type="checkbox" class="mt-1 h-4 w-4 shrink-0" />
                  I checked the native physical resolution in my display specifications or system settings.
                </label>
              </form>
-             <p id="ppi-result" role="status" aria-live="polite" class="mt-4 text-sm font-semibold text-[#125CC9]">Enter values and confirm they describe your display's physical pixel resolution.</p>
+             <p id="ppi-result" role="status" aria-live="polite" class="mt-4 text-sm font-semibold text-[#28513B]">Enter values and confirm they describe your display's physical pixel resolution.</p>
              <p class="mt-2 text-xs text-[#475569]">PPI = √(width² + height²) ÷ diagonal inches. This is a calculated estimate from user-supplied specifications, not a measurement of the panel.</p>
            </div>
          </div>
@@ -393,7 +393,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         </article>)}
       </div>
     </section>}
-    {newPage.mode==='fixer' && <section class="mt-12 rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 md:p-7">
+    {newPage.mode==='fixer' && <section class="mt-12 rounded-xl border border-[#C7DCC6] bg-[#EDF5E9] p-5 md:p-7">
       <h2 class="text-2xl font-bold mb-3">{isBR?'Como usar a área de cor estática':'How to use the static color patch'}</h2>
       <p class="leading-7 text-[#344256]">{isBR?'Abra o teste, toque na região suspeita para posicionar a área estática, escolha a cor e ajuste o tamanho. A comparação é manual, sem flashes rápidos e sem promessa de reparo.':'Start the test, click or tap the suspicious area to position the static patch, choose a patch color and adjust its size. This is a manual comparison, not rapid flashing or a guaranteed repair.'}</p>
     </section>}
@@ -494,7 +494,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       metrics=data;
       for(const [name,value] of data){
         const dt=document.createElement('dt');dt.textContent=String(name);
-        const dd=document.createElement('dd');dd.textContent=String(value);dd.style.marginBottom='0.75rem';
+        const dd=document.createElement('dd');dd.textContent=String(value);
         el.append(dt,dd);
       }
     };

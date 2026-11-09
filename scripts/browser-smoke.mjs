@@ -966,6 +966,25 @@ await check('/laptop-screen-dead-pixel-test',async page=>{
  }
 });
 
+await check('/screen-resolution-test',async page=>{
+ const cards=page.locator('.ui-landing-hero .ui-metrics-panel');
+ if(await cards.count()!==3)throw Error('Three resolution panels expected');
+ for(const card of await cards.all()){
+  const x=await card.evaluate(el=>({bg:getComputedStyle(el).backgroundColor,fg:getComputedStyle(el).color}));
+  if(x.bg!=='rgb(250, 253, 248)'||x.fg!=='rgb(28, 44, 35)')
+    throw Error('Resolution text/background contrast mismatch: '+JSON.stringify(x));
+ }
+ await page.setViewportSize({width:360,height:780});
+ const d=await page.evaluate(()=>({w:innerWidth,scroll:document.documentElement.scrollWidth}));
+ if(d.scroll>d.w+2)throw Error('Resolution calculator mobile overflow');
+ await page.getByLabel('Native width (physical pixels)').fill('2560');
+ await page.getByLabel('Native height (physical pixels)').fill('1440');
+ await page.getByLabel('Screen diagonal (inches)').fill('27');
+ await page.getByRole('checkbox',{name:/I checked the native physical resolution/i}).check();
+ await page.getByRole('button',{name:'Calculate PPI'}).click();
+ await page.getByText(/108\.79 PPI/).waitFor();
+});
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -983,4 +1002,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+88+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+89+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
