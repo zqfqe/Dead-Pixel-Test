@@ -413,6 +413,46 @@ await check('/pt-br/pixel-morto-notebook',async page=>{
   failures.push('404: '+error.message);console.error('FAIL browser 404: '+error.message);
  }finally{await ctx.close();}
 }
+await check('/',async page=>{
+ await page.getByRole('button',{name:'Start full-screen inspection'}).click();
+ await page.getByRole('button',{name:'Mark suspect spot'}).click();
+ await page.locator('[role="dialog"] [role="presentation"]').click({position:{x:190,y:230}});
+ await page.getByRole('button',{name:'Next color'}).click();
+ await page.getByText('White (2/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Not visible on this color'}).click();
+ await page.getByRole('button',{name:'Next color'}).click();
+ await page.getByText('Red (3/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'Still visible on this color'}).click();
+ await page.getByRole('button',{name:/Exit test/}).click();
+ const d=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Export self-check JSON'}).click();
+ const report=JSON.parse(readFileSync(await (await d).path(),'utf8'));
+ const spot=report.marks?.[0];
+ if(JSON.stringify(spot?.observedOn)!==JSON.stringify(['Black','Red'])||
+    JSON.stringify(spot?.notObservedOn)!==JSON.stringify(['White']))
+   throw Error('Recheck verdicts were not serialized correctly: '+JSON.stringify(spot));
+ if(report.certified!==false)throw Error('Recheck report incorrectly certified');
+ const htmlDownload=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Download printable HTML report'}).click();
+ const html=readFileSync(await (await htmlDownload).path(),'utf8');
+ if(!html.includes('Not visible on')||!html.includes('White')||!html.includes('Red'))
+   throw Error('Printable report omitted cross-color observed/absent evidence');
+});
+await check('/pt-br',async page=>{
+ await page.getByRole('button',{name:'Iniciar inspeção em tela cheia'}).click();
+ await page.getByRole('button',{name:'Marcar ponto suspeito'}).click();
+ await page.locator('[role="dialog"] [role="presentation"]').click({position:{x:195,y:205}});
+ await page.getByRole('button',{name:'Próxima cor'}).click();
+ await page.getByRole('button',{name:'Não visível nesta cor'}).click();
+ await page.getByRole('button',{name:'Limpar confirmação desta cor'}).click();
+ await page.getByRole('button',{name:'Ainda visível nesta cor'}).click();
+ await page.getByRole('button',{name:/Sair do teste/}).click();
+ const d=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Exportar inspeção JSON'}).click();
+ const item=JSON.parse(readFileSync(await (await d).path(),'utf8')).marks?.[0];
+ if(!item?.observedOn?.includes('White')||item?.notObservedOn?.includes('White'))
+   throw Error('Portuguese repeated rechecks did not keep a single consistent status');
+});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+43+' Chromium browser scenarios, including real 404 responses, light/dark design and 360/390/768 layouts');
+console.log('PASS all '+45+' Chromium browser scenarios, including cross-color recheck evidence and localized reports');
