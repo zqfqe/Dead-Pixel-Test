@@ -772,12 +772,14 @@ await check('/tests/refresh-rate',async page=>{
  const field=page.getByRole('textbox',{name:'Search tools'});
  await field.waitFor();
  await field.fill('Teste de Pixel Morto (Brasil)');
- const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
  await field.press('Enter');
- await navigation;
- if(await page.locator('html').getAttribute('lang')!=='pt-BR')
-  throw Error('Command palette left browser on wrong-language HTML');
+ // React Router can first push a same-document history entry. Only accept Astro's
+ // new HTML after both language and surface metadata have changed.
+ await page.locator('html[lang="pt-BR"][data-surface="light"]').waitFor({timeout:15000});
  await page.getByRole('heading',{level:1,name:'Teste de Pixel Morto'}).waitFor();
+ const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
+ if(canonical!==canonicalOrigin+'/pt-br')
+  throw Error('Command palette navigation did not refresh Astro canonical: '+canonical);
 });
 
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
