@@ -1,11 +1,12 @@
-name: Production Domain Smoke (configured origin only)
+name: Live Production HTTP and SEO Smoke
 on:
   push:
     branches: [main]
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   production-smoke:
-    if: ${{ vars.PUBLIC_SITE_URL != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -13,19 +14,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Verify configured production domain
-        if: ${{ vars.PUBLIC_SITE_URL != '' }}
+      - name: Verify live canonical pages, index rules, sitemap and redirects
         env:
-          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_SITE_URL: https://deadpixeltest.cc
         run: node scripts/production-smoke.mjs
-      - name: Install Chromium
-        if: ${{ vars.PUBLIC_SITE_URL != '' }}
+      - name: Install dependencies for optional live browser sweep
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium for optional live browser sweep
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: npx playwright install --with-deps chromium
-      - name: Test production interactions
-        if: ${{ vars.PUBLIC_SITE_URL != '' }}
+      - name: Test live user interactions after deployment
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
-          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
-          SMOKE_BASE: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_SITE_URL: https://deadpixeltest.cc
+          SMOKE_BASE: https://deadpixeltest.cc
         run: npm run smoke:browser
