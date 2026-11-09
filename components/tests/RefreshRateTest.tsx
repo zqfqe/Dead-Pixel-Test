@@ -193,7 +193,7 @@ const RefreshRateTest: React.FC = () => {
                   "name": "How to check for Frame Skipping?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames."
+                    "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. Gaps can suggest irregular frame presentation, but browser timing and camera exposure can also cause them. Repeat under controlled conditions; this photo alone cannot diagnose hardware frame skipping."
                   }
                 }, 
                 {
@@ -309,7 +309,7 @@ const RefreshRateTest: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to check for Frame Skipping?</h4>
-                    <p className="text-neutral-400 text-sm">Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. If the trail of squares has gaps, your monitor is dropping frames.</p>
+                    <p className="text-neutral-400 text-sm">Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. Gaps can suggest irregular frame presentation, but browser timing and camera exposure can also cause them. Repeat under controlled conditions; this photo alone cannot diagnose hardware frame skipping.</p>
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">Why is my 144Hz monitor showing 60Hz?</h4>
