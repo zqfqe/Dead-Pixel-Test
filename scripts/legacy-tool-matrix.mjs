@@ -100,6 +100,30 @@ try{
    await fields.nth(2).fill('24');
    await page.getByText('91.79',{exact:false}).first().waitFor();
   }],
+  ['/tools/input-lag',async page=>{
+   const start=page.getByRole('button',{name:'Start Counter'});
+   await start.click();
+   const timer=page.getByTestId('input-lag-elapsed-ms');
+   await timer.waitFor();
+   await page.waitForTimeout(170);
+   const value=Number(await timer.textContent());
+   if(!(value>=35&&value<2000))throw Error('Timer is not session-relative: '+value);
+   const frames=await page.getByTestId('input-lag-rendered-frames').textContent();
+   const count=Number(frames?.split(':').at(-1)?.trim());
+   if(!(count>=2))throw Error('No actual frame count: '+frames);
+   const bg=await timer.evaluate(el=>getComputedStyle(el.closest('.fixed.inset-0')).backgroundColor);
+   await page.keyboard.press('a');
+   const flashed=await timer.evaluate(el=>getComputedStyle(el.closest('.fixed.inset-0')).backgroundColor);
+   if(flashed===bg)throw Error('Keyboard input did not toggle the visible flash');
+   await page.keyboard.press('Escape');
+   await start.waitFor({timeout:12000});
+   await start.click();
+   await timer.waitFor();
+   const restarted=Number(await timer.textContent());
+   if(!(restarted>=0&&restarted<800))throw Error('Restart did not clear elapsed time: '+restarted);
+   await page.keyboard.press('Escape');
+   await start.waitFor();
+  }],
   ['/tools/ruler',async page=>{
    await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
    if(await page.getByText(/accurate to within 0\.5mm/).count())throw Error('Unverified ruler precision guarantee is still visible');
@@ -112,4 +136,4 @@ try{
  for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 4 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 5 interactive functional checks (hardware behaviors not certified).');

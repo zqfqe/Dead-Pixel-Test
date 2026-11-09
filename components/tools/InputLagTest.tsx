@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { Camera, MousePointer2, Keyboard, Zap, Play, RotateCcw, Monitor, Clock } from 'lucide-react';
@@ -14,47 +14,71 @@ const InputLagTest: React.FC = () => {
   const isIdle = useIdleCursor(3000); // UI Hiding logic
   
   const reqRef = useRef<number | null>(null);
-  const startRef = useRef<number>(0);
+  const startRef = useRef(0);
+  const frameCountRef = useRef(0);
+
+  const stopTest = useCallback(() => {
+    setIsActive(false);
+    setIsFlashed(false);
+    if (reqRef.current !== null) {
+      cancelAnimationFrame(reqRef.current);
+      reqRef.current = null;
+    }
+    void exitFullscreen();
+  }, [exitFullscreen]);
 
   const startTest = () => {
-    setIsActive(true);
-    enterFullscreen();
+    if (reqRef.current !== null) cancelAnimationFrame(reqRef.current);
+    reqRef.current = null;
     startRef.current = performance.now();
-    loop();
-  };
-
-  const stopTest = () => {
-    setIsActive(false);
-    exitFullscreen();
-    if (reqRef.current) cancelAnimationFrame(reqRef.current);
-  };
-
-  const loop = () => {
-    const now = performance.now();
-    // Update simple counter visible for camera
-    setFrameData({
-        count: Math.floor((now - startRef.current) / 16.666), // Approximate frame count
-        time: now
-    });
-    reqRef.current = requestAnimationFrame(loop);
-  };
-
-  // Input Handler
-  const handleInput = () => {
-      // Toggle flash state on input
-      setIsFlashed(prev => !prev);
+    frameCountRef.current = 0;
+    setFrameData({ count: 0, time: 0 });
+    setIsFlashed(false);
+    setIsActive(true);
+    void enterFullscreen();
   };
 
   useEffect(() => {
-      if (isActive) {
-          window.addEventListener('mousedown', handleInput);
-          window.addEventListener('keydown', handleInput);
-      }
-      return () => {
-          window.removeEventListener('mousedown', handleInput);
-          window.removeEventListener('keydown', handleInput);
-      };
+    if (!isActive) return;
+    // RequestAnimationFrame timestamps share performance.now's time origin.
+    // Count actual delivered callbacks rather than assuming a 60 Hz display.
+    const tick = (now: number) => {
+      frameCountRef.current += 1;
+      setFrameData({ count: frameCountRef.current, time: Math.max(0, now - startRef.current) });
+      reqRef.current = requestAnimationFrame(tick);
+    };
+    reqRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (reqRef.current !== null) cancelAnimationFrame(reqRef.current);
+      reqRef.current = null;
+    };
   }, [isActive]);
+
+  useEffect(() => {
+    if (!isActive) return;
+    const onMouseDown = (event: MouseEvent) => {
+      if (event.target instanceof Element && event.target.closest('button,a,input,[role="button"]')) return;
+      setIsFlashed(previous => !previous);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); stopTest(); return; }
+      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey ||
+          ['Tab','Shift','Control','Alt','Meta','F11'].includes(event.key)) return;
+      if (event.target instanceof Element && event.target.closest('button,a,input,select,textarea,[role="button"]')) return;
+      setIsFlashed(previous => !previous);
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') stopTest();
+    };
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('keydown', onKeyDown);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [isActive, stopTest]);
 
   if (isActive) {
     return (
@@ -65,12 +89,17 @@ const InputLagTest: React.FC = () => {
 
         {/* Main Counter */}
         <div className="text-center">
-            <div className="text-[15vw] font-bold leading-none tracking-tighter tabular-nums">
+            <div data-testid="input-lag-elapsed-ms" role="timer" aria-label="Elapsed milliseconds since starting the test" aria-live="off"
+              className="text-[15vw] font-bold leading-none tracking-tighter tabular-nums">
                 {frameData.time.toFixed(1)}
             </div>
-            <div className="text-[2vw] opacity-50 uppercase tracking-[1em] mt-4">
-                Milliseconds
+            <div className="text-[2vw] opacity-70 uppercase tracking-[0.5em] mt-4">
+                Elapsed since start (ms)
             </div>
+            <div className="mt-4 text-sm opacity-70" data-testid="input-lag-rendered-frames">
+              Animation frames displayed: {frameData.count}
+            </div>
+            <p className="mt-3 text-xs opacity-70">The elapsed timer and frames do not measure physical input-to-photon latency.</p>
         </div>
 
         {/* Visual Anchor for Camera focus */}
@@ -87,7 +116,7 @@ const InputLagTest: React.FC = () => {
     <>
       <SEO 
         title="Input Lag Test - Measure Monitor Latency" 
-        description="Calculate system input lag using a high-speed camera (240fps/960fps). Features a millisecond-precision counter for measuring end-to-end latency."
+        description="Use a session-relative timer and visual flashes with your high-speed camera to estimate input-to-display delay. Browser timing alone does not measure physical latency."
         canonical="/tools/input-lag"
         keywords={['input lag test', 'monitor latency test', 'mouse delay test', 'system latency checker', 'click to photon test']}
         breadcrumbs={[
@@ -98,13 +127,13 @@ const InputLagTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Input Lag Test"
-          description="A professional tool to measure 'Click-to-Photon' latency. Requires a smartphone with Slow Motion video capability (240fps or higher)."
+          description="Record both your physical input and the screen using a slow-motion camera. The on-screen clock starts at zero and does not itself measure input-to-photon latency."
           startButtonText="Start Counter"
           onStart={startTest}
         >
           <InfoCard title="How to Measure">
             <ol className="list-decimal pl-4 space-y-2 text-sm text-neutral-400 mt-2">
-                <li>Start the test to see the running millisecond timer.</li>
+                <li>Start the test to see the elapsed millisecond timer, beginning at zero.</li>
                 <li>Setup your phone to record both your mouse/finger and the screen in the same frame.</li>
                 <li>Record in <strong>Slow Motion (240fps+)</strong>.</li>
                 <li>Click the mouse. The screen will flash White.</li>
