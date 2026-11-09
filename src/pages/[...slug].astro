@@ -276,6 +276,14 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
          <div class="p-5 rounded-xl border border-[#20283C] bg-[#0A0B0E] text-white">
            <ScreenInspection client:only="react" mode={inspectionMode} lang={newPage.lang}
              defaultDevice={/laptop|notebook/.test(normalized)?'laptop':/phone|iphone/.test(normalized)?'phone':'monitor'} />
+           <noscript>
+             <div role="note" class="mt-4 rounded-lg border border-amber-400/40 bg-neutral-900 p-4 text-sm text-white">
+               <strong>{isBR?'JavaScript está desativado.':'JavaScript is disabled.'}</strong>
+               <p class="mt-2 leading-6">{isBR
+                 ? 'A inspeção em tela cheia, a marcação de pontos e o relatório precisam de JavaScript. Ative-o e recarregue esta página. Nenhuma conta é necessária.'
+                 : 'The full-screen inspection, mark recording and downloadable report need JavaScript. Enable it and reload this page. No account is required.'}</p>
+             </div>
+           </noscript>
          </div>
        )}
        <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
