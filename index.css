@@ -168,7 +168,7 @@ body[data-surface="light"] .prose a{color:var(--lab-deep-green)}
 .ui-workbench-heading{padding-bottom:24px}
 .ui-workbench-title{font-size:clamp(1.6rem,2.3vw,2.3rem);letter-spacing:-.05em;line-height:1.1;color:#F5F9F3;font-weight:760;margin:16px 0 12px}
 .ui-workbench-description{font-size:.87rem;line-height:1.7;color:#AEC1B6;max-width:370px}
-.ui-inspection-shell{background:#0A0B0E;border:1px solid #3B4942;border-radius:14px;padding:25px;box-shadow:0 20px 36px rgba(0,0,0,.18)}
+.ui-inspection-shell{color:#F3FAF1;background:#0A0B0E;border:1px solid #3B4942;border-radius:14px;padding:25px;box-shadow:0 20px 36px rgba(0,0,0,.18)}
 .ui-workbench-label{font-size:.84rem;font-weight:750;color:#FBFFF9;margin-bottom:17px}
 .ui-workbench-footnote{font-size:.77rem;line-height:1.65;margin-top:18px;color:#A8B4AD}
 .ui-inspection-shell button{transition:filter .14s ease,background-color .14s ease}

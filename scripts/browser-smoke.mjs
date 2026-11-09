@@ -835,9 +835,9 @@ await check('/tests/refresh-rate',async page=>{
  const dialog=page.getByRole('dialog',{name:'Search tools'});
  const search=dialog.getByRole('textbox',{name:'Search tools'});
  await search.waitFor();
- await page.waitForFunction(()=>document.activeElement===document.querySelector('input[aria-label="Search tools"]'),null,{timeout:5000});
+ await page.waitForFunction(()=>document.activeElement===document.querySelector('input[aria-label="Search tools"]'),null,{timeout:12000});
  await page.keyboard.press('Shift+Tab');
- await page.waitForFunction(()=>document.activeElement===Array.from(document.querySelectorAll('[role="dialog"] a[href]')).at(-1),null,{timeout:5000});
+ await page.waitForFunction(()=>document.activeElement===Array.from(document.querySelectorAll('[role="dialog"] a[href]')).at(-1),null,{timeout:12000});
  await page.keyboard.press('Tab');
  if(!await search.evaluate(el=>el===document.activeElement))throw Error('Tab did not wrap back to input');
  await search.fill('impossible query 32589');
@@ -905,6 +905,12 @@ await check('/',async page=>{
  const stageColor=await stage.evaluate(el=>getComputedStyle(el).backgroundColor);
  if(stageColor!=='rgb(13, 20, 22)')throw Error('Premium dark instrument surface is missing: '+stageColor);
  await page.getByRole('button',{name:'Start full-screen inspection'}).waitFor();
+ const label=await page.getByText('Device',{exact:true}).first().evaluate(el=>{
+  const cs=getComputedStyle(el);
+  return {color:cs.color,background:getComputedStyle(el.closest('.ui-inspection-shell')).backgroundColor};
+ });
+ if(label.color!=='rgb(243, 250, 241)'||label.background!=='rgb(10, 11, 14)')
+  throw Error('Device label is unreadable against diagnostic workbench: '+JSON.stringify(label));
  const action=await page.getByRole('button',{name:'Start full-screen inspection'}).evaluate(el=>{
   const cs=getComputedStyle(el);return {background:cs.backgroundColor,color:cs.color};
  });

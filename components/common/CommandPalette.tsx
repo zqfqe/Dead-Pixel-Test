@@ -51,17 +51,6 @@ const CommandPalette:React.FC=()=>{
  useEffect(()=>{
   if(!isOpen)return;
   const handleNav=(event:KeyboardEvent)=>{
-   if(event.key==='Tab'){
-    const nodes=[...(dialogRef.current?.querySelectorAll<HTMLElement>(
-     'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
-    )??[])].filter(node=>node.getClientRects().length>0);
-    if(!nodes.length)return;
-    const first=nodes[0],last=nodes[nodes.length-1];
-    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-    else if(!dialogRef.current?.contains(document.activeElement)){event.preventDefault();first.focus();}
-    return;
-   }
    // Leave native Enter/Space behavior untouched for focused links and buttons.
    if(document.activeElement!==inputRef.current)return;
    const matches=matchingTools(inputRef.current?.value??'');
@@ -82,19 +71,31 @@ const CommandPalette:React.FC=()=>{
   return()=>window.removeEventListener('keydown',handleNav);
  },[isOpen]);
 
+ const trapTab=(event:React.KeyboardEvent<HTMLDivElement>)=>{
+  if(event.key!=='Tab')return;
+  const nodes=[...(dialogRef.current?.querySelectorAll<HTMLElement>(
+    'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
+  )??[])].filter(node=>node.getClientRects().length>0);
+  if(!nodes.length)return;
+  const first=nodes[0],last=nodes[nodes.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  else if(!dialogRef.current?.contains(document.activeElement)){event.preventDefault();first.focus();}
+ };
+
  if(!isOpen)return null;
  return (
   <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} aria-hidden="true" />
-   <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Search tools"
+   <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Search tools" onKeyDown={trapTab}
     className="relative w-full max-w-lg rounded-xl border border-white/15 bg-[#0a0a0a] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
     <div className="flex items-center px-4 py-3 border-b border-white/10 gap-3">
      <Search className="text-neutral-400" size={20} aria-hidden="true" />
      <input ref={inputRef} autoFocus type="text" aria-label="Search tools" aria-controls="tool-search-results"
-      placeholder="Search tools..." className="flex-1 min-w-0 bg-transparent text-white placeholder-neutral-400 outline-none text-sm h-9 focus-visible:ring-2 focus-visible:ring-blue-400 rounded"
+      placeholder="Search tools..." className="flex-1 min-w-0 bg-transparent text-white placeholder-neutral-400 outline-none text-sm h-9 focus-visible:ring-2 focus-visible:ring-[#C5F277] rounded"
       value={query} onChange={event=>{setQuery(event.target.value);selectedRef.current=0;setSelectedIndex(0);}} />
      <button type="button" onClick={close} aria-label="Close search"
-      className="min-h-[40px] min-w-[40px] rounded-md border border-white/20 text-neutral-200 hover:text-white focus-visible:outline-2 focus-visible:outline-blue-400">
+      className="min-h-[40px] min-w-[40px] rounded-md border border-white/20 text-neutral-200 hover:text-white focus-visible:outline-2 focus-visible:outline-[#C5F277]">
       <X size={18} className="mx-auto" aria-hidden="true" />
      </button>
     </div>
@@ -105,8 +106,8 @@ const CommandPalette:React.FC=()=>{
       <a key={item.path} href={canonicalToolPath(item.path)}
        onMouseEnter={()=>{selectedRef.current=idx;setSelectedIndex(idx);}}
        onFocus={()=>{selectedRef.current=idx;setSelectedIndex(idx);}}
-       className={'mx-2 flex items-center justify-between rounded-lg px-4 py-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 '+
-        (idx===selectedIndex?'bg-blue-600 text-white':'text-neutral-300 hover:text-white hover:bg-white/10')}>
+       className={'mx-2 flex items-center justify-between rounded-lg px-4 py-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C5F277] '+
+        (idx===selectedIndex?'bg-[#345343] text-[#F3FFDD]':'text-neutral-300 hover:text-white hover:bg-white/10')}>
        <span className="flex items-center gap-3">
         <span className={'rounded-md p-1.5 '+(idx===selectedIndex?'bg-white/20':'bg-white/5')}><ArrowRight size={14} aria-hidden="true" /></span>
         <span className="font-medium">{item.title}</span>
