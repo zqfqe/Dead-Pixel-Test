@@ -88,7 +88,7 @@ const CommandPalette:React.FC=()=>{
   <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} aria-hidden="true" />
    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Search tools" onKeyDown={trapTab}
-    className="relative w-full max-w-lg rounded-xl border border-white/15 bg-[#0a0a0a] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    className="relative w-full max-w-lg rounded-xl border border-white/15 bg-[#111B1A] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
     <div className="flex items-center px-4 py-3 border-b border-white/10 gap-3">
      <Search className="text-neutral-400" size={20} aria-hidden="true" />
      <input ref={inputRef} autoFocus type="text" aria-label="Search tools" aria-controls="tool-search-results"

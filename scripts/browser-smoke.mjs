@@ -905,7 +905,7 @@ await check('/',async page=>{
  const stageColor=await stage.evaluate(el=>getComputedStyle(el).backgroundColor);
  if(stageColor!=='rgb(13, 20, 22)')throw Error('Premium dark instrument surface is missing: '+stageColor);
  await page.getByRole('button',{name:'Start full-screen inspection'}).waitFor();
- const label=await page.getByText('Device',{exact:true}).first().evaluate(el=>{
+ const label=await page.getByRole('combobox',{name:/Device/}).first().locator('..').evaluate(el=>{
   const cs=getComputedStyle(el);
   return {color:cs.color,background:getComputedStyle(el.closest('.ui-inspection-shell')).backgroundColor};
  });
@@ -931,6 +931,18 @@ await check('/',async page=>{
  if(!await details.evaluate(el=>el.open))throw Error('Preflight checklist failed to expand');
 });
 
+await check('/tests/refresh-rate',async page=>{
+ const header=page.locator('header').first();
+ if(!(await header.getAttribute('class'))?.includes('bg-[#0D1416]'))
+  throw Error('Legacy tools do not share the graphite site header');
+ await page.setViewportSize({width:390,height:844});
+ await page.getByRole('button',{name:'Open Menu'}).click();
+ const mobile=page.getByRole('navigation',{name:'Mobile navigation'});
+ await mobile.getByRole('link',{name:'Uniformity',exact:true}).waitFor();
+ await page.getByRole('button',{name:'Close Menu'}).click();
+ if(await mobile.getAttribute('aria-hidden')!=='true')throw Error('Legacy mobile menu failed to close');
+});
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -948,4 +960,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+85+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+86+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

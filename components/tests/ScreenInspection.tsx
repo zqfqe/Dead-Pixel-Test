@@ -283,7 +283,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
    <summary className="cursor-pointer font-medium text-neutral-300 focus-visible:outline-offset-4">{t.importHeading}</summary>
    <label className="mt-3 block text-xs leading-6 text-neutral-300">{t.import}
      <input type="file" accept=".json,application/json" aria-label={t.import} onChange={importJson}
-       className="mt-2 block max-w-full rounded-lg border border-white/25 bg-neutral-900 p-2 text-xs text-white file:mr-3 file:rounded file:border-0 file:bg-blue-700 file:px-3 file:py-2 file:text-white" />
+       className="mt-2 block max-w-full rounded-lg border border-white/25 bg-neutral-900 p-2 text-xs text-white file:mr-3 file:rounded file:border-0 file:bg-[#325541] file:px-3 file:py-2 file:text-white" />
    </label>
  </details>
  {importStatus&&<p role="status" className="mt-2 text-xs text-neutral-200">{importStatus}</p>}
@@ -326,7 +326,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
  )}
  {!hideControls&&<div className="absolute bottom-3 left-3 right-3 max-h-[45vh] overflow-y-auto rounded-xl border border-white/20 bg-neutral-950/95 p-3"><p className="pb-2 text-xs text-neutral-300">{warning&&t.fullscreen} {modeHint}</p><div className="flex flex-wrap items-center justify-center gap-2"><button type="button" onClick={prev} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{t.prev}</button><button type="button" onClick={next} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{t.next}</button><button type="button" onClick={()=>setMarkMode(v=>!v)} className="min-h-[44px] rounded bg-orange-700 px-3 py-2" aria-pressed={markMode}>{markMode?t.stop:t.mark}</button><button type="button" onClick={()=>setShowMarks(v=>!v)} aria-pressed={showMarks} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{showMarks?t.hide:t.show} ({marks.length})</button>{marks.length>0&&<button type="button" onClick={()=>{setMarks(v=>v.slice(0,-1));setSelected(marks.length>1?marks[marks.length-2].id:'');}} className="min-h-[44px] rounded bg-white/15 px-3 py-2">{t.undo}</button>}{marks.length>0&&<label className="text-xs">{t.selected}<select aria-label={t.selected} value={selected} onChange={e=>setSelected(e.target.value)} className="ml-2 rounded bg-neutral-900 p-2">{marks.map((m,i)=><option value={m.id}>{t.selected} {i+1}</option>)}</select></label>}{currentMark && <div className="flex flex-wrap items-center gap-2 rounded-lg border border-white/20 bg-neutral-900/75 p-2" role="group" aria-label={t.recheckState+': '+patternLabel(current.name)}>
  <span role="status" aria-live="polite" className="text-xs text-neutral-300">{t.recheckState}: <strong>{currentObservation==='visible'?t.recordedVisible:currentObservation==='absent'?t.recordedAbsent:t.recordedUnknown}</strong></span>
- <button type="button" aria-pressed={currentObservation==='visible'} onClick={()=>setColorObservation(selected,current.name,'visible')} className="min-h-[44px] rounded bg-blue-700 px-3 py-2 text-xs">{t.recheck}</button>
+ <button type="button" aria-pressed={currentObservation==='visible'} onClick={()=>setColorObservation(selected,current.name,'visible')} className="min-h-[44px] rounded bg-[#325541] px-3 py-2 text-xs">{t.recheck}</button>
  <button type="button" aria-pressed={currentObservation==='absent'} onClick={()=>setColorObservation(selected,current.name,'absent')} className="min-h-[44px] rounded bg-neutral-700 px-3 py-2 text-xs">{t.notSeen}</button>
  <button type="button" onClick={()=>setColorObservation(selected,current.name,'unknown')} className="min-h-[44px] rounded border border-white/30 px-3 py-2 text-xs">{t.clearCheck}</button>
  </div>}{isFixer&&<><label className="text-xs">{t.patch} <input aria-label="Static patch color" type="color" value={patchColor} onChange={e=>setPatchColor(e.target.value)} className="h-8 w-10 align-middle"/></label><label className="text-xs">{t.patchSize} <input aria-label="Patch size" type="range" min={40} max={320} value={patchSize} onChange={e=>setPatchSize(Number(e.target.value))}/></label></>}</div><div className="mt-3 border-t border-white/15 pt-3">
@@ -335,7 +335,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
     {patterns.map((pattern,i)=><button key={pattern.name} type="button" onClick={()=>setIndex(i)}
       aria-label={t.jump+' '+patternLabel(pattern.name)}
       aria-current={i===index?'step':undefined}
-      className={'shrink-0 min-h-[44px] rounded-md border px-3 text-xs font-semibold '+(i===index?'border-blue-400 bg-blue-700 text-white':'border-white/25 bg-white/10 text-white')}
+      className={'shrink-0 min-h-[44px] rounded-md border px-3 text-xs font-semibold '+(i===index?'border-[#C5F277] bg-[#325541] text-white':'border-white/25 bg-white/10 text-white')}
     >{i+1}. {patternLabel(pattern.name)}</button>)}
   </div>
 </div>

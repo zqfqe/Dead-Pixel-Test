@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/10 bg-black pt-16 pb-8 text-sm">
+    <footer className="border-t border-white/10 bg-[#0D1416] pt-16 pb-8 text-sm">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           
@@ -36,11 +36,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-white mb-4 uppercase tracking-wider text-xs">Core Tests</h3>
             <ul className="space-y-3 text-neutral-400">
-              <li><Link to="/" className="hover:text-blue-400 transition-colors">Dead Pixel Test</Link></li>
-              <li><Link to="/tests/uniformity" className="hover:text-blue-400 transition-colors">Uniformity Test</Link></li>
-              <li><Link to="/tests/response-time" className="hover:text-blue-400 transition-colors">Ghosting / UFO Test</Link></li>
-              <li><Link to="/tests/gamma" className="hover:text-blue-400 transition-colors">Gamma Calibration</Link></li>
-              <li><Link to="/tests/color-gradient" className="hover:text-blue-400 transition-colors">Color Gradient</Link></li>
+              <li><Link to="/" className="hover:text-[#C5F277] transition-colors">Dead Pixel Test</Link></li>
+              <li><Link to="/tests/uniformity" className="hover:text-[#C5F277] transition-colors">Uniformity Test</Link></li>
+              <li><Link to="/tests/response-time" className="hover:text-[#C5F277] transition-colors">Ghosting / UFO Test</Link></li>
+              <li><Link to="/tests/gamma" className="hover:text-[#C5F277] transition-colors">Gamma Calibration</Link></li>
+              <li><Link to="/tests/color-gradient" className="hover:text-[#C5F277] transition-colors">Color Gradient</Link></li>
             </ul>
           </div>
 
@@ -48,11 +48,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-white mb-4 uppercase tracking-wider text-xs">Resources</h3>
             <ul className="space-y-3 text-neutral-400">
-              <li><Link to="/blog" className="hover:text-blue-400 transition-colors">Knowledge Base</Link></li>
-              <li><Link to="/tools/keyboard" className="hover:text-blue-400 transition-colors">Keyboard Ghosting</Link></li>
-              <li><Link to="/tools/controller" className="hover:text-blue-400 transition-colors">Gamepad Tester</Link></li>
-              <li><Link to="/about" className="hover:text-blue-400 transition-colors">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Contact &amp; Feedback</Link></li>
+              <li><Link to="/blog" className="hover:text-[#C5F277] transition-colors">Knowledge Base</Link></li>
+              <li><Link to="/tools/keyboard" className="hover:text-[#C5F277] transition-colors">Keyboard Ghosting</Link></li>
+              <li><Link to="/tools/controller" className="hover:text-[#C5F277] transition-colors">Gamepad Tester</Link></li>
+              <li><Link to="/about" className="hover:text-[#C5F277] transition-colors">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-[#C5F277] transition-colors">Contact &amp; Feedback</Link></li>
             </ul>
           </div>
 
@@ -60,9 +60,9 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-white mb-4 uppercase tracking-wider text-xs">Legal</h3>
             <ul className="space-y-3 text-neutral-400">
-              <li><Link to="/privacy-policy" className="hover:text-blue-400 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms-of-service" className="hover:text-blue-400 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Report a Bug</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-[#C5F277] transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms-of-service" className="hover:text-[#C5F277] transition-colors">Terms of Service</Link></li>
+              <li><Link to="/contact" className="hover:text-[#C5F277] transition-colors">Report a Bug</Link></li>
             </ul>
           </div>
         </div>

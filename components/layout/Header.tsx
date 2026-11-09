@@ -138,8 +138,8 @@ const Header = () => {
         className={`
           fixed top-0 left-0 w-full z-40 transition-all duration-500 border-b
           ${scrolled 
-            ? 'bg-black/80 backdrop-blur-xl border-white/5 h-14' 
-            : 'bg-transparent border-transparent h-20'}
+            ? 'bg-[#0D1416]/95 backdrop-blur-xl border-white/5 h-14' 
+            : 'bg-[#0D1416]/95 border-white/10 h-20'}
         `}
       >
         <div className="max-w-[1400px] mx-auto h-full px-6 flex items-center justify-between relative">
@@ -169,7 +169,7 @@ const Header = () => {
                 
                 {/* Dropdown Menu */}
                 <div className="absolute top-full left-1/2 -translate-x-1/2 w-56 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/dropdown:opacity-100 group-hover/dropdown:translate-y-0 group-hover/dropdown:pointer-events-auto group-focus-within/dropdown:opacity-100 group-focus-within/dropdown:translate-y-0 group-focus-within/dropdown:pointer-events-auto transition-all duration-200 ease-out">
-                  <div className="bg-[#050505] border border-white/10 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden p-1.5 backdrop-blur-3xl">
+                  <div className="bg-[#14201D] border border-white/10 rounded-lg shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden p-1.5 backdrop-blur-3xl">
                     {group.items.map((item) => (
                       <NavLink
                         key={item.path}
@@ -177,7 +177,7 @@ const Header = () => {
                         className={({ isActive }) => `
                           block px-3 py-2 text-[13px] rounded-md transition-all
                           ${isActive 
-                            ? 'bg-white/10 text-white font-medium' 
+                            ? 'bg-[#294337] text-[#C5F277] font-medium' 
                             : 'text-neutral-400 hover:text-white hover:bg-white/5'}
                         `}
                       >
@@ -198,7 +198,7 @@ const Header = () => {
                 <button 
                   onClick={() => setIsReportOpen(true)}
                   aria-label="View Report"
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg shadow-blue-900/20 animate-in fade-in zoom-in"
+                  className="flex items-center gap-2 bg-[#C5F277] hover:bg-[#DCFFA3] text-[#142017] px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg shadow-blue-900/20 animate-in fade-in zoom-in"
                 >
                    <ClipboardCheck size={14} />
                    <span className="hidden sm:inline">Report</span>
@@ -221,7 +221,7 @@ const Header = () => {
                   <Maximize2 size={10} />
                   <span>DPR:{pixelRatio.toFixed(1)}</span>
                </div>
-               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border bg-white/5 transition-colors cursor-default ${fps < 30 ? 'text-red-500 border-red-900/30' : fps > 100 ? 'text-green-500 border-green-900/30' : 'text-blue-500 border-blue-900/30'}`} title="Estimated browser animation FPS, not physical panel refresh Hz">
+               <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border bg-white/5 transition-colors cursor-default ${fps < 30 ? 'text-red-500 border-red-900/30' : fps > 100 ? 'text-green-500 border-green-900/30' : 'text-[#C5F277] border-[#5B7D50]/40'}`} title="Estimated browser animation FPS, not physical panel refresh Hz">
                   <Activity size={10} />
                   <span>{fps} FPS</span>
                </div>
@@ -250,7 +250,7 @@ const Header = () => {
         aria-label="Mobile navigation"
         aria-hidden={!isMobileOpen}
         className={`
-          fixed inset-0 z-30 bg-black pt-24 px-6 overflow-y-auto transition-transform duration-300 lg:hidden
+          fixed inset-0 z-30 bg-[#0D1416] pt-24 px-6 overflow-y-auto transition-transform duration-300 lg:hidden
           ${isMobileOpen ? 'translate-x-0 visible' : 'translate-x-full invisible pointer-events-none'}
         `}
       >
@@ -268,7 +268,7 @@ const Header = () => {
                     className={({ isActive }) => `
                       block py-3 px-4 rounded-lg text-sm
                       ${isActive 
-                        ? 'bg-white text-black font-bold' 
+                        ? 'bg-[#C5F277] text-[#142017] font-bold' 
                         : 'text-neutral-400 hover:text-white hover:bg-white/5'}
                     `}
                   >
