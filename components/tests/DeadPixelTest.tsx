@@ -482,9 +482,9 @@ const DeadPixelTest: React.FC = () => {
         >
           <InfoCard title="Dead Pixel Test: Defects">
             <div className="space-y-3">
-              <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> Black spot. Transistor off.</p>
-              <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> Red/Green/Blue spot. Transistor stuck.</p>
-              <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our repair guide &rarr;</Link>
+              <p className="text-sm"><strong className="text-white">Dead Pixel:</strong> A pixel or subpixel that does not produce its expected output. It may appear dark on a bright background.</p>
+              <p className="text-sm"><strong className="text-red-400">Stuck Pixel:</strong> A spot that remains an unexpected color across several test backgrounds.</p>
+              <Link to="/blog/dead-pixel-vs-stuck-pixel-ultimate-guide" className="text-xs text-blue-400 hover:text-blue-300 underline block mt-2">Read our troubleshooting guide &rarr;</Link>
             </div>
           </InfoCard>
 
@@ -507,38 +507,36 @@ const DeadPixelTest: React.FC = () => {
                        <HelpCircle className="text-blue-500" /> What is a Dead Pixel?
                     </h2>
                     <p className="text-neutral-400 leading-relaxed mb-4">
-                       A <strong>Dead Pixel</strong> is a picture element (pixel) on a display screen that fails to change color. It appears as a tiny, permanent black dot on your screen, which is most visible against a white background. This occurs when the transistor controlling the pixel receives no power.
+                       A <strong>dead pixel</strong> does not produce its intended light or color. It may appear as a dark spot against a bright background. The appearance varies by display technology and the fault involved; dust and surface marks can look similar.
                     </p>
                     <p className="text-neutral-400 leading-relaxed">
-                       In contrast, a <strong>Stuck Pixel</strong> is frozen in a specific color (Red, Green, or Blue) because the liquid crystal is stuck in the open position, allowing light to pass through permanently. A stuck pixel can behave differently on multiple colors, but the browser cannot guarantee repair of any physical fault.
+                       In contrast, a <strong>stuck pixel or subpixel</strong> may remain an unexpected color as the background changes. LCD and OLED panels behave differently, and the browser cannot identify the failed component or guarantee a software repair.
                     </p>
                  </div>
                  
                  <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
                     <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                       <ShieldCheck className="text-green-500" /> ISO 9241-307 Standards
+                       <ShieldCheck className="text-green-500" /> Manufacturer defect and warranty policies
                     </h3>
                     <p className="text-sm text-neutral-400 mb-4">
-                       Monitor manufacturers categorize display quality by "Classes" based on allowed defects per million pixels:
+                       Acceptable pixel-defect thresholds and warranty eligibility depend on the specific manufacturer, product model, region and purchase terms. No universal threshold is assumed here.
                     </p>
-                    <ul className="space-y-3 text-sm">
-                       <li className="flex gap-2 text-neutral-300"><span className="font-bold text-white min-w-[60px]">Class 0</span> Zero defects allowed. (Medical/Military grade)</li>
-                       <li className="flex gap-2 text-neutral-300"><span className="font-bold text-white min-w-[60px]">Class 1</span> 1 dead or 1 stuck pixel allowed. (Premium monitors)</li>
-                       <li className="flex gap-2 text-neutral-300"><span className="font-bold text-white min-w-[60px]">Class 2</span> 2 dead or 5 stuck pixels allowed. (Most consumer screens)</li>
+                    <ul className="space-y-3 text-sm text-neutral-300 list-disc pl-5">
+                       <li>Record whether the same spot appears on several static backgrounds.</li>
+                       <li>Keep the receipt, purchase date and product model for the retailer or manufacturer.</li>
+                       <li>Check the official pixel policy and return window applicable to your device.</li>
+                       <li>A browser observation is not an authorized warranty certificate.</li>
                     </ul>
-                    <p className="mt-4 text-xs text-neutral-500 italic">
-                       *Always check your retailer's return policy, as it often overrides manufacturer warranty thresholds.
-                    </p>
                  </div>
               </div>
 
               <hr className="my-12 border-white/10" />
 
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                 <Zap className="text-yellow-500" /> How to Fix Stuck Pixels
+                 <Zap className="text-yellow-500" /> What to Do About a Suspected Stuck Pixel
               </h2>
               <p className="text-neutral-400 leading-relaxed mb-6">
-                 While dead pixels (black spots) are hard to fix, stuck pixels (colored dots) can often be revived. This tool includes two advanced repair modes:
+                 Software cannot repair a physically damaged pixel, and changes to a temporary color anomaly are not guaranteed. Use these three safe diagnostic steps before seeking service:
               </p>
               
               <div className="grid md:grid-cols-3 gap-6">
@@ -577,11 +575,11 @@ const DeadPixelTest: React.FC = () => {
                  <div>
                     <h3 className="text-lg font-bold text-white mb-2">Checking iPhone/Android Screens</h3>
                     <p className="text-neutral-400 text-sm leading-relaxed">
-                       Mobile screens have extremely high pixel density (PPI). A single dead pixel on an iPhone Retina display is almost invisible to the naked eye unless you use a magnifying glass. To test a phone:
+                       Modern phones often have high pixel density, making an isolated defect difficult to inspect. Actual visibility varies with the panel, distance, brightness and background. To test a phone:
                     </p>
                     <ul className="list-disc pl-5 mt-2 text-sm text-neutral-400">
                        <li>Clean the screen perfectly (dust looks like pixels).</li>
-                       <li>Set brightness to 100%.</li>
+                       <li>Set brightness to a comfortable level; avoid prolonged maximum brightness.</li>
                        <li>Use the <strong className="text-white">Swipe</strong> gestures in this tool to cycle colors.</li>
                        <li>Look for defects on the Green and White screens primarily.</li>
                     </ul>
