@@ -367,7 +367,7 @@ await check('/image-retention-test',async page=>{
 });
 await check('/',async page=>{
  const body=await page.evaluate(()=>({surface:document.body.dataset.surface,bg:getComputedStyle(document.body).backgroundColor,ink:getComputedStyle(document.body).color}));
- if(body.surface!=='light'||body.bg!=='rgb(246, 248, 251)'||body.ink!=='rgb(16, 24, 39)')throw Error('Information page does not use light palette: '+JSON.stringify(body));
+ if(body.surface!=='light'||body.bg!=='rgb(245, 247, 242)'||body.ink!=='rgb(25, 37, 34)')throw Error('Information page does not use light palette: '+JSON.stringify(body));
  const extent=await page.evaluate(()=>({body:document.body.getBoundingClientRect().height,document:document.documentElement.scrollHeight}));
  if(extent.body<extent.document-5)throw Error('Light page body ends before full page content, exposing dark root: '+JSON.stringify(extent));
  const workspace=page.getByText('Start your screen check',{exact:true}).locator('..');
@@ -377,7 +377,7 @@ await check('/',async page=>{
 });
 await check('/pt-br',async page=>{
  const bg=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
- if(bg!=='rgb(246, 248, 251)')throw Error('Brazilian information page is not light');
+ if(bg!=='rgb(245, 247, 242)')throw Error('Brazilian information page uses an unexpected information surface');
  const extent=await page.evaluate(()=>({body:document.body.getBoundingClientRect().height,document:document.documentElement.scrollHeight}));
  if(extent.body<extent.document-5)throw Error('Brazilian page body ends before content: '+JSON.stringify(extent));
  await page.screenshot({path:'smoke-screenshots/site-pt-br-mobile.png',fullPage:true});

@@ -25,67 +25,95 @@ const schema={
  operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}
 };
 ---
+
 <BaseLayout title="Dead Pixel Test – Free Online Screen Check | DeadPixelTest"
   description={page.description} canonicalPath="/" lang="en" schema={schema}>
-  <main id="main-content" tabindex="-1" class="ui-site-main mx-auto max-w-7xl px-4 pt-9 md:px-8 md:pt-14">
-    <div class="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(260px,.8fr)] gap-6 lg:gap-8 items-start">
-      <section class="ui-hero-intro ui-enter space-y-5 rounded-[1.5rem] border border-[#DCE3EA] bg-white px-5 py-7 md:px-9 md:py-10">
-        <p class="ui-eyebrow text-[#125CC9] text-sm font-bold tracking-[.13em] uppercase"><span class="ui-status-dot" aria-hidden="true"></span>Free browser-based display inspection</p>
-        <div class="ui-swatch-track" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-        <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.08]">Dead Pixel <span class="ui-text-accent">Test</span></h1>
-        <p class="text-lg text-[#344256] leading-8 max-w-3xl">Check your monitor, laptop, or phone with full-screen colors. Look for dead pixels, bright dots, and stuck subpixels. All observations are made by you — the browser cannot automatically detect physical panel damage.</p>
-        <div class="ui-inspection-shell rounded-2xl border border-[#20283C] bg-[#0A0B0E] text-white px-5 py-6 md:px-8 md:py-8">
-          <p class="font-semibold text-white mb-4">Start your screen check</p>
+  <main id="main-content" tabindex="-1" class="ui-site-main mx-auto max-w-7xl px-4 pt-7 md:px-8 md:pt-12">
+    <div class="ui-home-stage">
+      <section class="ui-hero-intro ui-enter" aria-label="Dead pixel test introduction">
+        <p class="ui-kicker"><span class="ui-status-dot" aria-hidden="true"></span> DISPLAY DIAGNOSTICS <span class="ui-kicker-id">/ 01</span></p>
+        <h1 class="ui-display-title">Dead Pixel Test</h1>
+        <p class="ui-headline-sub">See every detail.</p>
+        <p class="ui-hero-description">Check your monitor, laptop, or phone with full-screen colors. Look for dead pixels, bright dots, and stuck subpixels. All observations are made by you — the browser cannot automatically detect physical panel damage.</p>
+        <div class="ui-hero-metrics" aria-label="Test characteristics">
+          <span><span aria-hidden="true">↗</span> No installation</span>
+          <span><span aria-hidden="true">◈</span> Eight solid colors</span>
+          <span><span aria-hidden="true">◎</span> Manual inspection</span>
+        </div>
+        <div class="ui-preview-instrument" aria-hidden="true">
+          <div class="ui-preview-head"><span>VISUAL SAMPLE / COLOR FIELD</span><span>1920 × 1080</span></div>
+          <div class="ui-preview-screen">
+            <div class="ui-preview-target"><span class="ui-preview-dot"></span></div>
+          </div>
+          <div class="ui-preview-bottom"><span class="ui-preview-signal"></span><span>01 / 08 · STATIC PATTERN</span><span>RGB</span></div>
+        </div>
+      </section>
+      <section class="ui-workbench-panel ui-enter" aria-label="Interactive screen inspection workspace">
+        <div class="ui-workbench-heading">
+          <p class="ui-kicker">SCREEN CHECK <span class="ui-kicker-id">/ READY</span></p>
+          <h2 class="ui-workbench-title">Inspect your screen</h2>
+          <p class="ui-workbench-description">Start with a color. Observe the surface. Record only what you can actually see.</p>
+        </div>
+        <div class="ui-inspection-shell">
+          <p class="ui-workbench-label">Start your screen check</p>
           <ScreenInspection client:only="react" mode="pixels" lang="en" />
           <noscript>
             <div role="note" class="mt-4 rounded-lg border border-amber-400/40 bg-neutral-900 p-4 text-sm text-white">
               <strong>JavaScript is disabled.</strong> The full-screen color test, manual spot marking and report download need JavaScript. Enable it and reload this page to inspect your display. No account is required.
             </div>
           </noscript>
-          <p class="text-sm text-neutral-300 mt-5">Black, white, red, green, blue and more. Keyboard arrows and touch-friendly controls. Record suspect spots for manual rechecks.</p>
+          <p class="ui-workbench-footnote">Black, white, red, green, blue and more. Keyboard arrows and touch-friendly controls. Record suspect spots for manual rechecks.</p>
         </div>
       </section>
-      <aside class="ui-help-card ui-enter ui-enter-delayed rounded-2xl border border-[#DCE3EA] bg-white p-6 md:p-7">
-        <p class="ui-overline">INSPECTION GUIDE · 5 SIGNALS</p><h2 class="font-semibold text-xl mb-3">What to look for</h2>
-        <p class="mb-5 text-sm leading-6 text-[#344256]">Each background helps reveal a different kind of visible symptom. Compare several colors before deciding whether a mark is on the screen surface or in the panel.</p>
-        <ol class="ui-checklist space-y-4 text-[#344256] leading-7">
-          <li><strong class="text-[#101827]">White screen</strong> — unusually dark points that might otherwise blend in.</li>
-          <li><strong class="text-[#101827]">Black screen</strong> — unusually bright or colored points.</li>
-          <li><strong class="text-[#101827]">Red, green and blue</strong> — spots that do not behave like their surroundings.</li>
-          <li><strong class="text-[#101827]">Whole lines</strong> — investigate separately from an isolated pixel.</li>
-          <li><strong class="text-[#101827]">Faint old image</strong> — compare on neutral gray in the retention test.</li>
-        </ol>
-        <a href="/what-is-a-dead-pixel" class="mt-5 inline-block text-sm font-semibold text-[#125CC9] hover:underline">See symptom examples and next steps</a>
-        <p class="text-xs text-amber-800 border-t border-[#DCE3EA] pt-4 mt-5">This is a visual self-check, not a certified diagnosis.</p>
-      </aside>
     </div>
-    <section class="ui-section mt-14 md:mt-20">
-      <div class="ui-section-heading"><div><p class="ui-overline">TOOL COLLECTION</p><h2 class="text-2xl md:text-3xl font-bold mb-2">More display and device tests</h2></div><p class="max-w-sm text-sm leading-6 text-[#475569]">Choose the test that matches what you see. Each opens its own guided workflow.</p></div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {topLinks.map((link,i) => <a href={link.path.replace(/\/$/,'') || '/'} class="ui-feature-card group rounded-xl border border-[#DCE3EA] bg-white p-5">
-          <div class="flex items-center justify-between gap-3"><span class="ui-card-index">TOOL {String(i+1).padStart(2,'0')}</span><span class="ui-card-arrow" aria-hidden="true">↗</span></div>
-          <h3 class="mt-3 text-lg font-semibold text-[#101827]">{link.name}</h3>
-          <p class="mt-2 text-sm leading-6 text-[#475569]">{link.sub}</p>
+
+    <aside class="ui-help-card ui-enter ui-enter-delayed" aria-labelledby="inspection-guide-title">
+      <div class="ui-guide-heading">
+        <div><p class="ui-overline">READ THE SCREEN · FIVE SIGNALS</p><h2 id="inspection-guide-title">What to look for</h2></div>
+        <p>Each background reveals a different symptom. Compare several colors before deciding whether a mark is on the screen surface or in the panel.</p>
+      </div>
+      <ol class="ui-checklist">
+        <li><strong>White screen</strong><span>Unusually dark points that might otherwise blend in.</span></li>
+        <li><strong>Black screen</strong><span>Unusually bright or colored points.</span></li>
+        <li><strong>Red, green and blue</strong><span>Spots that do not behave like their surroundings.</span></li>
+        <li><strong>Whole lines</strong><span>Investigate separately from an isolated pixel.</span></li>
+        <li><strong>Faint old image</strong><span>Compare on neutral gray in the retention test.</span></li>
+      </ol>
+      <div class="ui-guide-foot"><a href="/what-is-a-dead-pixel">See symptom examples and next steps <span aria-hidden="true">↗</span></a><p>This is a visual self-check, not a certified diagnosis.</p></div>
+    </aside>
+
+    <section class="ui-section ui-tool-library" aria-labelledby="tool-library-heading">
+      <div class="ui-section-heading">
+        <div><p class="ui-overline">EXPLORE / SCREEN & DEVICE TOOLS</p><h2 id="tool-library-heading">More display and device tests</h2></div>
+        <p>Choose the test that matches what you see. Each opens its own guided workflow.</p>
+      </div>
+      <div class="ui-tools-grid">
+        {topLinks.map((link,i) => <a href={link.path.replace(/\/$/,'') || '/'} class:list={["ui-feature-card",i===0?"ui-feature-card-primary":""]}>
+          <div class="ui-feature-card-top"><span class="ui-card-index">{String(i+1).padStart(2,'0')} / {i<7?'SCREEN CHECK':'DEVICE TOOL'}</span><span class="ui-card-arrow" aria-hidden="true">↗</span></div>
+          <h3>{link.name}</h3><p>{link.sub}</p>
         </a>)}
       </div>
     </section>
-    <section class="ui-section mt-16 grid md:grid-cols-2 gap-7 lg:gap-10">
-      <article>
-        <h2 class="text-2xl font-bold mb-4">How to identify a dead pixel</h2>
-        <p class="text-[#344256] leading-8">A dead pixel does not produce the expected light output. It may appear as a consistently dark spot, particularly against white. A stuck subpixel may remain red, green or blue, while dust and protective-film marks can look similar. Compare several backgrounds before drawing conclusions.</p>
-        <a href="/what-is-a-dead-pixel" class="inline-block mt-5 text-[#125CC9] hover:text-[#125CC9]">Understand dead and stuck pixels →</a>
+
+    <section class="ui-editorial-grid ui-section">
+      <article class="ui-editorial-card">
+        <p class="ui-overline">UNDERSTAND / 01</p>
+        <h2>How to identify a dead pixel</h2>
+        <p>A dead pixel does not produce the expected light output. It may appear as a consistently dark spot, particularly against white. A stuck subpixel may remain red, green or blue, while dust and protective-film marks can look similar. Compare several backgrounds before drawing conclusions.</p>
+        <a href="/what-is-a-dead-pixel">Understand dead and stuck pixels <span aria-hidden="true">↗</span></a>
       </article>
-      <article>
-        <h2 class="text-2xl font-bold mb-4">Why test several colors?</h2>
-        <p class="text-[#344256] leading-8">The same defect can look different on a black, white or primary-color field. Static color screens help you locate an abnormal spot, but cannot measure monitor luminance, native refresh rate or physical panel health. Never press or heat the display in an attempt to fix a pixel.</p>
-        <a href="/pt-br" class="inline-block mt-5 text-[#125CC9] hover:text-[#125CC9]">Teste de pixel morto em português →</a>
+      <article class="ui-editorial-card">
+        <p class="ui-overline">UNDERSTAND / 02</p>
+        <h2>Why test several colors?</h2>
+        <p>The same defect can look different on a black, white or primary-color field. Static color screens help you locate an abnormal spot, but cannot measure monitor luminance, native refresh rate or physical panel health. Never press or heat the display in an attempt to fix a pixel.</p>
+        <a href="/pt-br">Teste de pixel morto em português <span aria-hidden="true">↗</span></a>
       </article>
     </section>
-    <section class="ui-section mt-16 pb-8">
-      <h2 class="text-2xl font-bold mb-5">Common questions</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <article class="border border-[#DCE3EA] rounded-xl p-5"><h3 class="font-semibold text-lg mb-2">Can a webpage detect dead pixels automatically?</h3><p class="text-[#344256] leading-7">No. The test displays patterns; you inspect the physical screen. A browser cannot read the panel's actual damaged pixels.</p></article>
-        <article class="border border-[#DCE3EA] rounded-xl p-5"><h3 class="font-semibold text-lg mb-2">Can a dead pixel be fixed online?</h3><p class="text-[#344256] leading-7">A physically damaged pixel cannot be repaired by a webpage. Avoid rapid flashing, heat and pressure. Ask the manufacturer about warranty options.</p></article>
+    <section class="ui-faq-section ui-section" aria-labelledby="faq-title">
+      <div class="ui-section-heading"><div><p class="ui-overline">HELP / FAQ</p><h2 id="faq-title">Common questions</h2></div></div>
+      <div class="ui-faq-grid">
+        <article class="ui-info-card"><h3>Can a webpage detect dead pixels automatically?</h3><p>No. The test displays patterns; you inspect the physical screen. A browser cannot read the panel's actual damaged pixels.</p></article>
+        <article class="ui-info-card"><h3>Can a dead pixel be fixed online?</h3><p>A physically damaged pixel cannot be repaired by a webpage. Avoid rapid flashing, heat and pressure. Ask the manufacturer about warranty options.</p></article>
       </div>
     </section>
   </main>
