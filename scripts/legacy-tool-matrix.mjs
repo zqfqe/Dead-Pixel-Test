@@ -108,6 +108,15 @@ try{
    await page.getByRole('button',{name:'Exit'}).click();
    await page.getByRole('button',{name:'Start Touch Test'}).waitFor();
   }],
+  ['/tools/webcam',async page=>{
+   await page.getByRole('button',{name:'Start Camera'}).first().click();
+   await page.locator('video').waitFor();
+   await page.getByText(/Microphone unavailable or permission denied/).waitFor();
+   await page.getByRole('button',{name:'Stop Camera'}).click();
+   await page.getByText('Camera is off').waitFor();
+   if(await page.evaluate(()=>window.__fakeCameraTrack?.readyState)!=='ended')
+     throw Error('Camera video track not released on Stop');
+  }],
   ['/tools/double-click-test',async page=>{
    const pad=page.getByRole('region',{name:'Mouse click test pad'});
    await pad.click();
@@ -264,7 +273,19 @@ try{
    await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
   }]
  ];
- for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
+ for(const [route,fn] of scenarioChecks)await inspectRoute(route,{
+  interact:fn,
+  beforeNavigate:route==='/tools/webcam'?async page=>await page.addInitScript(()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=160;canvas.height=90;
+    const stream=canvas.captureStream(1);
+    window.__fakeCameraTrack=stream.getVideoTracks()[0];
+    Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,value:async constraints=>{
+      if(constraints?.video)return stream;
+      throw new DOMException('Microphone denied','NotAllowedError');
+    }});
+  }):undefined
+ });
  await inspectRoute('/tools/controller',{
   beforeNavigate:async page=>await page.addInitScript(()=>{
    window.__mockPads=[null,{id:'QA Minimal Controller',index:1,connected:true,mapping:'standard',buttons:[{pressed:false,value:0}],axes:[],timestamp:0}];
@@ -281,4 +302,4 @@ try{
  });
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 10 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 11 interactive functional checks (hardware behaviors not certified).');
