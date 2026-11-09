@@ -228,6 +228,52 @@ const specificGuidance: Record<string,{heading:string;intro:string;checks:{title
   ]
  }
 };
+
+type SymptomOption={title:string;check:string;action:string;link?:string;linkLabel?:string};
+const symptomDecisions:Record<string,{heading:string;intro:string;options:SymptomOption[];source:string}>={
+ '/laptop-screen-dead-pixel-test':{
+  heading:'Laptop screen symptoms: what to check next',
+  intro:'Choose the symptom closest to what you see. These are follow-up suggestions, not an automated diagnosis.',
+  source:'Manufacturer example: Dell pixel guidance',
+  options:[
+   {title:'Single dark point on white',check:'Clean the glass, then compare the same position on white, red, green and blue.',action:'Mark its approximate position in the test report and check your model’s pixel-defect/return policy.'},
+   {title:'Bright or colored point on black',check:'Compare the spot on black and the three primary colors. Note which backgrounds reveal it.',action:'Record the behavior without pressing or heating the screen. Contact the manufacturer for policy-specific advice.'},
+   {title:'Complete horizontal or vertical line',check:'Compare the line across solid colors; where practical, check an external display or different cable.',action:'A continuous line differs from one isolated pixel. Follow the dedicated line comparison.',link:'/dead-pixel-line-test',linkLabel:'Screen-line test'},
+   {title:'Issue on the internal panel only',check:'Move this browser test to the laptop panel and external monitor separately and compare.',action:'Record which display shows the issue; this comparison does not prove which component is faulty.'}
+  ]},
+ '/pt-br/pixel-morto-notebook':{
+  heading:'Pixel morto no notebook: como interpretar o sintoma',
+  intro:'Escolha o caso que se parece com sua tela. Estas etapas orientam a observação, sem emitir laudo técnico.',
+  source:'Exemplo de fabricante: orientação da Dell (em inglês)',
+  options:[
+   {title:'Ponto escuro no fundo branco',check:'Limpe o vidro com cuidado e compare o mesmo ponto nas cores branco, vermelho, verde e azul.',action:'Marque o local aproximado, exporte o registro e consulte a política de troca do fabricante.'},
+   {title:'Ponto brilhante ou colorido no preto',check:'Observe o ponto no fundo preto e depois em cada cor primária.',action:'Anote em quais cores ele aparece. Não pressione nem aqueça a tela.'},
+   {title:'Linha horizontal ou vertical inteira',check:'Compare várias cores e, se possível, um monitor externo ou outra entrada.',action:'Uma linha contínua não é igual a um pixel isolado. Registre o sintoma e procure assistência.'},
+   {title:'Problema somente na tela interna',check:'Compare a tela integrada e outra tela usando a mesma ferramenta.',action:'A diferença ajuda na triagem, mas não prova defeito de painel, cabo ou GPU.'}
+  ]},
+ '/dead-pixel-fixer':{
+  heading:'Does this symptom need a pixel fixer?',
+  intro:'Online color patterns can help document a spot, but they cannot repair physical panel damage.',
+  source:'Manufacturer safety reference: Dell pixel guidance',
+  options:[
+   {title:'Always-dark point in several colors',check:'Clean the surface, compare white and primary-color patterns, and note the same screen position.',action:'Physical dead pixels cannot be fixed by a webpage. Save your observations and contact support.'},
+   {title:'Point stays red, green or blue',check:'Use the movable static patch to compare colors without rapid flashes.',action:'Record which colors show the point. Avoid heat, pressure and rapid flashing; no fix is guaranteed.'},
+   {title:'Faint outline from an old window',check:'Briefly check neutral gray and note whether the outline changes after normal varied content.',action:'This may be image retention rather than an isolated pixel defect.',link:'/image-retention-test',linkLabel:'Image retention check'},
+   {title:'A full row or column is abnormal',check:'Compare multiple static colors and check whether the line stays in place.',action:'A full-line issue requires broader troubleshooting, not pixel-fixer software.',link:'/dead-pixel-line-test',linkLabel:'Screen-line troubleshooting'}
+  ]},
+ '/pt-br/reparar-pixel-preso':{
+  heading:'Pixel preso: qual próximo passo é seguro?',
+  intro:'Um teste com cores estáticas serve para observar, não para consertar o painel.',
+  source:'Referência de segurança: Dell (em inglês)',
+  options:[
+   {title:'Ponto sempre escuro em várias cores',check:'Limpe o vidro e observe a mesma região nos fundos branco e RGB.',action:'Uma página não recupera um pixel fisicamente danificado. Guarde o registro para a assistência.'},
+   {title:'Ponto sempre vermelho, verde ou azul',check:'Compare cores estáticas e use a área móvel como referência, sem piscar rapidamente.',action:'Registre quais cores mostram a anomalia. Evite pressão e calor; nenhuma correção é garantida.'},
+   {title:'Sombra de uma imagem anterior',check:'Observe brevemente o cinza neutro e retome o conteúdo normal.',action:'Pode ser persistência de imagem; siga as orientações de cuidado do fabricante.'},
+   {title:'Linha contínua na tela',check:'Compare a linha em vários fundos e, se possível, em outra tela.',action:'Uma linha inteira exige análise de tela/sinal e não será corrigida por um reparador de pixels online.'}
+  ]}
+};
+const symptomDecision=symptomDecisions[normalized];
+
 const taskGuide=specificGuidance[normalized];
 const legacyGuide=legacyGuides[normalized];
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
@@ -245,7 +291,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
            <div class="border border-[#DCE3EA] p-4 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-[#344256]">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
            <div class="border border-[#DCE3EA] p-4 rounded-lg">
              <dl id="screen-metrics" aria-live="off" class="font-mono text-sm text-[#344256]">Enable JavaScript for live screen and viewport metrics.</dl>
-             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-[#101827]">Copy browser metrics</button>
+             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white">Copy browser metrics</button>
              <p id="copy-screen-status" role="status" class="mt-2 text-xs text-[#475569]" aria-live="polite"></p>
            </div>
            <div class="md:col-span-2 rounded-xl border border-blue-500/20 bg-white p-5">
@@ -262,14 +308,14 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
                  <input id="native-diagonal" inputmode="decimal" type="number" min="0.1" max="300" step="any" placeholder="e.g. 24" class="mt-2 w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-3 text-[#101827]" />
                </label>
                <div class="flex flex-col justify-end">
-                 <button type="submit" class="min-h-[48px] rounded-lg bg-blue-700 px-4 py-3 font-semibold text-[#101827] hover:bg-blue-600">Calculate PPI</button>
+                 <button type="submit" class="min-h-[48px] rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-600">Calculate PPI</button>
                </div>
                <label class="sm:col-span-2 lg:col-span-4 flex items-start gap-3 text-sm text-[#101827]">
                  <input id="native-confirmed" type="checkbox" class="mt-1 h-4 w-4 shrink-0" />
                  I checked the native physical resolution in my display specifications or system settings.
                </label>
              </form>
-             <p id="ppi-result" role="status" aria-live="polite" class="mt-4 text-sm font-semibold text-blue-200">Enter values and confirm they describe your display's physical pixel resolution.</p>
+             <p id="ppi-result" role="status" aria-live="polite" class="mt-4 text-sm font-semibold text-[#125CC9]">Enter values and confirm they describe your display's physical pixel resolution.</p>
              <p class="mt-2 text-xs text-[#475569]">PPI = √(width² + height²) ÷ diagonal inches. This is a calculated estimate from user-supplied specifications, not a measurement of the panel.</p>
            </div>
          </div>
@@ -307,6 +353,22 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         <p class="mt-3 leading-7 text-[#344256]">{check.body}</p>
       </article>)}</div>
     </section>}
+
+    {symptomDecision && <section class="mt-12" data-symptom-decision>
+      <h2 class="text-2xl font-bold mb-3">{symptomDecision.heading}</h2>
+      <p class="max-w-3xl mb-5 leading-7 text-[#344256]">{symptomDecision.intro}</p>
+      <div class="grid gap-3 md:grid-cols-2">
+        {symptomDecision.options.map(option=><details class="rounded-xl border border-[#DCE3EA] bg-white p-5">
+          <summary class="cursor-pointer font-semibold text-[#101827]">{option.title}</summary>
+          <div class="mt-4 border-t border-[#DCE3EA] pt-4 text-sm leading-7 text-[#344256]">
+            <p><strong>{isBR?'Verificação':'Check'}:</strong> {option.check}</p>
+            <p class="mt-3"><strong>{isBR?'Próximo passo':'Next step'}:</strong> {option.action}</p>
+            {option.link && <a class="mt-3 inline-block font-semibold text-[#125CC9] underline underline-offset-4" href={option.link}>{option.linkLabel}</a>}
+          </div>
+        </details>)}
+      </div>
+      <p class="mt-4 text-sm leading-7 text-[#344256]">{isBR?'Regras de troca variam por fabricante e modelo.':'Return policies vary by manufacturer and model.'} <a href="https://www.dell.com/support/kbdoc/en-us/000126004/dell-display-pixel-guidelines" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#125CC9] underline underline-offset-4">{symptomDecision.source}</a>.</p>
+    </section>}
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
       <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="border border-[#DCE3EA] bg-white p-5 rounded-xl text-[#344256] leading-7">{note}</p>)}</div>
     </section>
@@ -317,7 +379,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         {pixelDifferences.map(item=><article class="rounded-xl border border-[#DCE3EA] bg-white p-5">
           <h3 class="text-lg font-semibold text-[#101827]">{item.appearance}</h3>
           <p class="mt-3 text-sm leading-7 text-[#344256]">{item.meaning}</p>
-          <p class="mt-3 border-t border-[#DCE3EA] pt-3 text-sm leading-7 text-blue-200"><strong>{isBR?'Próximo passo':'Next step'}:</strong> {item.action}</p>
+          <p class="mt-3 border-t border-[#DCE3EA] pt-3 text-sm leading-7 text-[#125CC9]"><strong>{isBR?'Próximo passo':'Next step'}:</strong> {item.action}</p>
         </article>)}
       </div>
     </section>}
