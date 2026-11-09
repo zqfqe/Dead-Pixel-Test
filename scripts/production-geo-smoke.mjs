@@ -11,6 +11,9 @@ const pages=[
   '/pt-br/o-que-e-dead-pixel', '/pt-br/teste-de-cores'
 ];
 const failures=[];
+const parseSchemas=html=>[...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
+  .map(x=>{try{return JSON.parse(x[1])}catch{return null}}).filter(Boolean);
+const graph=html=>parseSchemas(html).flatMap(x=>x['@graph']||[x]);
 const inspect=async(path)=>{
   try{
     const response=await fetch(origin+path,{
@@ -29,6 +32,27 @@ const inspect=async(path)=>{
       ['visible practical guidance',html.includes(br?'O que verificar':path==='/'?'Clean the glass':'Practical checks')],
       ['html locale',html.includes('lang="'+(br?'pt-BR':'en')+'"')]
     ])if(!condition)failures.push(path+' missing '+label);
+    if(!html.includes('data-editorial-review')||!html.includes('rel="author"')||
+       !html.includes('datetime="2026-11-09"'))
+      failures.push(path+' missing visible author or reviewed date');
+    const typed=graph(html);
+    const entry=typed.find(x=>['WebPage','WebApplication'].includes(x['@type']) && x.inLanguage===(br?'pt-BR':'en'));
+    if(!entry || entry.author?.name!=='DeadPixelTest' || entry.dateModified!=='2026-11-09')
+      failures.push(path+' source data has missing author or dateModified');
+    if(path==='/'){
+      const app=typed.find(x=>x['@type']==='WebApplication');
+      const org=typed.find(x=>x['@type']==='Organization');
+      const page=typed.find(x=>x['@type']==='WebPage');
+      if(!app || app.sameAs!=='https://github.com/zqfqe/Dead-Pixel-Test')
+        failures.push('homepage missing verified sameAs project source');
+      if(!org || org.name!=='DeadPixelTest' || !page || page.author?.['@id']!==org['@id'])
+        failures.push('homepage organization and author entity disconnected');
+      const logo=html.match(/<img\b[^>]*src="\/logo\.svg"[^>]*>/i)?.[0];
+      if(!logo || !/alt="DeadPixelTest home"/.test(logo))
+        failures.push('homepage branding image has missing functional alt');
+      if(!html.includes('<span aria-hidden="true">DeadPixelTest</span>'))
+        failures.push('homepage brand name may be duplicated for assistive technology');
+    }
     console.log('CHECK GEO '+path+' '+(br?'pt-BR':'en'));
   }catch(error){
     failures.push(path+' request failed: '+String(error));
@@ -44,11 +68,33 @@ try{
   const html=await response.text();
   if(!html.includes('How we describe evidence and sources'))
     failures.push('/about lacks visible source-methodology section');
+  if(!html.includes('Editorial identity and verifiable changes') ||
+     !html.includes('https://github.com/zqfqe/Dead-Pixel-Test'))
+    failures.push('/about lacks identifiable author and real project repository');
   for(const host of ['www.dell.com/support/kbdoc','www.samsung.com/sg/support','developer.mozilla.org/en-US/docs'])
     if(!html.includes(host))failures.push('/about lacks expected source reference '+host);
 }catch(error){failures.push('/about request failed: '+String(error))}
+for(const slug of [
+ 'dead-pixel-vs-stuck-pixel-ultimate-guide',
+ 'ips-glow-vs-backlight-bleed-guide',
+ 'monitor-calibration-guide-no-hardware'
+]){
+ try {
+  const response=await fetch(origin+'/blog/'+slug,{
+   cache:'no-store',headers:{'Cache-Control':'no-cache'},
+   signal:AbortSignal.timeout(15000)
+  });
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const html=await response.text();
+  const blog=graph(html).find(x=>x['@type']==='BlogPosting');
+  if(!blog || blog.author?.name!=='DeadPixelTest' ||
+      blog.dateModified!=='2026-11-09' || !blog.datePublished ||
+      !html.includes('Reviewed <time datetime="2026-11-09">November 9, 2026</time>'))
+    failures.push('Blog editorial schema/content mismatch '+slug);
+ }catch(error){failures.push('Blog provenance check '+slug+': '+String(error))}
+}
 if(failures.length){
   for(const problem of failures)console.error('FAIL '+problem);
   process.exit(1);
 }
-console.log('PASS live GEO content: all 15 core pages + About have server-rendered, correct-language answers and source-methodology section.');
+console.log('PASS live GEO content: 15 core pages, 3 articles and About verified for visible answers, author/date consistency, real GitHub project, sources and accessible branding.');
