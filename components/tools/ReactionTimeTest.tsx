@@ -9,49 +9,54 @@ type GameState = 'idle' | 'waiting' | 'ready' | 'finished' | 'early';
 type Mode = 'visual' | 'audio';
 
 const RANKS = [
-  { threshold: 150, title: 'Godlike', color: 'text-purple-400' },
-  { threshold: 180, title: 'Pro Gamer', color: 'text-blue-400' },
-  { threshold: 220, title: 'Average', color: 'text-green-400' },
-  { threshold: 300, title: 'Sluggish', color: 'text-yellow-400' },
-  { threshold: 9999, title: 'Turtle', color: 'text-red-400' },
+  { threshold: 150, title: '≤150ms', color: 'text-purple-400' },
+  { threshold: 180, title: '151–180ms', color: 'text-blue-400' },
+  { threshold: 220, title: '181–220ms', color: 'text-green-400' },
+  { threshold: 300, title: '221–300ms', color: 'text-yellow-400' },
+  { threshold: Infinity, title: '>300ms', color: 'text-red-400' },
 ];
 
 const ReactionTimeTest: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>('idle');
   const [mode, setMode] = useState<Mode>('visual');
   const [result, setResult] = useState<number>(0);
+  const [audioError,setAudioError]=useState<string|null>(null);
   const [history, setHistory] = useState<number[]>([]);
   
   const timerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // Initialize audio on first user interaction
-  const initAudio = () => {
-    if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    if (audioContextRef.current.state === 'suspended') {
-        audioContextRef.current.resume();
+  const initAudio=():boolean=>{
+    try{
+      const Ctor=window.AudioContext||(window as any).webkitAudioContext;
+      if(!Ctor)throw Error('Web Audio unsupported');
+      if(!audioContextRef.current)audioContextRef.current=new Ctor();
+      if(audioContextRef.current.state==='suspended')
+        void audioContextRef.current.resume().catch(()=>{
+          setAudioError('Audio playback was blocked by the browser.');
+          if(timerRef.current!==null)clearTimeout(timerRef.current);
+          timerRef.current=null;setGameState('idle');
+        });
+      setAudioError(null);return true;
+    }catch{
+      setAudioError('Audio playback is not available in this browser. Use Visual mode.');
+      return false;
     }
   };
-
-  const playBeep = () => {
-    if (!audioContextRef.current) return;
-    const osc = audioContextRef.current.createOscillator();
-    const gain = audioContextRef.current.createGain();
-    
-    osc.connect(gain);
-    gain.connect(audioContextRef.current.destination);
-    
-    osc.frequency.value = 1000;
-    osc.type = 'square';
-    
-    gain.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.1);
-    
-    osc.start();
-    osc.stop(audioContextRef.current.currentTime + 0.1);
+  const playBeep=():boolean=>{
+    const ctx=audioContextRef.current;if(!ctx)return false;
+    try{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=1000;osc.type='sine';
+      gain.gain.setValueAtTime(0.06,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1);
+      osc.onended=()=>{osc.disconnect();gain.disconnect();};
+      osc.start();osc.stop(ctx.currentTime+0.1);return true;
+    }catch{
+      setAudioError('Unable to play audio cue. Use Visual mode.');return false;
+    }
   };
 
   // Keyboard support
@@ -70,20 +75,18 @@ const ReactionTimeTest: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, mode]);
 
-  const startGame = () => {
-    if (mode === 'audio') initAudio();
-    setGameState('waiting');
-    const randomDelay = Math.floor(Math.random() * 2500) + 1500; // 1.5s to 4.0s
-    
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      timerRef.current = null;
+  const startGame=()=>{
+    if(mode==='audio'&&!initAudio())return;
+    setAudioError(null);setGameState('waiting');
+    const delay=Math.floor(Math.random()*2500)+1500;
+    if(timerRef.current!==null)clearTimeout(timerRef.current);
+    timerRef.current=window.setTimeout(()=>{
+      timerRef.current=null;
+      if(document.visibilityState!=='visible'){setGameState('idle');return;}
+      if(mode==='audio'&&!playBeep()){setGameState('idle');return;}
+      startTimeRef.current=performance.now();
       setGameState('ready');
-      startTimeRef.current = performance.now();
-      if (mode === 'audio') {
-          playBeep();
-      }
-    }, randomDelay);
+    },delay);
   };
 
   const handleAction = () => {
@@ -91,7 +94,7 @@ const ReactionTimeTest: React.FC = () => {
       startGame();
     } else if (gameState === 'waiting') {
       // Clicked too early
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if(timerRef.current!==null){clearTimeout(timerRef.current);timerRef.current=null;}
       setGameState('early');
     } else if (gameState === 'ready') {
       // Successful click
@@ -111,13 +114,23 @@ const ReactionTimeTest: React.FC = () => {
     e?.stopPropagation();
     setHistory([]);
     setGameState('idle');
-    if (timerRef.current) clearTimeout(timerRef.current);
+    if(timerRef.current!==null){clearTimeout(timerRef.current);timerRef.current=null;}
   };
 
   const switchMode = (newMode: Mode) => {
       setMode(newMode);
       resetHistory();
   };
+
+  useEffect(()=>{
+    const onVisibility=()=>{
+      if(document.visibilityState!=='hidden')return;
+      if(timerRef.current!==null){clearTimeout(timerRef.current);timerRef.current=null;}
+      setGameState(current=>current==='waiting'||current==='ready'?'idle':current);
+    };
+    document.addEventListener('visibilitychange',onVisibility);
+    return ()=>document.removeEventListener('visibilitychange',onVisibility);
+  },[]);
 
   useEffect(() => () => {
     // Do not leave a pending stimulus timer or audio device open after navigation.
@@ -259,13 +272,23 @@ const ReactionTimeTest: React.FC = () => {
            </div>
         </div>
 
+        {audioError && <p role="alert" className="mb-4 rounded-lg border border-amber-500/40 bg-amber-950/30 p-3 text-sm text-amber-200">{audioError}</p>}
+        <p className="mb-4 text-center text-xs leading-6 text-neutral-400">Browser-observed timing includes screen/audio scheduling and input latency. These informal timing bands are not clinical benchmarks.</p>
+
         {/* --- Main Game Area --- */}
         <div 
           className={`
             w-full aspect-video md:aspect-[21/9] rounded-3xl shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-100 ease-linear
             ${current.bg} ${current.textColor} relative overflow-hidden group
           `}
-          onMouseDown={handleAction}
+          role="button"
+          tabIndex={0}
+          aria-label="Reaction test area"
+          onMouseDown={e=>{if((e.target as Element).closest('button'))return;handleAction();}}
+          onKeyDown={e=>{
+            if(e.target!==e.currentTarget||e.repeat)return;
+            if(e.key===' '||e.key==='Enter'){e.preventDefault();e.stopPropagation();handleAction();}
+          }}
         >
           {/* Helper Hint */}
           {gameState === 'idle' && (
@@ -295,7 +318,7 @@ const ReactionTimeTest: React.FC = () => {
           {/* 1. Rank Card */}
           <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
              <Trophy size={24} className={history.length > 0 ? currentRank.color : 'text-neutral-700'} />
-             <div className="mt-2 text-xs font-bold uppercase tracking-widest text-neutral-500">Current Rank</div>
+             <div className="mt-2 text-xs font-bold uppercase tracking-widest text-neutral-500">Observed Timing Band</div>
              <div className={`text-3xl font-bold mt-1 ${history.length > 0 ? currentRank.color : 'text-neutral-700'}`}>
                {history.length > 0 ? currentRank.title : '-'}
              </div>

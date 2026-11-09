@@ -228,15 +228,25 @@ try{
   ['/tools/reaction-time',async page=>{
    const audio=page.getByRole('button',{name:'Audio',exact:true});
    const visual=page.getByRole('button',{name:'Visual',exact:true});
-   await audio.focus();
-   await page.keyboard.press('Enter');
-   if(!(await audio.getAttribute('class'))?.includes('bg-blue-600'))
-    throw Error('Global reaction keyboard hotkey intercepted native Audio button activation');
-   await visual.focus();
-   await page.keyboard.press('Space');
-   if(!(await visual.getAttribute('class'))?.includes('bg-blue-600'))
-    throw Error('Global reaction keyboard hotkey intercepted native Visual button activation');
-   await page.getByRole('heading',{level:1}).waitFor();
+   await audio.focus();await page.keyboard.press('Enter');
+   if(!(await audio.getAttribute('class'))?.includes('bg-blue-600'))throw Error('Native Audio button activation was intercepted');
+   await visual.focus();await page.keyboard.press('Space');
+   if(!(await visual.getAttribute('class'))?.includes('bg-blue-600'))throw Error('Native Visual button activation was intercepted');
+   const pad=page.getByRole('button',{name:'Reaction test area'});
+   await pad.focus();await page.keyboard.press('Space');
+   await page.getByText('Wait for Green...').waitFor();
+   await page.evaluate(()=>{
+     Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'hidden'});
+     document.dispatchEvent(new Event('visibilitychange'));
+   });
+   await page.getByText('Visual Reflex').waitFor();
+   await page.evaluate(()=>{
+     Object.defineProperty(window,'AudioContext',{configurable:true,value:undefined});
+     Object.defineProperty(window,'webkitAudioContext',{configurable:true,value:undefined});
+     Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'visible'});
+   });
+   await audio.click();await pad.focus();await page.keyboard.press('Enter');
+   await page.getByRole('alert').getByText(/Audio playback is not available/).waitFor();
   }],
   ['/tools/input-lag',async page=>{
    const start=page.getByRole('button',{name:'Start Counter'});
