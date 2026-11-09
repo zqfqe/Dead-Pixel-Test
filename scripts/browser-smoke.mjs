@@ -6,8 +6,8 @@ const baseOrigin=new URL(base).origin;
 mkdirSync('smoke-screenshots',{recursive:true});
 const browser=await chromium.launch({headless:true});
 const failures=[];
-async function check(url,fn,{mobile=false,denyFullscreen=false,media=false}={}){
- const ctx=await browser.newContext(mobile?{...devices['iPhone 13'],browserName:undefined}:{viewport:{width:1366,height:900}});
+async function check(url,fn,{mobile=false,denyFullscreen=false,media=false,width}={}){
+ const ctx=await browser.newContext(mobile?{...devices['iPhone 13'],browserName:undefined}:{viewport:{width:width||1366,height:900}});
  const page=await ctx.newPage();
  if(media)await page.addInitScript(()=>{
   const canvas=document.createElement('canvas');canvas.width=320;canvas.height=240;
@@ -363,6 +363,37 @@ await check('/image-retention-test',async page=>{
  await page.getByRole('heading',{name:'Temporary retention and permanent OLED burn-in are not interchangeable'}).waitFor();
  await page.getByRole('heading',{name:'Neutral gray first'}).waitFor();
 });
+await check('/',async page=>{
+ const body=await page.evaluate(()=>({surface:document.body.dataset.surface,bg:getComputedStyle(document.body).backgroundColor,ink:getComputedStyle(document.body).color}));
+ if(body.surface!=='light'||body.bg!=='rgb(246, 248, 251)'||body.ink!=='rgb(16, 24, 39)')throw Error('Information page does not use light palette: '+JSON.stringify(body));
+ const workspace=page.getByText('Start your screen check',{exact:true}).locator('..');
+ const bg=await workspace.evaluate(el=>getComputedStyle(el).backgroundColor);
+ if(bg!=='rgb(10, 11, 14)')throw Error('Immersive workspace is not dark: '+bg);
+ await page.screenshot({path:'smoke-screenshots/site-home-desktop.png',fullPage:true});
+});
+await check('/pt-br',async page=>{
+ const bg=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+ if(bg!=='rgb(246, 248, 251)')throw Error('Brazilian information page is not light');
+ await page.screenshot({path:'smoke-screenshots/site-pt-br-mobile.png',fullPage:true});
+},{mobile:true});
+await check('/tests/refresh-rate',async page=>{
+ const value=await page.evaluate(()=>document.body.dataset.surface);
+ if(value!=='dark')throw Error('Legacy tool lost dark theme');
+});
+await check('/',async page=>{
+ const sizes=await page.evaluate(()=>({screen:innerWidth,root:document.documentElement.scrollWidth}));
+ if(sizes.root>sizes.screen+2)throw Error('Homepage overflows 360px width '+JSON.stringify(sizes));
+ await page.screenshot({path:'smoke-screenshots/site-home-360.png',fullPage:true});
+},{width:360});
+await check('/screen-contrast-test',async page=>{
+ const sizes=await page.evaluate(()=>({screen:innerWidth,root:document.documentElement.scrollWidth}));
+ if(sizes.root>sizes.screen+2)throw Error('Contrast landing page overflows 360px width '+JSON.stringify(sizes));
+ await page.screenshot({path:'smoke-screenshots/site-contrast-360.png',fullPage:true});
+},{width:360});
+await check('/pt-br/pixel-morto-notebook',async page=>{
+ const sizes=await page.evaluate(()=>({screen:innerWidth,root:document.documentElement.scrollWidth}));
+ if(sizes.root>sizes.screen+2)throw Error('Notebook landing page overflows 768px width '+JSON.stringify(sizes));
+},{width:768});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+36+' browser smoke scenarios covering full planned inspection workflows, PPI, contrast, localized pages and reports');
+console.log('PASS all '+42+' Chromium browser scenarios, including light/dark design, responsive 360/390/768 layouts and test workflows');
