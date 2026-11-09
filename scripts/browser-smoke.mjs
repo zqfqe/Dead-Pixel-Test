@@ -598,6 +598,25 @@ await check('/phone-screen-dead-pixel-test',async page=>{
  await page.getByText('White (2/8)',{exact:true}).waitFor();
  await page.getByRole('button',{name:/Exit test/}).tap();
 },{mobile:true,denyFullscreen:true});
+await check('/',async page=>{
+ const prior={
+  kind:'user_observed_screen_inspection',certified:false,testMode:'pixels',
+  deviceType:'monitor',observedPatterns:['Black'],
+  marks:[{xRatio:.2,yRatio:.3,observedOn:['Black'],notObservedOn:[],
+   category:'dark',notes:'Viewport regression',
+   viewportAtMark:{width:1366,height:900,dpr:1,orientation:'landscape'}}]
+ };
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+  name:'same-viewport.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(prior))
+ });
+ await page.getByText('Previous self-check loaded locally. Review each marked spot before continuing.').waitFor();
+ const alert=page.getByText(/The display viewport, scaling or orientation has changed since a spot was recorded/i);
+ if(await alert.count())throw Error('Same-sized viewport is incorrectly marked as changed');
+ await page.setViewportSize({width:800,height:900});
+ await alert.waitFor({timeout:5000});
+ await page.setViewportSize({width:1366,height:900});
+ await alert.waitFor({state:'hidden',timeout:5000});
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -615,4 +634,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+55+' Chromium browser scenarios, including movable compact controls and per-mark evidence');
+console.log('PASS all '+56+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
