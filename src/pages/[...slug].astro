@@ -26,7 +26,346 @@ const newPage=SEO_LANDING_PAGES.find(p=>(p.path.replace(/\/$/,'')||'/')===normal
 const article=BLOG_POSTS.find(p=>'/blog/'+p.slug===normalized);
 const blogIndex=normalized==='/blog';
 const isLegacy=!newPage && !article && !blogIndex;
-const title=newPage?.title || article?.title || (
+const legacySeoGuides: Record<string,{seoTitle:string;heading:string;intro:string;steps:string[];limits:string[]}> = {
+  "/tests/uniformity": {
+    "seoTitle": "Screen Uniformity Test – Black, White & Gray | DeadPixelTest",
+    "heading": "How to check screen uniformity",
+    "intro": "Compare solid black, white and gray fields to observe visible brightness patches, tint or corner glow. This is a visual screen-uniformity check, not a luminance measurement.",
+    "steps": [
+      "Use ordinary room lighting and a comfortable display brightness.",
+      "Compare black, white and neutral gray fields, noting patches and edge differences.",
+      "Change viewing angle and check whether any apparent glow moves.",
+      "Repeat with a normal photo or application before deciding whether to contact support."
+    ],
+    "limits": [
+      "The browser cannot measure physical nits or panel uniformity percentages.",
+      "Phone photos may exaggerate dark-scene glow; no screen defect is certified."
+    ]
+  },
+  "/tests/text-clarity": {
+    "seoTitle": "Text Clarity Test – Sharpness & Scaling | DeadPixelTest",
+    "heading": "How to evaluate text clarity",
+    "intro": "Compare test lettering and fine edges to spot visible softness, colored fringes and scaling effects. Text clarity depends on browser zoom and display configuration.",
+    "steps": [
+      "Check your operating system scaling and browser zoom before testing.",
+      "View small and large text at your normal reading distance.",
+      "Compare the same text in another application or display profile.",
+      "If letters look blurred, review the panel's native resolution and operating system text settings."
+    ],
+    "limits": [
+      "Subpixel rendering and antialiasing differ between operating systems and browsers.",
+      "A screenshot or webpage cannot certify the optical sharpness of a display."
+    ]
+  },
+  "/tests/color-distance": {
+    "seoTitle": "Color Distance Test – Compare Screen Swatches | DeadPixelTest",
+    "heading": "How to compare color swatches",
+    "intro": "View neighboring screen colors to see whether subtle shades appear distinct. The perceived difference changes with profiles, ambient light and display calibration.",
+    "steps": [
+      "Use the same picture mode and brightness during comparisons.",
+      "View color pairs against a neutral surrounding area.",
+      "Compare differences on a second display only as an informal reference.",
+      "If colors collapse together, check your color profile and display settings."
+    ],
+    "limits": [
+      "This tool does not measure color difference in Delta E or chromaticity.",
+      "Vision, browser color management and panel gamut affect what appears distinct."
+    ]
+  },
+  "/tests/response-time": {
+    "seoTitle": "Monitor Response Time Visual Test – Motion | DeadPixelTest",
+    "heading": "How to observe motion response artifacts",
+    "intro": "Use browser-drawn moving patterns to look for trails, overshoot or motion blur. The tool helps visual comparison but cannot measure a panel's millisecond response specification.",
+    "steps": [
+      "Check the operating system display refresh setting and a stable browser tab.",
+      "Observe the moving object at normal brightness and viewing distance.",
+      "If available, compare the monitor's overdrive modes under the same conditions.",
+      "Repeat the comparison with different content or a high-speed camera for further investigation."
+    ],
+    "limits": [
+      "Browser frame pacing and display refresh settings can change the observed trail.",
+      "Gray-to-gray response time and input latency need calibrated equipment to measure."
+    ]
+  },
+  "/tests/gamma": {
+    "seoTitle": "Monitor Gamma Test – Visual Midtone Patterns | DeadPixelTest",
+    "heading": "How to compare gamma and midtone appearance",
+    "intro": "Use midtone patterns to inspect whether grays appear unusually light or dark. Gamma visual checks are sensitive to scaling, viewing distance and browser processing.",
+    "steps": [
+      "Confirm your browser zoom, display scaling and HDR state.",
+      "View the midtone reference pattern at the recommended distance for your display.",
+      "Compare the visual impression after adjusting only one display setting.",
+      "Return to original settings if you cannot reliably judge a difference."
+    ],
+    "limits": [
+      "No browser-only pattern establishes a calibrated gamma response curve.",
+      "Antialiasing, dithering and color profiles can change the result."
+    ]
+  },
+  "/tests/viewing-angle": {
+    "seoTitle": "Monitor Viewing Angle Test – Color & Contrast | DeadPixelTest",
+    "heading": "How to observe display viewing angles",
+    "intro": "Compare perceived brightness, color and contrast while looking at the screen from different positions. The browser supplies reference patterns, not an optical angle measurement.",
+    "steps": [
+      "Begin at your normal seating position using a familiar test pattern.",
+      "Move your head gently to the left and right and note any color shift.",
+      "Repeat above and below the center line without touching the screen.",
+      "Compare observations with your expected viewing conditions."
+    ],
+    "limits": [
+      "The webpage cannot know your head position or measure viewing angles in degrees.",
+      "Room reflections and different panel technologies can affect the visual result."
+    ]
+  },
+  "/tests/brightness": {
+    "seoTitle": "Monitor Brightness Test – Dark & Light Levels | DeadPixelTest",
+    "heading": "How to inspect screen brightness levels visually",
+    "intro": "Use light and dark reference fields to observe visible clipping or unevenness at your current screen settings. This is a brightness visibility check, not a nit-meter.",
+    "steps": [
+      "Use a comfortable brightness in your normal room lighting.",
+      "Compare black, white and near-black or near-white levels.",
+      "If details disappear, examine HDR and display range settings before changing brightness.",
+      "Check normal images again after any adjustment."
+    ],
+    "limits": [
+      "Browsers cannot directly read calibrated physical luminance in nits.",
+      "Do not infer a precise brightness level or monitor fault from the page."
+    ]
+  },
+  "/tests/contrast": {
+    "seoTitle": "Screen Contrast Test – Black & White Detail | DeadPixelTest",
+    "heading": "How to check visible contrast and clipping",
+    "intro": "Compare black-to-white steps to find shadow crush or highlight clipping. These reference patterns do not measure your panel's physical contrast ratio.",
+    "steps": [
+      "Use your normal viewing brightness and picture preset.",
+      "Look for separation among dark-gray and bright-gray patches.",
+      "Check whether HDR, video-range or auto-contrast processing changes the result.",
+      "Change one setting at a time and record what you observe."
+    ],
+    "limits": [
+      "Contrast ratio requires calibrated light measurements.",
+      "Browser color management and OLED/LCD processing can affect the displayed steps."
+    ]
+  },
+  "/tests/matrix": {
+    "seoTitle": "Matrix Rain Display Animation – Visual Demo | DeadPixelTest",
+    "heading": "About the Matrix Rain visual demo",
+    "intro": "Run the Matrix-style animation as an optional motion and display demonstration. It is decorative browser content, not a dead-pixel or performance diagnosis.",
+    "steps": [
+      "Start the animation only if you want to observe this visual effect.",
+      "Keep screen brightness comfortable during use.",
+      "Exit the animation when finished and return to a static test for defect inspection."
+    ],
+    "limits": [
+      "The animation does not indicate whether a monitor is healthy or defective.",
+      "Animation speed depends on browser scheduling and hardware performance."
+    ]
+  },
+  "/tools/burn-in-wiper": {
+    "seoTitle": "OLED Display Pattern Demo – No Burn-In Repair | DeadPixelTest",
+    "heading": "How to use the optional OLED pattern demo safely",
+    "intro": "This legacy tool offers changing colors, static noise and moving-line patterns for short visual comparisons. It does not repair OLED burn-in or stuck pixels.",
+    "steps": [
+      "Use ordinary brightness and choose a short session duration.",
+      "Select a pattern only if it is comfortable to watch.",
+      "Stop the demonstration with Escape, the exit control or by leaving the tab.",
+      "For residual-image questions, compare a neutral gray field in the separate retention guide."
+    ],
+    "limits": [
+      "Avoid unattended sessions and high-contrast motion if sensitive to light changes.",
+      "Permanent OLED burn-in cannot be reversed by a browser animation."
+    ]
+  },
+  "/tools/input-lag": {
+    "seoTitle": "Input Lag Visual Test – Browser Timing Caveats | DeadPixelTest",
+    "heading": "How to investigate apparent input lag",
+    "intro": "Use the browser input-lag demonstration to compare perceived input and visual response. Camera, display, browser and device delays can all affect timing.",
+    "steps": [
+      "Use the same monitor, input device and system settings for repeat comparisons.",
+      "Follow the tool's visible event and camera or observation instructions.",
+      "Repeat several times and note outliers rather than relying on one click.",
+      "For an objective figure, use synchronized external measurement equipment."
+    ],
+    "limits": [
+      "A browser cannot isolate monitor-only input latency from the rest of the system.",
+      "Network, USB, camera and operating-system scheduling can influence timing."
+    ]
+  },
+  "/tools/reaction-time": {
+    "seoTitle": "Reaction Time Test – Click Response | DeadPixelTest",
+    "heading": "How to run a browser reaction-time check",
+    "intro": "Try a simple visual stimulus and record how quickly you respond. Results combine human response, input device latency and browser scheduling.",
+    "steps": [
+      "Close distracting tabs and use your normal mouse or touchscreen.",
+      "Watch for the visible stimulus, then respond as instructed.",
+      "Repeat a few trials and compare the distribution rather than a single number.",
+      "Avoid comparing results across devices as if they were calibrated measurements."
+    ],
+    "limits": [
+      "The tool is not a clinical or neurological assessment.",
+      "Input devices, display refresh and browser timing influence recorded milliseconds."
+    ]
+  },
+  "/tools/double-click-test": {
+    "seoTitle": "Mouse Double-Click Test – Check Event Behavior | DeadPixelTest",
+    "heading": "How to test for unexpected mouse double-clicks",
+    "intro": "Click the test target to observe whether a single action produces multiple browser click events. This can help investigate a worn mouse switch or a software configuration issue.",
+    "steps": [
+      "Keep the pointer inside the designated test area.",
+      "Perform separate single clicks and note unexpected double events.",
+      "Repeat after changing the double-click interval in operating-system settings if relevant.",
+      "Test another mouse or browser to narrow down the cause."
+    ],
+    "limits": [
+      "Browser events cannot identify an internal switch fault with certainty.",
+      "Operating-system settings and deliberate rapid clicks affect the result."
+    ]
+  },
+  "/tools/mouse-polling": {
+    "seoTitle": "Mouse Polling Rate Test – Browser Event Estimate | DeadPixelTest",
+    "heading": "How to interpret a mouse event-rate estimate",
+    "intro": "Move your mouse in the test area to sample how often the browser receives movement events. Browser-observed Hz is not the same as USB hardware polling rate.",
+    "steps": [
+      "Move the pointer continuously inside the sampling surface.",
+      "Compare the reported event-rate estimate across several passes.",
+      "Use Reset Statistics before repeating under different system conditions.",
+      "Treat the observed cadence as a browser-level signal, not a hardware guarantee."
+    ],
+    "limits": [
+      "Browsers can coalesce mouse events or throttle callbacks.",
+      "The estimate cannot certify a mouse's advertised 125, 500, 1000 or higher Hz USB polling rate."
+    ]
+  },
+  "/tools/keyboard": {
+    "seoTitle": "Online Keyboard Test – Check Key Events | DeadPixelTest",
+    "heading": "How to check keyboard events in the browser",
+    "intro": "Press keys and observe which input events reach the page. This can help identify unresponsive keys or unusual key mappings.",
+    "steps": [
+      "Focus the keyboard test before typing.",
+      "Press individual keys and observe which keys the browser reports.",
+      "Repeat suspicious keys in another application or with another keyboard.",
+      "Check language layouts, shortcuts and system remapping if reported keys differ."
+    ],
+    "limits": [
+      "Browser shortcuts and reserved system keys may not be reported to websites.",
+      "This check does not certify switch force, rollover or electrical reliability."
+    ]
+  },
+  "/tools/controller": {
+    "seoTitle": "Gamepad & Controller Test – Browser Buttons | DeadPixelTest",
+    "heading": "How to inspect controller input events",
+    "intro": "Connect a compatible controller and observe button, trigger or stick signals made available through the browser Gamepad API.",
+    "steps": [
+      "Connect the controller and press a button to expose it to the browser.",
+      "Move sticks and press buttons while watching the test readouts.",
+      "Repeat suspicious inputs in a game or system controller panel.",
+      "Check connection and permissions if no controller appears."
+    ],
+    "limits": [
+      "Gamepad support and button mappings vary across browsers and operating systems.",
+      "A browser cannot certify internal hardware calibration or repair drift."
+    ]
+  },
+  "/tools/touch": {
+    "seoTitle": "Touch Screen Test – Visual Touch Points | DeadPixelTest",
+    "heading": "How to inspect touchscreen input",
+    "intro": "Use the touch surface to see where the browser receives taps and gestures. This helps observe missing areas or unexpected multi-touch behavior.",
+    "steps": [
+      "Open the test on a touch-capable device.",
+      "Tap or drag across different parts of the test area.",
+      "Try simultaneous touches if the device and browser support them.",
+      "Compare the same area in another app if input appears absent."
+    ],
+    "limits": [
+      "Browser gestures can be intercepted by the operating system.",
+      "A touch event test cannot certify digitizer hardware condition."
+    ]
+  },
+  "/tools/color-blindness": {
+    "seoTitle": "Color Blindness Simulation – Visual Preview | DeadPixelTest",
+    "heading": "What a color-vision simulation can and cannot show",
+    "intro": "Preview approximate changes to image colors under selected simulation settings. This is a visual demonstration, not a medical color-vision screening.",
+    "steps": [
+      "Choose an image or available sample in the tool.",
+      "Compare the original with a selected simulation.",
+      "Use the result for accessibility design discussion, not personal diagnosis.",
+      "For any vision concerns, consult an appropriate eye-care professional."
+    ],
+    "limits": [
+      "Displays and color profiles alter what simulations look like.",
+      "Simulation algorithms cannot diagnose or measure an individual's vision."
+    ]
+  },
+  "/tools/webcam": {
+    "seoTitle": "Webcam & Microphone Test – Local Browser Check | DeadPixelTest",
+    "heading": "How to check webcam and microphone access",
+    "intro": "Verify that the browser can request a camera or microphone and display local preview or input behavior. Access requires your permission.",
+    "steps": [
+      "Connect the device and review the browser permission prompt.",
+      "Select the intended camera or microphone if more than one exists.",
+      "Observe the local preview and test microphone input at a comfortable level.",
+      "Stop the test and revoke permissions if you no longer need access."
+    ],
+    "limits": [
+      "Permission success does not certify sensor color accuracy or audio latency.",
+      "The test should not imply that the browser has access before the user grants permission."
+    ]
+  },
+  "/tools/speaker-test": {
+    "seoTitle": "Speaker & Headphone Test – Audio Channels | DeadPixelTest",
+    "heading": "How to check speaker and headphone output",
+    "intro": "Play user-initiated reference audio to verify that your chosen speakers or headphones produce sound from expected channels.",
+    "steps": [
+      "Lower system volume before beginning.",
+      "Start playback and listen for channel or volume differences.",
+      "Try wired and wireless outputs if troubleshooting routing issues.",
+      "Stop playback and check audio settings if one channel is missing."
+    ],
+    "limits": [
+      "This is not a calibrated speaker frequency-response or hearing test.",
+      "Room acoustics, audio mixing and Bluetooth codecs affect the result."
+    ]
+  },
+  "/tools/ruler": {
+    "seoTitle": "Online Physical Ruler – Calibrate CSS Size | DeadPixelTest",
+    "heading": "How to use a browser ruler accurately",
+    "intro": "Use the screen ruler as an approximate measurement aid after calibrating against a real object. CSS pixels do not automatically correspond to physical millimeters.",
+    "steps": [
+      "Set browser zoom and display scaling to known values.",
+      "Compare the displayed ruler against a physical ruler or known-size reference.",
+      "Adjust the on-screen calibration until the reference aligns.",
+      "Recalibrate whenever display, zoom or orientation changes."
+    ],
+    "limits": [
+      "Without physical calibration, length readings are estimates.",
+      "Browser DPR and CSS pixels do not provide true panel pixel pitch by themselves."
+    ]
+  },
+  "/tools/ppi-calculator": {
+    "seoTitle": "PPI Calculator – Physical Screen Pixel Density | DeadPixelTest",
+    "heading": "How to calculate screen pixel density",
+    "intro": "Enter the physical native resolution and diagonal size to calculate pixels per inch. The browser cannot discover a panel's native hardware resolution for you.",
+    "steps": [
+      "Find the display's native pixel dimensions in its specifications.",
+      "Enter width, height and diagonal size in inches.",
+      "Confirm that the values describe the physical panel, not browser CSS pixels.",
+      "Compare the calculated density with your viewing needs without treating it as a measured optical property."
+    ],
+    "limits": [
+      "Presets are illustrative; confirm your specific model specifications.",
+      "PPI is a calculation from supplied dimensions, not a browser hardware measurement."
+    ]
+  }
+};
+const staticSeoMeta: Record<string,{title:string;description:string}> = {
+ '/blog':{title:'Screen Testing Guides – Pixels, Color & Display Settings | DeadPixelTest',description:'Practical dead pixel, screen uniformity and color testing guides with safe browser tools and clearly stated measurement limits.'},
+ '/about':{title:'About DeadPixelTest – Visual Screen Testing Tools',description:'Learn how DeadPixelTest provides browser-based screen inspections and why our user-observed checks are not hardware certification.'},
+ '/contact':{title:'Contact DeadPixelTest – Screen Test Support',description:'Find site contact information and guidance about browser-based screen tests, feedback and privacy requests.'},
+ '/privacy-policy':{title:'Privacy Policy | DeadPixelTest',description:'Read how DeadPixelTest handles browser-based inspections, local report files, optional device permissions and hosting request data.'},
+ '/terms-of-service':{title:'Terms of Service | DeadPixelTest',description:'Understand the usage conditions and accuracy limitations of DeadPixelTest browser-based visual inspection tools.'}
+};
+
+const title=newPage?.title || article?.title || staticSeoMeta[normalized]?.title || legacySeoGuides[normalized]?.seoTitle || (
  normalized==='/tests/refresh-rate'?'Frame Skipping Test – Monitor Browser FPS':
  normalized==='/tests/local-dimming'?'Local Dimming & Blooming Test':
  normalized==='/tests/color-gradient'?'Color Banding & Gradient Test':
@@ -34,7 +373,7 @@ const title=newPage?.title || article?.title || (
  normalized==='/tests/dead-pixel'?'Dead Pixel Test – Free Online Screen Check':
  (MENU_ITEMS.find(m=>m.path===normalized)?.title || normalized.split('/').filter(Boolean).slice(-1)[0]?.replaceAll('-',' ') || 'Screen Test')+' | DeadPixelTest'
 );
-const description=newPage?.description || article?.excerpt || (
+const description=newPage?.description || article?.excerpt || staticSeoMeta[normalized]?.description || legacySeoGuides[normalized]?.intro || (
  normalized==='/tests/refresh-rate'?'Check browser animation frame cadence, and use an external camera to investigate monitor frame skipping.':
  normalized==='/tests/local-dimming'?'Visually inspect monitor local dimming, halos and blooming using high contrast patterns.':
  normalized==='/tests/color-gradient'?'Check monitor color gradients and possible banding with browser-based test patterns.':
@@ -114,6 +453,7 @@ const structuredData=newPage?{
  ]
 }:undefined;
 const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];limits:string[]}> = {
+ ...legacySeoGuides,
  '/tests/refresh-rate':{
   heading:'How to interpret a frame-skipping and browser FPS check',
   intro:'This tool animates a repeating sequence of blocks using requestAnimationFrame. The on-screen FPS counter measures how frequently the browser callback fires; it does not directly read your monitor panel’s scan-out or verify its configured refresh rate.',
