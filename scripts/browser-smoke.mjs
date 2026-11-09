@@ -800,6 +800,30 @@ await check('/tests/refresh-rate',async page=>{
  if(canonical!==canonicalOrigin+'/tests/color-gradient')throw Error('Search result link bypassed the Astro document: '+canonical);
  await page.getByRole('heading',{name:'How to identify visible color banding'}).waitFor();
 });
+await check('/',async page=>{
+ const prior={
+  kind:'user_observed_screen_inspection',certified:false,testMode:'pixels',
+  createdAt:'2026-11-08T05:11:00.000Z',deviceType:'laptop',
+  observedPatterns:['Black','White','Red'],
+  marks:[{xRatio:0.3,yRatio:0.4,observedOn:['Black','Red'],notObservedOn:['White'],
+    category:'dark',notes:'<script>do not run</script>',
+    viewportAtMark:{width:1440,height:900,dpr:2,orientation:'landscape-primary'}}]
+ };
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+  name:'evidence.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(prior))
+ });
+ await page.getByText('Previous self-check loaded locally. Review each marked spot before continuing.').waitFor();
+ const download=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Download printable HTML report'}).click();
+ const html=readFileSync(await (await download).path(),'utf8');
+ for(const text of ['Test mode','Viewport at mark','1440 × 900 CSS px; DPR 2; landscape-primary',
+  'Color-by-color observations','Not checked','Not visible','Visible','Patterns viewed',
+  '2026-11-08T05:11:00.000Z','&lt;script&gt;do not run&lt;/script&gt;']){
+  if(!html.includes(text))throw Error('Printable HTML lost evidence: '+text);
+ }
+ if(html.includes('<script>do not run</script>'))throw Error('Report contains executable imported text');
+ if(!html.includes('window.print()'))throw Error('Printable offline report has no explicit print action');
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -817,4 +841,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+77+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+78+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

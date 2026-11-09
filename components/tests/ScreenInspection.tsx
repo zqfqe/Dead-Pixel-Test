@@ -217,7 +217,59 @@ const modeHint=mode==='lines'
   }
 };
 const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;charset=utf-8','screen-self-check.json');
- const printReport=()=>{const p=payload(),rows=marks.map((m,i)=>'<tr><td>'+(i+1)+'</td><td>'+(m.x*100).toFixed(1)+'%, '+(m.y*100).toFixed(1)+'%</td><td>'+esc(m.colors.join(', ')||'—')+'</td><td>'+esc(m.notVisibleOn.join(', ')||'—')+'</td><td>'+esc(m.category)+'</td><td>'+esc(m.notes||'—')+'</td></tr>').join('');const html='<!doctype html><html lang="'+(lang==='pt-BR'?'pt-BR':'en')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>'+t.report+'</title><style>body{font:16px/1.5 system-ui;max-width:900px;margin:32px auto;padding:0 20px;color:#17202c}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccd3dc;padding:8px;text-align:left}.notice{padding:12px;background:#eef2f7}@media print{body{margin:0}}</style></head><body><h1>'+t.report+'</h1><p class="notice">'+t.disclaimer+'</p><p>'+t.created+': '+esc(p.createdAt)+'</p><p>'+t.exported+': '+esc(p.exportedAt)+'</p><p>'+t.device+': '+esc(device)+'</p><p>'+t.screen+': '+screen.width+' × '+screen.height+'</p><p>'+t.viewport+': '+innerWidth+' × '+innerHeight+'</p><p>'+t.dpr+': '+devicePixelRatio+'</p><h2>'+t.marks+': '+marks.length+'</h2>'+(rows?'<table><thead><tr><th>#</th><th>'+t.position+'</th><th>'+t.colors+'</th><th>'+t.absentColors+'</th><th>'+t.category+'</th><th>'+t.notes+'</th></tr></thead><tbody>'+rows+'</tbody></table>':'<p>'+t.none+'</p>')+'<p class="notice">'+t.hint+'</p>'+(layoutChanged?'<p class="notice">'+t.layoutWarning+'</p>':'')+'<p>'+t.progress+': '+p.observedCount+'/'+p.totalPatterns+'</p><p><button type="button" onclick="window.print()" style="font:inherit;padding:10px 18px;cursor:pointer">'+t.printAction+'</button></p><small>'+(lang==='pt-BR'?'As coordenadas são proporções da área visível, não pixels físicos. Nenhuma imagem da tela é capturada.':'Coordinates are viewport ratios, not physical pixels. No screen image is captured.')+'</small></body></html>';save(html,'text/html;charset=utf-8','screen-self-check-report.html');};
+ const printReport=()=>{
+  const report=payload();
+  const isBR=lang==='pt-BR';
+  const labels=isBR
+   ? {mode:'Modo de teste',marked:'Área ao marcar',current:'Área atual',matrix:'Observações por cor',status:'Resultado',visible:'Visível',absent:'Não visível',unknown:'Não verificado',point:'Ponto',summary:'Resumo dos pontos',visited:'Padrões vistos',category:'Classificação'}
+   : {mode:'Test mode',marked:'Viewport at mark',current:'Current viewport',matrix:'Color-by-color observations',status:'Observation',visible:'Visible',absent:'Not visible',unknown:'Not checked',point:'Spot',summary:'Suspect spot summary',visited:'Patterns viewed',category:'Category'};
+  const categoryLabels:Record<Category,string>={
+   unclassified:t.uncategorized,dark:t.dark,bright:t.bright,'stuck-color':t.stuck,
+   'dust-or-surface':t.dust,'line-or-other':t.line,uncertain:t.unknown
+  };
+  const geometry=(g:{width:number;height:number;dpr:number;orientation:string})=>
+   String(g.width)+' × '+String(g.height)+' CSS px; DPR '+String(g.dpr)+'; '+esc(g.orientation);
+  const summary=report.marks.map((m,i)=>
+   '<tr><th scope="row">'+(i+1)+'</th><td>'+(m.xRatio*100).toFixed(1)+'%, '+(m.yRatio*100).toFixed(1)+
+   '%</td><td>'+esc(categoryLabels[m.category]||m.category)+'</td><td>'+esc(m.notes||'—')+
+   '</td><td>'+geometry(m.viewportAtMark)+'</td></tr>').join('');
+  const matrices=report.marks.map((m,i)=>{
+   const rows=patterns.map(p=>{
+    const status=m.observedOn.includes(p.name)?labels.visible:m.notObservedOn.includes(p.name)?labels.absent:labels.unknown;
+    return '<tr><th scope="row">'+esc(patternLabel(p.name))+'</th><td>'+esc(status)+'</td></tr>';
+   }).join('');
+   return '<section class="spot"><h3>'+esc(labels.point)+' '+(i+1)+'</h3><p>'+esc(t.position)+': '+
+    (m.xRatio*100).toFixed(1)+'%, '+(m.yRatio*100).toFixed(1)+'% · '+esc(labels.marked)+': '+
+    geometry(m.viewportAtMark)+'</p><table><thead><tr><th>'+esc(t.patterns)+
+    '</th><th>'+esc(labels.status)+'</th></tr></thead><tbody>'+rows+'</tbody></table></section>';
+  }).join('');
+  const html='<!doctype html><html lang="'+(isBR?'pt-BR':'en')+
+   '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
+   '<title>'+esc(t.report)+'</title><style>'+
+   'body{font:15px/1.55 system-ui,sans-serif;max-width:1050px;margin:30px auto;padding:0 18px;color:#17202c}'+
+   'table{border-collapse:collapse;width:100%;margin:10px 0 24px}th,td{border:1px solid #cbd5e1;padding:9px;text-align:left;vertical-align:top;overflow-wrap:anywhere}'+
+   'thead{background:#f1f5f9}.scroll{overflow-x:auto}.notice{padding:12px;background:#eef2f7;border-left:3px solid #475569}'+
+   '.spot{break-inside:avoid;page-break-inside:avoid;border-top:1px solid #cbd5e1;padding-top:12px}'+
+   'button{font:inherit;padding:10px 18px;cursor:pointer}'+
+   '@media print{body{margin:0;max-width:none;font-size:11pt}.print-control{display:none}th,td{padding:5px}}'+
+   '</style></head><body><h1>'+esc(t.report)+'</h1><p class="notice">'+esc(t.disclaimer)+'</p>'+
+   '<p>'+esc(t.created)+': '+esc(report.createdAt)+'</p><p>'+esc(t.exported)+': '+esc(report.exportedAt)+'</p>'+
+   '<p>'+esc(t.device)+': '+esc(device)+'</p><p>'+esc(labels.mode)+': '+esc(mode)+'</p>'+
+   '<p>'+esc(t.screen)+': '+String(report.browserScreen.cssWidth)+' × '+String(report.browserScreen.cssHeight)+' CSS px</p>'+
+   '<p>'+esc(labels.current)+': '+geometry(view())+'</p>'+
+   '<p>'+esc(labels.visited)+': '+report.observedPatterns.map(name=>esc(patternLabel(name as Name))).join(', ')+' ('+
+    String(report.observedCount)+'/'+String(report.totalPatterns)+')</p>'+
+   '<h2>'+esc(labels.summary)+': '+String(report.marks.length)+'</h2>'+
+   (summary?'<div class="scroll"><table><thead><tr><th>#</th><th>'+esc(t.position)+'</th><th>'+esc(labels.category)+
+    '</th><th>'+esc(t.notes)+'</th><th>'+esc(labels.marked)+'</th></tr></thead><tbody>'+summary+'</tbody></table></div>'
+    :'<p>'+esc(t.none)+'</p>')+
+   (report.marks.length?'<h2>'+esc(labels.matrix)+'</h2>'+matrices:'')+
+   '<p class="notice">'+esc(t.hint)+'</p>'+
+   (report.viewportChangedSinceMark?'<p class="notice">'+esc(t.layoutWarning)+'</p>':'')+
+   '<p class="print-control"><button type="button" onclick="window.print()">'+esc(t.printAction)+'</button></p>'+
+   '<small>'+(isBR?'As coordenadas são proporções CSS, não pixels físicos.':'Coordinates use CSS viewport ratios, not physical pixels.')+'</small></body></html>';
+  save(html,'text/html;charset=utf-8','screen-self-check-report.html');
+ };
  return <div ref={root}>
  <div className="mb-4 rounded-xl border border-white/10 bg-neutral-900/60 p-4">
   <h3 className="mb-2 text-sm font-semibold text-white">{t.preflight}</h3>
