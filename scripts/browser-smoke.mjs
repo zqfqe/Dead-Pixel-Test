@@ -555,7 +555,7 @@ await check('/pt-br',async page=>{
  if(await mainLink.getAttribute('aria-current')!=='page')throw Error('Active Portuguese navigation route is not marked current');
  await page.getByRole('navigation',{name:'Informações legais'}).getByRole('link',{name:'Privacidade'}).waitFor();
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
- if(theme!=='#F6F8FB')throw Error('Light page theme color not set: '+theme);
+ if(theme!=='#0D1416')throw Error('Information-site browser chrome does not match graphite navigation: '+theme);
 });
 await check('/tests/refresh-rate',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
@@ -898,6 +898,24 @@ await check('/',async page=>{
  if(transform!=='none')throw Error('Reduced-motion feature card moves unexpectedly');
 });
 
+
+await check('/',async page=>{
+ const stage=page.locator('.ui-home-stage');
+ const stageColor=await stage.evaluate(el=>getComputedStyle(el).backgroundColor);
+ if(stageColor!=='rgb(13, 20, 22)')throw Error('Premium dark instrument surface is missing: '+stageColor);
+ await page.getByRole('button',{name:'Start full-screen inspection'}).waitFor();
+ const action=await page.getByRole('button',{name:'Start full-screen inspection'}).evaluate(el=>{
+  const cs=getComputedStyle(el);return {background:cs.backgroundColor,color:cs.color};
+ });
+ if(action.background!=='rgb(197, 242, 119)'||action.color!=='rgb(21, 32, 21)')
+  throw Error('Primary CTA color contrast differs from chosen design tokens: '+JSON.stringify(action));
+ await page.setViewportSize({width:360,height:780});
+ if(await page.locator('.ui-preview-instrument').isVisible())
+  throw Error('Decorative screen sample displaces mobile Start action below the fold');
+ const a=await page.locator('.ui-workbench-panel').boundingBox();
+ if(!a||a.y>710)throw Error('Mobile screen check begins too far down: '+JSON.stringify(a));
+});
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -915,4 +933,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+83+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+84+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

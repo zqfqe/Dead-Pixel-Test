@@ -247,6 +247,7 @@ body[data-surface="light"] footer a:hover{color:#132C20}
 }
 @media(max-width:639px){
  .ui-site-main{padding-bottom:3rem}
+ .ui-preview-instrument{display:none}
  .ui-home-stage{border-radius:18px}
  .ui-hero-intro{padding:30px 23px 28px}
  .ui-display-title{font-size:clamp(3rem,12.2vw,4.25rem);margin:35px 0 10px;max-width:10ch}
