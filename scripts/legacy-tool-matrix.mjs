@@ -235,6 +235,9 @@ try{
    const countVertical=await page.getByTestId('ruler-vertical-ticks').locator(':scope > div').count();
    if(countVertical<5)throw Error('Vertical ruler ticks not rendered');
    const firstCount=await page.getByTestId('ruler-horizontal-ticks').locator(':scope > div').count();
+   // Chromium rejects resizing a fullscreen browser window; restore normal bounds first.
+   await page.evaluate(async()=>{if(document.fullscreenElement)await document.exitFullscreen();});
+   await page.waitForFunction(()=>!document.fullscreenElement);
    await page.setViewportSize({width:600,height:840});
    await page.waitForFunction(previous=>document.querySelector('[data-testid="ruler-horizontal-ticks"]')?.children.length<previous,firstCount);
    await page.getByRole('button',{name:'Recalibrate'}).click();
