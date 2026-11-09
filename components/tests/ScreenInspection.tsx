@@ -110,7 +110,7 @@ const modeHint=mode==='lines'
  };
  const currentMark=marks.find(m=>m.id===selected);
  const currentObservation=currentMark?.colors.includes(current.name)?'visible':currentMark?.notVisibleOn.includes(current.name)?'absent':'unknown';
- const payload=()=>({kind:'user_observed_screen_inspection',certified:false,disclaimer:t.disclaimer,createdAt:started||new Date().toISOString(),deviceType:device,browserScreen:{cssWidth:screen.width,cssHeight:screen.height},viewport:view(),observedPatterns:viewed,observedCount:viewed.length,totalPatterns:patterns.length,marks:marks.map(m=>({xRatio:m.x,yRatio:m.y,observedOn:m.colors,notObservedOn:m.notVisibleOn,category:m.category,notes:m.notes,viewportAtMark:m.viewport}))});
+ const payload=()=>({kind:'user_observed_screen_inspection',certified:false,testMode:mode,disclaimer:t.disclaimer,createdAt:started||new Date().toISOString(),deviceType:device,browserScreen:{cssWidth:screen.width,cssHeight:screen.height},viewport:view(),observedPatterns:viewed,observedCount:viewed.length,totalPatterns:patterns.length,marks:marks.map(m=>({xRatio:m.x,yRatio:m.y,observedOn:m.colors,notObservedOn:m.notVisibleOn,category:m.category,notes:m.notes,viewportAtMark:m.viewport}))});
  const importJson=async(e:React.ChangeEvent<HTMLInputElement>)=>{
   const file=e.currentTarget.files?.[0];
   e.currentTarget.value='';
@@ -120,7 +120,7 @@ const modeHint=mode==='lines'
     const raw:unknown=JSON.parse(await file.text());
     if(!raw||typeof raw!=='object')throw Error('invalid JSON');
     const report=raw as Record<string,unknown>;
-    if(report.kind!=='user_observed_screen_inspection'||report.certified!==false||!Array.isArray(report.marks)||report.marks.length>50)throw Error('incorrect report type');
+    if(report.kind!=='user_observed_screen_inspection'||report.certified!==false||!Array.isArray(report.marks)||report.marks.length>50||(report.testMode!==undefined&&report.testMode!==mode))throw Error('incorrect report type or mode');
     const allowedCategories=new Set<Category>(['unclassified','dark','bright','stuck-color','dust-or-surface','line-or-other','uncertain']);
     const allowedPatterns=new Set<string>(PATTERNS.map(p=>p.name));
     const normalizeNames=(value:unknown):string[]=>{
@@ -148,7 +148,8 @@ const modeHint=mode==='lines'
         : view();
       return {id:crypto.randomUUID?.()??String(Date.now()+Math.random()),x,y,colors,notVisibleOn,category:m.category as Category,notes:m.notes,viewport:measured};
     });
-    const observed=report.observedPatterns===undefined?[]:normalizeNames(report.observedPatterns);
+    const currentPatterns=new Set<string>(patterns.map(p=>p.name));
+    const observed=(report.observedPatterns===undefined?[]:normalizeNames(report.observedPatterns)).filter(p=>currentPatterns.has(p));
     const validDate=typeof report.createdAt==='string'&&report.createdAt.length<=40&&!Number.isNaN(Date.parse(report.createdAt));
     const deviceType=typeof report.deviceType==='string'&&['monitor','laptop','phone','tablet','other'].includes(report.deviceType)?report.deviceType:'other';
     setMarks(imported);
