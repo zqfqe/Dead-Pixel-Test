@@ -824,6 +824,32 @@ await check('/',async page=>{
  if(html.includes('<script>do not run</script>'))throw Error('Report contains executable imported text');
  if(!html.includes('window.print()'))throw Error('Printable offline report has no explicit print action');
 });
+await check('/tests/refresh-rate',async page=>{
+ const opener=page.getByRole('link',{name:'DeadPixelTest Home'});
+ await opener.focus();
+ await page.keyboard.press('Control+k');
+ const dialog=page.getByRole('dialog',{name:'Search tools'});
+ const search=dialog.getByRole('textbox',{name:'Search tools'});
+ await search.waitFor();
+ if(!await search.evaluate(el=>el===document.activeElement))throw Error('Search did not receive initial focus');
+ await page.keyboard.press('Shift+Tab');
+ if(!await dialog.getByRole('link').last().evaluate(el=>el===document.activeElement))
+  throw Error('Shift+Tab did not wrap to last result');
+ await page.keyboard.press('Tab');
+ if(!await search.evaluate(el=>el===document.activeElement))throw Error('Tab did not wrap back to input');
+ await search.fill('impossible query 32589');
+ await dialog.getByText('No results found.').waitFor();
+ await page.keyboard.press('Shift+Tab');
+ if(!await dialog.getByRole('button',{name:'Close search'}).evaluate(el=>el===document.activeElement))
+  throw Error('Empty-result Tab order did not wrap to close control');
+ await page.keyboard.press('Escape');
+ await dialog.waitFor({state:'hidden'});
+ await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
+ await page.keyboard.press('Control+k');
+ await search.waitFor();
+ await dialog.getByRole('button',{name:'Close search'}).click();
+ await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -841,4 +867,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+78+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+79+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
