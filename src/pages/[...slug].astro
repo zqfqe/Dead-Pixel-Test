@@ -251,19 +251,19 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
              <h2 class="text-xl font-semibold mb-2">Optional PPI calculator — user-confirmed panel resolution</h2>
              <p class="text-sm leading-6 text-[#344256]">Use the display's stated <strong>native physical pixel resolution</strong> and measured diagonal size, not the browser-reported CSS width or height above. No value is filled in automatically.</p>
              <form id="manual-ppi" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" novalidate>
-               <label class="block text-sm text-neutral-200">Native width (physical pixels)
-                 <input id="native-width" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1920" class="mt-2 w-full rounded-lg border border-white/25 bg-white px-3 py-3 text-[#101827]" />
+               <label class="block text-sm text-[#101827]">Native width (physical pixels)
+                 <input id="native-width" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1920" class="mt-2 w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-3 text-[#101827]" />
                </label>
-               <label class="block text-sm text-neutral-200">Native height (physical pixels)
-                 <input id="native-height" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1080" class="mt-2 w-full rounded-lg border border-white/25 bg-white px-3 py-3 text-[#101827]" />
+               <label class="block text-sm text-[#101827]">Native height (physical pixels)
+                 <input id="native-height" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1080" class="mt-2 w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-3 text-[#101827]" />
                </label>
-               <label class="block text-sm text-neutral-200">Screen diagonal (inches)
-                 <input id="native-diagonal" inputmode="decimal" type="number" min="0.1" max="300" step="any" placeholder="e.g. 24" class="mt-2 w-full rounded-lg border border-white/25 bg-white px-3 py-3 text-[#101827]" />
+               <label class="block text-sm text-[#101827]">Screen diagonal (inches)
+                 <input id="native-diagonal" inputmode="decimal" type="number" min="0.1" max="300" step="any" placeholder="e.g. 24" class="mt-2 w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-3 text-[#101827]" />
                </label>
                <div class="flex flex-col justify-end">
                  <button type="submit" class="min-h-[48px] rounded-lg bg-blue-700 px-4 py-3 font-semibold text-[#101827] hover:bg-blue-600">Calculate PPI</button>
                </div>
-               <label class="sm:col-span-2 lg:col-span-4 flex items-start gap-3 text-sm text-neutral-200">
+               <label class="sm:col-span-2 lg:col-span-4 flex items-start gap-3 text-sm text-[#101827]">
                  <input id="native-confirmed" type="checkbox" class="mt-1 h-4 w-4 shrink-0" />
                  I checked the native physical resolution in my display specifications or system settings.
                </label>
@@ -323,7 +323,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-[#DCE3EA] px-4 py-3 text-[#125CC9] hover:border-blue-400">{isBR?'English':'Português (Brasil)'}</a>
     </nav>
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Testes relacionados':'Related tests'}</h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="rounded-lg p-4 border border-[#DCE3EA] hover:border-blue-500/60 text-neutral-200" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="rounded-lg p-4 border border-[#DCE3EA] hover:border-blue-500/60 text-[#101827]" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>
     </section>
   </main>
 ) : article ? (
