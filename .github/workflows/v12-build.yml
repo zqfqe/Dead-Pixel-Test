@@ -41,6 +41,20 @@ jobs:
           ! grep -q 'Sitemap:' dist/robots.txt
           grep -q 'X-Robots-Tag: noindex' dist/_headers
           grep -q 'noindex,nofollow' dist/pt-br.html
+      - name: Cloudflare production main must be indexable without dashboard variable
+        env:
+          CF_PAGES: '1'
+          CF_PAGES_BRANCH: main
+        run: |
+          npm run build
+          grep -q '<loc>https://deadpixeltest.cc/</loc>' dist/sitemap.xml
+          grep -q '<loc>https://deadpixeltest.cc/pt-br</loc>' dist/sitemap.xml
+          grep -q 'Sitemap: https://deadpixeltest.cc/sitemap.xml' dist/robots.txt
+          grep -q 'rel="canonical" href="https://deadpixeltest.cc/"' dist/index.html
+          grep -q 'rel="canonical" href="https://deadpixeltest.cc/pt-br"' dist/pt-br.html
+          ! grep -q 'noindex,nofollow' dist/index.html
+          ! grep -q 'noindex,nofollow' dist/pt-br.html
+          test "$(grep -o '<loc>' dist/sitemap.xml | wc -l | tr -d ' ')" -eq 50
       - name: Build configured SEO origin using test-only domain
         env:
           PUBLIC_SITE_URL: https://deadpixeltest.example
