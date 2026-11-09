@@ -6,6 +6,7 @@ import ScreenInspection from '../../components/tests/ScreenInspection';
 import { BLOG_POSTS } from '../../data/blog';
 import { MENU_ITEMS } from '../../data/menu';
 import { SEO_LANDING_PAGES, LOCALE_PAIRS } from '../../data/seoLandingPages';
+import { GEO_ANSWERS } from '../../data/geoAnswers';
 
 const oldPaths = MENU_ITEMS.filter(item=>!item.isHeader && item.path && item.path!=='/' && item.path.startsWith('/')).map(item=>item.path);
 const additionalPaths=['/tests/dead-pixel','/about','/contact','/privacy-policy','/terms-of-service',
@@ -24,6 +25,7 @@ const {routePath} = Astro.props;
 const route=String(routePath);
 const normalized=route.replace(/\/$/,'')||'/';
 const newPage=SEO_LANDING_PAGES.find(p=>(p.path.replace(/\/$/,'')||'/')===normalized);
+const geoAnswer=GEO_ANSWERS[normalized];
 const article=BLOG_POSTS.find(p=>'/blog/'+p.slug===normalized);
 const blogIndex=normalized==='/blog';
 const informationalRoutes=['/about','/contact','/privacy-policy','/terms-of-service'] as const;
@@ -429,6 +431,7 @@ const structuredData=newPage?{
   {'@type':docType,name:newPage.h1,
    ...(schemaUrl(newPage.path)?{url:schemaUrl(newPage.path)}:{}),
    description:newPage.description,
+   inLanguage:newPage.lang,
    ...(docType==='WebApplication'?{applicationCategory:'UtilitiesApplication',operatingSystem:'Web Browser',
     offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}:{})},
   // Do not give the pt-BR homepage a self-only breadcrumb.
@@ -728,6 +731,23 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
        )}
        <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
     </header>
+    {geoAnswer && <section id="quick-answer" data-geo-answer class="mt-7 rounded-xl border border-[#DCE3EA] bg-white px-5 py-6 text-[#101827] md:px-8" aria-labelledby="quick-answer-heading">
+      <p class="text-xs font-bold uppercase tracking-wider text-[#31583F]">{isBR?'RESPOSTA DIRETA':'IN BRIEF / DIRECT ANSWER'}</p>
+      <h2 id="quick-answer-heading" class="mt-2 text-2xl font-bold">{geoAnswer.question}</h2>
+      <p class="mt-4 max-w-4xl text-base leading-8 text-[#344256]">{geoAnswer.answer}</p>
+      <h3 class="mt-5 text-base font-semibold">{isBR?'O que verificar':'Practical checks'}</h3>
+      <ul class="mt-3 list-disc space-y-2 pl-5 text-sm leading-7 text-[#344256]">
+        {geoAnswer.distinctions.map(item=><li>{item}</li>)}
+      </ul>
+      <p class="mt-5 border-t border-[#DCE3EA] pt-4 text-sm leading-7 text-[#344256]"><strong>{isBR?'Limite da ferramenta':'What this cannot prove'}:</strong> {geoAnswer.limitation}</p>
+      {geoAnswer.sources.length>0 && <p class="mt-3 text-xs leading-6 text-[#475569]">
+        {isBR?'Referências técnicas externas: ':'Technical references: '}
+        {geoAnswer.sources.map((source,i)=><>
+          {i>0 && <span aria-hidden="true"> · </span>}
+          <a class="text-[#125CC9] underline underline-offset-2" href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a>
+        </>)}
+      </p>}
+    </section>}
     <section class="ui-procedure ui-section mt-12 grid md:grid-cols-[2fr_1fr] gap-6 lg:gap-10" aria-label={isBR?"Instruções do teste":"Test instructions"}>
       <div>
         <p class="ui-overline">{isBR?'PROCEDIMENTO / PASSO A PASSO':'PROCEDURE / STEP BY STEP'}</p><h2 class="text-2xl font-bold mb-5">{isBR?'Como fazer o teste':'How to run this check'}</h2>
