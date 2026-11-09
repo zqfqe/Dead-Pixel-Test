@@ -502,6 +502,21 @@ await check('/',async page=>{
  });
  if(await page.getByRole('button',{name:'Export self-check JSON'}).count())throw Error('Wrong test mode was imported into pixel report');
 });
+for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
+ const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+ const page=await context.newPage();
+ try{
+  const response=await page.goto(base+route,{waitUntil:'domcontentloaded'});
+  if(response?.status()!==200)throw Error('Unexpected HTTP status '+response?.status());
+  await page.getByText(message,{exact:true}).waitFor({timeout:5000});
+  if(await page.getByRole('button',{name:/Start full-screen inspection|Iniciar inspeção em tela cheia/}).count())throw Error('Hydrated start button unexpectedly available without JavaScript');
+  if(!await page.locator('main#main-content').count())throw Error('No static accessible content');
+  console.log('PASS browser: no-JavaScript fallback '+route);
+ }catch(error){
+  failures.push('no-JS '+route+': '+error.message);
+  console.error('FAIL browser: no-JS '+route+': '+error.message);
+ }finally{await context.close();}
+}
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+47+' Chromium browser scenarios, including safe local JSON restore and recheck evidence');
+console.log('PASS all '+49+' Chromium browser scenarios, including no-JavaScript EN/PT fallbacks and local report restoration');
