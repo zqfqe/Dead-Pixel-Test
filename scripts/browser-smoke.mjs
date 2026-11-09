@@ -549,6 +549,18 @@ await check('/',async page=>{
  if(await page.getByRole('button',{name:'Export self-check JSON'}).count())
   throw Error('Legacy report imported a pattern not supported in the current test mode');
 });
+await check('/pt-br',async page=>{
+ await page.getByRole('link',{name:'Pular para o conteúdo principal'}).waitFor();
+ const mainLink=page.getByRole('navigation',{name:'Ferramentas'}).getByRole('link',{name:'Teste de pixel'});
+ if(await mainLink.getAttribute('aria-current')!=='page')throw Error('Active Portuguese navigation route is not marked current');
+ await page.getByRole('navigation',{name:'Informações legais'}).getByRole('link',{name:'Privacidade'}).waitFor();
+ const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
+ if(theme!=='#F6F8FB')throw Error('Light page theme color not set: '+theme);
+});
+await check('/tests/refresh-rate',async page=>{
+ const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
+ if(theme!=='#08090c')throw Error('Dark legacy tool theme color wrong: '+theme);
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -566,4 +578,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+51+' Chromium browser scenarios, including color matrices, viewport evidence and strict mode import checks');
+console.log('PASS all '+53+' Chromium browser scenarios, including language-specific navigation, color matrices and viewport evidence');
