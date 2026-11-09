@@ -1,0 +1,16 @@
+group,canonical_url,country,priority,keyword_candidate,site_http_status,site_index_allowed,gsc_verified_property,gsc_sitemap_last_read,gsc_sitemap_status,gsc_google_index_status,gsc_google_selected_canonical,gsc_last_crawl,gsc_clicks_28d,gsc_impressions_28d,gsc_ctr_28d,gsc_avg_position_28d,gsc_query_match,gsc_report_asof,source_notes
+EN01,https://deadpixeltest.cc/,US,P0,dead pixel test,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN02,https://deadpixeltest.cc/laptop-screen-dead-pixel-test,US,P0,dead pixels on laptop screen,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN03,https://deadpixeltest.cc/dead-pixel-fixer,US,P0,laptop dead pixel repair,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN04,https://deadpixeltest.cc/phone-screen-dead-pixel-test,US,P1,phone screen test,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN05,https://deadpixeltest.cc/what-is-a-dead-pixel,US,P1,what is a dead pixel,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN06,https://deadpixeltest.cc/dead-pixel-line-test,US,P1,dead line of pixels,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN07,https://deadpixeltest.cc/image-retention-test,US,P1,lcd image persistence,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN08,https://deadpixeltest.cc/screen-resolution-test,US,P2,display resolution test,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+EN09,https://deadpixeltest.cc/screen-contrast-test,US,P2,screen contrast test,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+BR01,https://deadpixeltest.cc/pt-br,BR,P0,teste de dead pixel,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+BR02,https://deadpixeltest.cc/pt-br/pixel-morto-notebook,BR,P0,pixel morto notebook,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+BR03,https://deadpixeltest.cc/pt-br/pixel-morto-iphone,BR,P0,pixel morto iphone,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+BR04,https://deadpixeltest.cc/pt-br/reparar-pixel-preso,BR,P1,pixel preso,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+BR05,https://deadpixeltest.cc/pt-br/o-que-e-dead-pixel,BR,P1,o que é dead pixel,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
+BR06,https://deadpixeltest.cc/pt-br/teste-de-cores,BR,P1,teste de cores,200,yes,,,,,,,,,,,,,,Site-side checks only; GSC status not accessible
