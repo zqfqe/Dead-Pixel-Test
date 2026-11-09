@@ -60,7 +60,7 @@ const languageFallback=!matchedLocalePair;
     {!legacy && <header class="ui-topbar sticky top-0 z-40 border-b border-[#DCE3EA] bg-white/95 backdrop-blur-lg">
       <div class="mx-auto max-w-7xl flex flex-wrap items-center gap-x-4 gap-y-0 px-4 md:min-h-16 md:flex-nowrap md:px-8">
         <a href={lang==='pt-BR'?'/pt-br':'/'} class="ui-brand order-1 flex min-h-14 items-center gap-2 font-bold text-[#101827] shrink-0 md:min-h-16">
-          <img src="/logo.svg" alt="" width="28" height="28" /><span>DeadPixelTest</span>
+          <img src="/logo.svg" alt={lang==="pt-BR"?"Página inicial DeadPixelTest":"DeadPixelTest home"} width="28" height="28" /><span aria-hidden="true">DeadPixelTest</span>
         </a>
         <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="ui-main-nav order-3 flex w-full gap-1 overflow-x-auto whitespace-nowrap border-t border-[#E5EBF3] text-sm text-[#344256] md:order-2 md:ml-auto md:w-auto md:border-t-0">
           {navigation.map(n=><a href={normalizePath(n.href)} aria-current={isNavCurrent(n.href)?"page":undefined} class:list={["ui-nav-link flex min-h-11 shrink-0 items-center rounded-lg px-3 py-2 font-medium",isNavCurrent(n.href)?"text-[#125CC9] font-bold":""]}>{n.label}</a>)}
