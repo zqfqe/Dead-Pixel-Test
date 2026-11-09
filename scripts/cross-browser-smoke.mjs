@@ -64,6 +64,16 @@ for(const [name,engine] of [['firefox',firefox],['webkit',webkit]]){
    await page.getByText(/91\.79 PPI/).waitFor();
   });
   await scenario(browser,name,'/phone-screen-dead-pixel-test',async page=>{
+   await page.getByRole('button',{name:'Start full-screen inspection'}).tap();
+   await page.getByRole('button',{name:'Hide controls'}).tap();
+   const controls=page.locator('[data-compact-controls="true"]');
+   await controls.waitFor();
+   await page.getByRole('button',{name:'Move controls to next corner'}).tap();
+   if(await controls.getAttribute('data-corner')!=='1')throw Error('Compact controls failed to reposition on mobile '+name);
+   await page.getByRole('button',{name:'Show controls'}).tap();
+   await page.getByRole('button',{name:/Exit test/}).tap();
+  },{mobile:true});
+  await scenario(browser,name,'/phone-screen-dead-pixel-test',async page=>{
    const width=await page.evaluate(()=>[innerWidth,document.documentElement.scrollWidth]);
    if(width[1]>width[0]+2)throw Error('Page horizontally overflows '+width);
    await page.getByRole('button',{name:'Start full-screen inspection'}).tap();
@@ -74,4 +84,4 @@ for(const [name,engine] of [['firefox',firefox],['webkit',webkit]]){
  }finally{await browser.close();}
 }
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS 12 Firefox/WebKit responsive and inspection scenarios');
+console.log('PASS 14 Firefox/WebKit responsive, compact-control and inspection scenarios');
