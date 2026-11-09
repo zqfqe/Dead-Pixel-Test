@@ -91,6 +91,22 @@ await check('/tests/refresh-rate',async page=>{
   });
   await start.waitFor({timeout:8000});
 });
+await check('/tools/mouse-polling',async page=>{
+  // Idle pages schedule no sampling frames; pointer input must still wake the
+  // sampler and produce a nonzero browser-observed estimate.
+  const area=page.getByTestId('mouse-polling-surface');
+  await area.waitFor({timeout:12000});
+  const box=await area.boundingBox();
+  if(!box)throw Error('Mouse sampling area has no visible bounds');
+  await page.mouse.move(box.x+35,box.y+55);
+  for(let i=0;i<10;i++){
+    await page.mouse.move(box.x+50+i*17,box.y+60+(i%2)*18);
+    await page.waitForTimeout(16);
+  }
+  await page.waitForFunction(()=>Number(document.querySelector('[data-testid="mouse-polling-average"]')?.textContent)>0,null,{timeout:8000});
+  await page.getByRole('button',{name:'Reset Statistics'}).click();
+  await page.waitForFunction(()=>Number(document.querySelector('[data-testid="mouse-polling-average"]')?.textContent)===0,null,{timeout:5000});
+});
 await check('/tests/local-dimming',async page=>{
  await expectedTitle('Local Dimming')(page);
  await page.getByText(/Local Dimming/i).first().waitFor({timeout:15000});
