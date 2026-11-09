@@ -2,6 +2,7 @@ import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
 type Name='Black'|'White'|'Red'|'Green'|'Blue'|'Cyan'|'Magenta'|'Yellow'|'Gray'|'Gray steps'|'Near black'|'Near white'|'Horizontal'|'Vertical'|'Horizontal fine'|'Vertical fine'|'Grid'|'Checkerboard'|'Gradient'|'Red gradient'|'Green gradient'|'Blue gradient'|'Black levels'|'White levels'|'Color bars';
 type Pattern={name:Name;color?:string;background?:string;backgroundSize?:string};
 type Category='unclassified'|'dark'|'bright'|'stuck-color'|'dust-or-surface'|'line-or-other'|'uncertain';
+type Device='monitor'|'laptop'|'phone'|'tablet'|'other';
 type Mark={id:string;x:number;y:number;colors:string[];notVisibleOn:string[];category:Category;notes:string;viewport:{width:number;height:number;dpr:number;orientation:string}};
 const CORE:Name[]=['Black','White','Red','Green','Blue','Cyan','Magenta','Yellow'];
 const PATTERNS:Pattern[]=[
@@ -53,7 +54,7 @@ const PRECHECK={
 };
 const esc=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const save=(body:string,type:string,name:string)=>{const u=URL.createObjectURL(new Blob([body],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);};
-export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retention'|'contrast';lang?:'en'|'pt-BR';defaultDevice?:'monitor'|'laptop'|'phone'|'tablet'|'other'}>=({mode='pixels',lang='en',defaultDevice='monitor'})=>{
+export const ScreenInspection:React.FC<{mode?:'pixels'|'fixer'|'lines'|'retention'|'contrast';lang?:'en'|'pt-BR';defaultDevice?:Device}>=({mode='pixels',lang='en',defaultDevice='monitor'})=>{
  const t=lang==='pt-BR'?TEXT.pt:TEXT.en;
  const patterns=useMemo(()=>{
  const select=(names:Name[])=>names.map(name=>PATTERNS.find(p=>p.name===name)).filter((p):p is Pattern=>Boolean(p));
@@ -67,7 +68,7 @@ const modeHint=mode==='lines'
  : mode==='retention'
  ? (lang==='pt-BR'?'Observe um fundo cinza neutro em busca de contornos residuais. Alterne cores por pouco tempo; este teste não distingue nem repara burn-in permanente.':'Look for a ghost outline on neutral gray. Change patterns briefly; this test cannot distinguish or repair permanent burn-in.')
  : mode==='contrast' ? (lang==='pt-BR'?'Compare níveis de preto e branco, gradientes suaves e barras de cor. Isto não mede nits, contraste físico ou cobertura de gama.':'Compare black and white levels, smooth color ramps and color bars. This is not a calibrated measurement of nits, physical contrast or gamut.') : t.hint;
- const [importStatus,setImportStatus]=useState(''),[active,setActive]=useState(false),[index,setIndex]=useState(0),[viewed,setViewed]=useState<Name[]>([]),[hideControls,setHideControls]=useState(false),[markMode,setMarkMode]=useState(false),[showMarks,setShowMarks]=useState(false),[marks,setMarks]=useState<Mark[]>([]),[selected,setSelected]=useState(''),[device,setDevice]=useState(defaultDevice),[started,setStarted]=useState(''),[ran,setRan]=useState(false),[warning,setWarning]=useState(false),[patchColor,setPatchColor]=useState('#f00'),[patchSize,setPatchSize]=useState(140),[patchPos,setPatchPos]=useState({x:50,y:50});
+ const [importStatus,setImportStatus]=useState(''),[active,setActive]=useState(false),[index,setIndex]=useState(0),[viewed,setViewed]=useState<Name[]>([]),[hideControls,setHideControls]=useState(false),[markMode,setMarkMode]=useState(false),[showMarks,setShowMarks]=useState(false),[marks,setMarks]=useState<Mark[]>([]),[selected,setSelected]=useState(''),[device,setDevice]=useState<Device>(defaultDevice),[started,setStarted]=useState(''),[ran,setRan]=useState(false),[warning,setWarning]=useState(false),[patchColor,setPatchColor]=useState('#f00'),[patchSize,setPatchSize]=useState(140),[patchPos,setPatchPos]=useState({x:50,y:50});
  const root=useRef<HTMLDivElement>(null),dialog=useRef<HTMLDivElement>(null),startButton=useRef<HTMLButtonElement>(null),native=useRef(false);
  const touchStart=useRef<{x:number;y:number}|null>(null);
  const patternLabel=(name:Name)=>lang==='pt-BR'?(PT_PATTERN_NAMES[name]??name):name;
@@ -154,7 +155,7 @@ const modeHint=mode==='lines'
     setSelected(imported[0]?.id??'');
     setShowMarks(imported.length>0);
     setViewed(observed as Name[]);
-    setDevice(deviceType);
+    setDevice(deviceType as Device);
     setStarted(validDate?report.createdAt as string:new Date().toISOString());
     setRan(true);
     setImportStatus(t.importOk);
@@ -177,7 +178,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
   </label>
   {importStatus&&<p role="status" className="text-xs text-neutral-200">{importStatus}</p>}
  </div>
- <div className="flex flex-wrap items-center gap-3"><button ref={startButton} type="button" onClick={start} className="rounded-lg bg-blue-600 px-6 py-3 min-h-[48px] font-semibold text-white">{t.start}</button><label className="flex items-center gap-2 text-sm">{t.device}<select value={device} onChange={e=>setDevice(e.target.value)} className="rounded border border-white/20 bg-neutral-900 p-2 text-white"><option value="monitor">{t.monitor}</option><option value="laptop">{t.laptop}</option><option value="phone">{t.phone}</option><option value="tablet">{t.tablet}</option><option value="other">{t.other}</option></select></label><span className="text-sm text-neutral-400">{t.disclaimer}</span></div>
+ <div className="flex flex-wrap items-center gap-3"><button ref={startButton} type="button" onClick={start} className="rounded-lg bg-blue-600 px-6 py-3 min-h-[48px] font-semibold text-white">{t.start}</button><label className="flex items-center gap-2 text-sm">{t.device}<select value={device} onChange={e=>setDevice(e.target.value as Device)} className="rounded border border-white/20 bg-neutral-900 p-2 text-white"><option value="monitor">{t.monitor}</option><option value="laptop">{t.laptop}</option><option value="phone">{t.phone}</option><option value="tablet">{t.tablet}</option><option value="other">{t.other}</option></select></label><span className="text-sm text-neutral-400">{t.disclaimer}</span></div>
  <p className="mt-3 text-xs text-neutral-400">{t.session}{ran?' · '+t.progress+': '+viewed.length+'/'+patterns.length:''}</p>
  {ran&&<div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={exportJson} className="rounded border border-white/20 px-3 py-2 text-sm">{t.export}</button><button type="button" onClick={printReport} className="rounded border border-white/20 px-3 py-2 text-sm">{t.print}</button>{marks.length>0&&<button type="button" onClick={()=>{setMarks([]);setSelected('');}} className="rounded border border-white/20 px-3 py-2 text-sm">{t.clear}</button>}
  <button type="button" onClick={beginNewSession} className="rounded border border-white/20 px-3 py-2 text-sm">{t.newSession}</button></div>}
