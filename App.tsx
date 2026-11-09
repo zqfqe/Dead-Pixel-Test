@@ -1,15 +1,17 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { TestReportProvider } from './contexts/TestReportContext';
 import Header from './components/layout/Header';
 import { SEO_LANDING_PAGES } from './data/seoLandingPages';
+import { MENU_ITEMS } from './data/menu';
+import { BLOG_POSTS } from './data/blog';
 import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
 import { Loader2 } from 'lucide-react';
 
-// Eager Load Home Page (Critical for LCP/SEO)
-import DeadPixelTest from './components/tests/DeadPixelTest';
+// The Astro homepage has its own React island. Avoid eagerly loading this legacy test on every tool route.
+const DeadPixelTest = lazy(() => import('./components/tests/DeadPixelTest'));
 
 // Lazy Load Pages - Phase 1
 const UniformityTest = lazy(() => import('./components/tests/UniformityTest'));
@@ -67,11 +69,56 @@ const PageLoader = () => (
   </div>
 );
 
+// Astro owns the actual HTML document, canonical and indexability for each static route.
+// Client-side React Router transitions must never leave a legacy route's metadata on screen.
+const normalizeDocumentPath=(path:string)=>path==='/'?'/':path.replace(/\/+$/,'');
+const staticDocumentPaths=new Set([
+ ...MENU_ITEMS.filter(item=>!item.isHeader&&item.path.startsWith('/')).map(item=>normalizeDocumentPath(item.path)),
+ ...SEO_LANDING_PAGES.map(page=>normalizeDocumentPath(page.path)),
+ ...BLOG_POSTS.map(post=>'/blog/'+post.slug),
+ '/tests/dead-pixel','/about','/contact','/privacy-policy','/terms-of-service'
+]);
+const AstroDocumentNavigation:React.FC=()=>{
+ const route=useLocation();
+ const mountedPath=React.useRef(normalizeDocumentPath(window.location.pathname));
+ // Route changes initiated by the command palette or other imperative navigate calls
+ // must also return control to Astro's static HTML response.
+ React.useEffect(()=>{
+  if(document.documentElement.hasAttribute('data-astro-site') &&
+     normalizeDocumentPath(route.pathname)!==mountedPath.current &&
+     staticDocumentPaths.has(normalizeDocumentPath(route.pathname))){
+   window.location.reload();
+  }
+ },[route.pathname]);
+ React.useEffect(()=>{
+  if(!document.documentElement.hasAttribute('data-astro-site'))return;
+  const onClick=(event:MouseEvent)=>{
+   if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+   const target=event.target;
+   if(!(target instanceof Element))return;
+   const anchor=target.closest('a[href]');
+   if(!anchor || anchor.hasAttribute('download') || (anchor.target&&anchor.target!=='_self'))return;
+   let destination:URL;
+   try{destination=new URL(anchor.href);}catch{return;}
+   if(destination.origin!==window.location.origin ||
+      (destination.pathname===window.location.pathname&&destination.search===window.location.search) ||
+      !staticDocumentPaths.has(normalizeDocumentPath(destination.pathname)))return;
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   window.location.assign(destination.href);
+  };
+  document.addEventListener('click',onClick,true);
+  return()=>document.removeEventListener('click',onClick,true);
+ },[]);
+ return null;
+};
+
 const App: React.FC = () => {
   return (
     <HelmetProvider>
       <TestReportProvider>
         <Router>
+          <AstroDocumentNavigation />
           <div className="min-h-screen font-sans bg-black text-white flex flex-col">
             <Header />
             <CommandPalette />

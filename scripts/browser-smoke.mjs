@@ -735,6 +735,42 @@ for(const path of ['/tests/refresh-rate','/tests/local-dimming','/tests/color-gr
  });
 }
 
+
+await check('/tests/refresh-rate',async page=>{
+ const previous=await page.locator('link[rel="canonical"]').getAttribute('href');
+ const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
+ await page.getByRole('link',{name:'DeadPixelTest Home'}).click();
+ await navigation;
+ if(await page.locator('html').getAttribute('data-surface')!=='light')
+  throw Error('React soft navigation bypassed Astro homepage HTML');
+ if(await page.locator('main h1').first().textContent()!=='Dead Pixel Test')
+  throw Error('Astro homepage main heading not loaded');
+ const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
+ if(canonical===previous||canonical!==canonicalOrigin+'/')
+  throw Error('Static homepage canonical was not refreshed: '+canonical);
+});
+await check('/tests/local-dimming',async page=>{
+ const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
+ await page.locator('footer').getByRole('link',{name:'Color Gradient',exact:true}).click();
+ await navigation;
+ await page.getByRole('heading',{name:'How to identify visible color banding'}).waitFor();
+ const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
+ if(canonical!==canonicalOrigin+'/tests/color-gradient')
+  throw Error('Legacy tool navigation retained stale canonical '+canonical);
+});
+await check('/tests/refresh-rate',async page=>{
+ await page.keyboard.press('Control+k');
+ const field=page.getByRole('textbox',{name:'Search tools'});
+ await field.waitFor();
+ await field.fill('Teste de Pixel Morto (Brasil)');
+ const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
+ await field.press('Enter');
+ await navigation;
+ if(await page.locator('html').getAttribute('lang')!=='pt-BR')
+  throw Error('Command palette left browser on wrong-language HTML');
+ await page.getByRole('heading',{level:1,name:'Teste de Pixel Morto'}).waitFor();
+});
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -752,4 +788,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+71+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+74+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
