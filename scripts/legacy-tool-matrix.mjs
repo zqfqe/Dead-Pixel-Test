@@ -113,6 +113,26 @@ try{
    await page.getByRole('button',{name:'Reset',exact:true}).click();
    await page.getByText('Click here to test',{exact:true}).waitFor();
   }],
+  ['/tools/speaker-test',async page=>{
+   await page.getByRole('heading',{level:1,name:'Audio System Test'}).waitFor();
+   const left=page.getByRole('button',{name:'LEFT',exact:true});
+   await left.click();
+   await page.getByRole('button',{name:'Polarity / Phase'}).click();
+   await page.getByRole('button',{name:'IN PHASE (Center)'}).click();
+   await page.getByRole('button',{name:'Stop Noise'}).waitFor();
+   const inBtn=page.getByRole('button',{name:'IN PHASE (Center)'});
+   const outBtn=page.getByRole('button',{name:'OUT OF PHASE (Wide)'});
+   if(!(await inBtn.getAttribute('class'))?.includes('border-green-500'))throw Error('Selected in-phase state missing');
+   if((await outBtn.getAttribute('class'))?.includes('border-red-500'))throw Error('Out-of-phase falsely selected');
+   await outBtn.click();
+   if(!(await outBtn.getAttribute('class'))?.includes('border-red-500'))throw Error('Out-of-phase button did not activate');
+   await page.getByRole('button',{name:'Stop Noise'}).click();
+   if(await page.getByRole('button',{name:'Stop Noise'}).count())throw Error('Phase test failed to stop');
+   await page.getByRole('button',{name:'Frequency Sweep'}).click();
+   await page.getByRole('button',{name:/Start 20Hz/}).click();
+   await page.getByRole('button',{name:'Stop',exact:true}).waitFor();
+   await page.getByRole('button',{name:'Stop',exact:true}).click();
+  }],
   ['/tools/ppi-calculator',async page=>{
    const fields=page.locator('main#main-content input[type="number"]');
    if(await fields.count()!==3)throw Error('PPI calculator is missing its native resolution/diagonal inputs');
@@ -207,4 +227,4 @@ try{
  for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 8 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 9 interactive functional checks (hardware behaviors not certified).');
