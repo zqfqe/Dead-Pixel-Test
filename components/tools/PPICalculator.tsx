@@ -37,7 +37,7 @@ const PPICalculator: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'monitors' | 'laptops' | 'mobile'>('monitors');
 
   const stats = useMemo(() => {
-    if (!width || !height || !diagonal) return null;
+    if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1 || width > 20000 || height > 20000 || !Number.isFinite(diagonal) || diagonal < 0.1 || diagonal > 300) return null;
 
     // PPI
     const diagonalPixels = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
@@ -235,6 +235,9 @@ const PPICalculator: React.FC = () => {
              </div>
           </div>
 
+          {!stats && <div role="status" className="lg:col-span-7 rounded-xl border border-amber-500/40 bg-amber-500/10 p-6 text-sm text-amber-200">
+            Enter whole-number native pixel dimensions from 1 to 20,000 and a diagonal size from 0.1 to 300 inches. Browser CSS pixels are not panel-native resolution.
+          </div>}
           {/* --- RIGHT COL: RESULTS (7 cols) --- */}
           {stats && (
               <div className="lg:col-span-7 space-y-6">

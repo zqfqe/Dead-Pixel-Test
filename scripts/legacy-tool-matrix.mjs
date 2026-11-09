@@ -44,6 +44,7 @@ async function inspectRoute(path,options={}){
    if(dimensions.page>dimensions.viewport+2)
     throw Error('Mobile horizontal overflow: '+JSON.stringify(dimensions));
   }
+  if(options.interact)await options.interact(page);
   await page.waitForTimeout(120);
   if(runtimeErrors.length)throw Error('Runtime exception: '+runtimeErrors.join('; '));
   if(networkViolations.length)throw Error('Unexpected third-party request: '+networkViolations.join('; '));
@@ -59,6 +60,48 @@ try{
  for(const route of routes)await inspectRoute(route);
  for(const route of ['/tests/uniformity','/tools/keyboard','/tools/double-click-test','/tools/ppi-calculator','/tools/touch'])
   await inspectRoute(route,{mobile:true});
+
+ const scenarioChecks=[
+  ['/tools/keyboard',async page=>{
+   await page.getByRole('heading',{name:'Keyboard Tester'}).waitFor();
+   const tkl=page.getByRole('button',{name:'TKL',exact:true});
+   await tkl.click();
+   if(!((await tkl.getAttribute('class'))||'').includes('bg-neutral-700'))throw Error('TKL layout did not activate');
+   const sixty=page.getByRole('button',{name:'60%',exact:true});
+   await sixty.click();
+   if(!((await sixty.getAttribute('class'))||'').includes('bg-neutral-700'))throw Error('60-percent layout did not activate');
+   await page.keyboard.press('a');
+   await page.getByRole('button',{name:'Full',exact:true}).click();
+   await page.getByRole('button',{name:'Reset All'}).click();
+  }],
+  ['/tools/double-click-test',async page=>{
+   await page.getByText('Click here to test',{exact:true}).click();
+   await page.getByText('SINGLE CLICK',{exact:true}).waitFor();
+   await page.getByRole('button',{name:'Reset',exact:true}).click();
+   await page.getByText('Click here to test',{exact:true}).waitFor();
+  }],
+  ['/tools/ppi-calculator',async page=>{
+   const fields=page.locator('main#main-content input[type="number"]');
+   if(await fields.count()!==3)throw Error('PPI calculator is missing its native resolution/diagonal inputs');
+   await fields.nth(0).fill('1920');await fields.nth(1).fill('1080');await fields.nth(2).fill('24');
+   await page.getByText('91.79',{exact:false}).first().waitFor();
+   await fields.nth(0).fill('-120');
+   await page.getByText(/Enter whole-number native pixel dimensions from 1 to 20,000/).waitFor();
+   await fields.nth(0).fill('1920');
+   await fields.nth(2).fill('0');
+   await page.getByText(/Enter whole-number native pixel dimensions from 1 to 20,000/).waitFor();
+   await fields.nth(2).fill('24');
+   await page.getByText('91.79',{exact:false}).first().waitFor();
+  }],
+  ['/tools/ruler',async page=>{
+   await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
+   await page.getByRole('button',{name:'Calibrate & Measure'}).click();
+   await page.getByRole('heading',{name:'1:1 Physical Scale'}).waitFor();
+   await page.getByRole('button',{name:'Recalibrate'}).click();
+   await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
+  }]
+ ];
+ for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes loaded and '+5+' mobile overflow audits (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 4 interactive functional checks (hardware behaviors not certified).');
