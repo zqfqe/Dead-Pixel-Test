@@ -105,7 +105,9 @@ const TouchTest: React.FC = () => {
     for(let i=0;i<event.targetTouches.length;i++){
       const touch=event.targetTouches[i],id=touch.identifier;
       const x=touch.clientX-rect.left,y=touch.clientY-rect.top;
-      active.push({id,x,y,radius:touch.radiusX||10,force:Number.isFinite(touch.force)?touch.force:null,
+      const optionalTouch=touch as Touch & {radiusX?:number;force?:number};
+      const force=typeof optionalTouch.force==='number'&&Number.isFinite(optionalTouch.force)?optionalTouch.force:null;
+      active.push({id,x,y,radius:optionalTouch.radiusX||10,force,
         color:COLORS[((id%COLORS.length)+COLORS.length)%COLORS.length]});
       if(!pathsRef.current.has(id)){
         if(pathsRef.current.size>=MAX_SAVED_PATHS){
