@@ -90,7 +90,7 @@ const CommandPalette:React.FC=()=>{
     className="relative w-full max-w-lg rounded-xl border border-white/15 bg-[#0a0a0a] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
     <div className="flex items-center px-4 py-3 border-b border-white/10 gap-3">
      <Search className="text-neutral-400" size={20} aria-hidden="true" />
-     <input ref={inputRef} type="text" aria-label="Search tools" aria-controls="tool-search-results"
+     <input ref={inputRef} autoFocus type="text" aria-label="Search tools" aria-controls="tool-search-results"
       placeholder="Search tools..." className="flex-1 min-w-0 bg-transparent text-white placeholder-neutral-400 outline-none text-sm h-9 focus-visible:ring-2 focus-visible:ring-blue-400 rounded"
       value={query} onChange={event=>{setQuery(event.target.value);selectedRef.current=0;setSelectedIndex(0);}} />
      <button type="button" onClick={close} aria-label="Close search"

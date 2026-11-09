@@ -831,7 +831,7 @@ await check('/tests/refresh-rate',async page=>{
  const dialog=page.getByRole('dialog',{name:'Search tools'});
  const search=dialog.getByRole('textbox',{name:'Search tools'});
  await search.waitFor();
- if(!await search.evaluate(el=>el===document.activeElement))throw Error('Search did not receive initial focus');
+ await page.waitForFunction(()=>document.activeElement===document.querySelector('input[aria-label="Search tools"]'),null,{timeout:5000});
  await page.keyboard.press('Shift+Tab');
  if(!await dialog.getByRole('link').last().evaluate(el=>el===document.activeElement))
   throw Error('Shift+Tab did not wrap to last result');
