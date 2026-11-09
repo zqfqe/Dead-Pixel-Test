@@ -70,10 +70,20 @@ const MousePollingTest: React.FC = () => {
       if (events.length > 0) {
           lastTimeRef.current = events[events.length - 1].timeStamp;
       }
+      scheduleFrame();
     };
 
-    // 2. Render Loop (Updates React State max 60/144 times per sec)
+    // Schedule only while pointer sampling is in progress. Previously an
+    // idle page requested animation frames forever, even without mouse input.
+    const scheduleFrame = () => {
+      if (frameRef.current === null && document.visibilityState !== 'hidden') {
+        frameRef.current = requestAnimationFrame(loop);
+      }
+    };
+
+    // 2. Render Loop (Updates React State only during pointer activity)
     const loop = () => {
+        frameRef.current = null;
         const now = performance.now();
         const queue = dataQueueRef.current;
 
@@ -106,15 +116,28 @@ const MousePollingTest: React.FC = () => {
             lastTimeRef.current = 0; 
         }
 
-        frameRef.current = requestAnimationFrame(loop);
+        if (queue.length > 0 || isCurrentlyActive) scheduleFrame();
+    };
+
+    const stopWhenHidden = () => {
+      if (document.visibilityState !== 'hidden') return;
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+      dataQueueRef.current = [];
+      lastTimeRef.current = 0;
+      lastActivityRef.current = 0;
+      setIsActive(false);
+      setCurrentRate(0);
     };
 
     window.addEventListener('pointermove', handlePointerMove);
-    frameRef.current = requestAnimationFrame(loop);
+    document.addEventListener('visibilitychange', stopWhenHidden);
 
     return () => {
         window.removeEventListener('pointermove', handlePointerMove);
-        if (frameRef.current) cancelAnimationFrame(frameRef.current);
+        document.removeEventListener('visibilitychange', stopWhenHidden);
+        if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
     };
   }, [isMobile]);
 
@@ -159,7 +182,6 @@ const MousePollingTest: React.FC = () => {
             {
               "@type": "WebApplication",
               "name": "Mouse Polling Rate Checker",
-              "url": "https://deadpixeltest.cc/tools/mouse-polling",
               "description": "Test your mouse's report rate (Hz) in real-time. Supports high-frequency gaming mice (1000Hz, 4000Hz, 8000Hz).",
               "applicationCategory": "UtilitiesApplication",
               "operatingSystem": "Web Browser",
