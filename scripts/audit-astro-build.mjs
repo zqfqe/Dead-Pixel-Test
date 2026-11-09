@@ -5,6 +5,12 @@ const raw=isCloudflarePreview?'':process.env.PUBLIC_SITE_URL?.trim(),origin=raw?
 const priority=['/','/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns'];
 const planned=['/laptop-screen-dead-pixel-test/','/dead-pixel-fixer/','/phone-screen-dead-pixel-test/','/what-is-a-dead-pixel/','/dead-pixel-line-test/','/image-retention-test/','/screen-resolution-test/','/screen-contrast-test/','/pt-br/','/pt-br/pixel-morto-notebook/','/pt-br/pixel-morto-iphone/','/pt-br/reparar-pixel-preso/','/pt-br/o-que-e-dead-pixel/','/pt-br/teste-de-cores/'];
 const errors=[],xml=readFileSync('dist/sitemap.xml','utf8'),robots=readFileSync('dist/robots.txt','utf8'),locs=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
+const taskSpecificGuides=new Map([
+ ['/laptop-screen-dead-pixel-test/','Laptop screen symptoms: what to check next'],
+ ['/pt-br/pixel-morto-notebook/','Pixel morto no notebook: como interpretar o sintoma'],
+ ['/dead-pixel-fixer/','Does this symptom need a pixel fixer?'],
+ ['/pt-br/reparar-pixel-preso/','Pixel preso: qual próximo passo é seguro?']
+]);
 const staticGuides=new Map([
  ['/tests/refresh-rate','How to interpret a frame-skipping and browser FPS check'],
  ['/tests/local-dimming','How to inspect local dimming, halos and blooming'],
@@ -18,6 +24,11 @@ for(const path of [...priority,...planned]){
  if(!existsSync(file)){errors.push('Missing HTML '+path);continue;}
  const html=readFileSync(file,'utf8'),canon=[...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/gi)];
  const guideTitle=staticGuides.get(path);
+ const symptomTitle=taskSpecificGuides.get(path);
+ if(symptomTitle && (!html.includes(symptomTitle)||!html.includes('data-symptom-decision')||!html.includes('<details')||!html.includes('www.dell.com/support/kbdoc/'))){
+  errors.push('Missing independent static laptop/fixer triage content on '+path);
+ }
+
  if(guideTitle&&(!html.includes(guideTitle)||!html.includes('Practical inspection steps')||!html.includes('What the result cannot prove'))){
   errors.push('Legacy GSC route missing indexable static guide content: '+path);
  }

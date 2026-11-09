@@ -650,6 +650,61 @@ await check('/phone-screen-dead-pixel-test',async page=>{
  const text=await page.locator('nav[aria-label="Switch language"]').innerText();
  if(!text.includes('página inicial'))throw Error('Language switch fallback not explained to readers');
 });
+
+for(const [path,heading,example] of [
+ ['/laptop-screen-dead-pixel-test','Laptop screen symptoms: what to check next','Single dark point on white'],
+ ['/pt-br/pixel-morto-notebook','Pixel morto no notebook: como interpretar o sintoma','Ponto escuro no fundo branco'],
+ ['/dead-pixel-fixer','Does this symptom need a pixel fixer?','Always-dark point in several colors'],
+ ['/pt-br/reparar-pixel-preso','Pixel preso: qual próximo passo é seguro?','Ponto sempre escuro em várias cores']
+]){
+ await check(path,async page=>{
+   const guide=page.locator('[data-symptom-decision]');
+   await guide.getByRole('heading',{name:heading}).waitFor();
+   if(await guide.locator('details').count()!==4)throw Error('Expected four diagnosis choices');
+   await guide.locator('summary').filter({hasText:example}).click();
+   const expanded=guide.locator('details[open]');
+   if(await expanded.count()!==1)throw Error('Decision guide did not expand');
+   const content=await expanded.innerText();
+   if(!content.includes(path.startsWith('/pt-br')?'Próximo passo':'Next step'))throw Error('Symptom advice missing a next action');
+   if(await guide.locator('a[href*="dell.com/support/kbdoc"]').count()!==1)throw Error('Missing manufacturer reference');
+ });
+}
+await check('/screen-resolution-test',async page=>{
+ for(const selector of ['#copy-screen-metrics','#manual-ppi button[type="submit"]','#ppi-result']){
+  const ratio=await page.locator(selector).evaluate(el=>{
+   const luminosity=color=>{
+    const vals=(color.match(/[0-9.]+/g)||[]).slice(0,3).map(Number).map(n=>n/255);
+    const linear=vals.map(v=>v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4));
+    return linear[0]*.2126+linear[1]*.7152+linear[2]*.0722;
+   };
+   let bg='rgb(255,255,255)',node=el;
+   while(node){
+    const found=getComputedStyle(node).backgroundColor;
+    if(found&&found!=='transparent'&&found!=='rgba(0, 0, 0, 0)'){bg=found;break;}
+    node=node.parentElement;
+   }
+   const fg=getComputedStyle(el).color;
+   const [low,high]=[luminosity(bg),luminosity(fg)].sort((a,b)=>a-b);
+   return (high+.05)/(low+.05);
+  });
+  if(!(ratio>=4.5))throw Error('Low contrast on '+selector+': '+ratio.toFixed(2));
+ }
+});
+{
+ const ctx=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+ const page=await ctx.newPage();
+ try{
+  const result=await page.goto(base+'/pt-br/pixel-morto-notebook',{waitUntil:'domcontentloaded'});
+  if(result?.status()!==200)throw Error('No-JS laptop page not served');
+  const guide=page.locator('[data-symptom-decision]');
+  if(await guide.locator('details').count()!==4)throw Error('No-JS HTML lost visible decision guide');
+  await guide.locator('summary').first().click();
+  if(!await guide.locator('details').first().evaluate(el=>el.open))throw Error('Native no-JS decision guide not interactive');
+  console.log('PASS browser: no-JavaScript Portuguese laptop guidance');
+ }catch(error){failures.push('no-JS Portuguese laptop: '+error.message);}
+ finally{await ctx.close();}
+}
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -667,4 +722,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+60+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+66+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
