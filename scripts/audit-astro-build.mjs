@@ -97,6 +97,38 @@ if(origin){
  }
 }
 
+// Existing URLs should not depend entirely on a hydrated React island for
+// their primary explanation. They need distinct indexable metadata and real
+// per-tool guidance in the original Astro HTML.
+const enhancedLegacyPaths=["/tests/uniformity","/tests/text-clarity","/tests/color-distance","/tests/response-time","/tests/gamma","/tests/viewing-angle","/tests/brightness","/tests/contrast","/tests/matrix","/tools/burn-in-wiper","/tools/input-lag","/tools/reaction-time","/tools/double-click-test","/tools/mouse-polling","/tools/keyboard","/tools/controller","/tools/touch","/tools/color-blindness","/tools/webcam","/tools/speaker-test","/tools/ruler","/tools/ppi-calculator"];
+const descriptions=new Map();
+for(const path of enhancedLegacyPaths){
+ const file=join('dist',path.slice(1)+'.html');
+ if(!existsSync(file)){errors.push('Missing enhanced tool HTML '+path);continue;}
+ const html=readFileSync(file,'utf8');
+ const match=html.match(/<meta name="description" content="([^"]+)"/i);
+ if(!match||match[1].length<65||match[1].includes('Free browser-based display and device diagnostics.'))
+  errors.push('Legacy tool has generic or missing meta description '+path);
+ else{
+  if(descriptions.has(match[1]))errors.push('Duplicate tool meta description '+path+' and '+descriptions.get(match[1]));
+  descriptions.set(match[1],path);
+ }
+ if(!/<title>[^<]+\| DeadPixelTest<\/title>/i.test(html))
+  errors.push('Legacy tool has no descriptive branded title '+path);
+ if(!html.includes('id="legacy-static-guide"')||!html.includes('Practical inspection steps')||
+    !html.includes('What the result cannot prove')||!html.includes('<ol')||!html.includes('<ul'))
+  errors.push('Legacy tool lacks unique server-rendered guidance '+path);
+}
+for(const [path,expected] of [
+ ['/blog','Screen Testing Guides'],['/about','About DeadPixelTest'],['/contact','Contact DeadPixelTest'],
+ ['/privacy-policy','Privacy Policy'],['/terms-of-service','Terms of Service']
+]){
+ const file=join('dist',path.slice(1)+'.html');
+ if(!existsSync(file)){errors.push('Missing static informational route '+path);continue;}
+ const html=readFileSync(file,'utf8');
+ if(!html.includes('<title>'+expected))errors.push('Informational route has generic SEO title '+path);
+}
+
 // The three legacy editorial guides are indexable and must not undermine
 // the safe static-pixel workflow with unverified fixes or fake expert teams.
 const editorialPages=[
