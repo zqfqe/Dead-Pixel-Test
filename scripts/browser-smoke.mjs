@@ -611,6 +611,25 @@ await check('/',async page=>{
  await page.setViewportSize({width:1366,height:900});
  await alert.waitFor({state:'hidden',timeout:5000});
 });
+await check('/',async page=>{
+  await page.getByRole('button',{name:'Start full-screen inspection'}).click();
+  await page.getByRole('button',{name:'Mark suspect spot'}).click();
+  const surface=page.locator('[role="dialog"] [role="presentation"]');
+  await surface.click({position:{x:160,y:180}});
+  await surface.click({position:{x:300,y:270}});
+  await page.getByRole('button',{name:/Exit test/}).click();
+  const remove=page.getByRole('button',{name:'Remove'});
+  if(await remove.count()!==2)throw Error('Expected two manually marked spots');
+  // The second (selected) spot is removed; the first must become selected.
+  await remove.nth(1).click();
+  await page.getByText(/Suspect spots: 1/).waitFor();
+  await page.getByRole('button',{name:'Start full-screen inspection'}).click();
+  const picker=page.getByRole('combobox',{name:'Selected spot'});
+  await picker.waitFor();
+  if(!await picker.inputValue())throw Error('Removing selected mark lost selection of remaining spot');
+  await page.getByRole('button',{name:'Still visible on this color'}).waitFor();
+  await page.getByRole('button',{name:/Exit test/}).click();
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -628,4 +647,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+56+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+57+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
