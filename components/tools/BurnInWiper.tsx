@@ -87,7 +87,7 @@ const BurnInWiper: React.FC = () => {
     noiseCanvas.height = h / scale;
     const noiseCtx = noiseCanvas.getContext('2d', { alpha: false });
     const noiseData = noiseCtx?.createImageData(noiseCanvas.width, noiseCanvas.height);
-    const buffer32 = new Uint32Array(noiseData!.data.buffer);
+    const buffer32 = noiseData ? new Uint32Array(noiseData.data.buffer) : null;
 
     const render = () => {
       frameCount++;
@@ -111,7 +111,7 @@ const BurnInWiper: React.FC = () => {
       }
       else if (mode === 'noise') {
         // Generate the noise once; do not strobe a new frame every animation tick.
-        if (frameCount === 1 && noiseCtx && noiseData) {
+        if (frameCount === 1 && noiseCtx && noiseData && buffer32) {
             const len = buffer32.length;
             for (let i = 0; i < len; i++) {
                 // Random grayscale noise
@@ -121,10 +121,14 @@ const BurnInWiper: React.FC = () => {
             noiseCtx.putImageData(noiseData, 0, 0);
             ctx.imageSmoothingEnabled = false; // Nearest neighbor scaling
             ctx.drawImage(noiseCanvas, 0, 0, w, h);
+        } else if (frameCount === 1) {
+            ctx.fillStyle = '#202020';
+            ctx.fillRect(0, 0, w, h);
         }
       }
 
-      reqRef.current = requestAnimationFrame(render);
+      // Static noise needs one draw; do not waste frames in a 60+ FPS loop.
+      reqRef.current = mode === 'noise' ? null : requestAnimationFrame(render);
     };
 
     reqRef.current = requestAnimationFrame(render);

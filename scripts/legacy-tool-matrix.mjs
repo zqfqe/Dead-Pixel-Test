@@ -100,6 +100,38 @@ try{
    await fields.nth(2).fill('24');
    await page.getByText('91.79',{exact:false}).first().waitFor();
   }],
+  ['/tools/mouse-polling',async page=>{
+   await page.getByRole('heading',{name:'Mouse Polling Rate'}).waitFor();
+   const avg=page.getByTestId('mouse-polling-average');
+   await page.getByTestId('mouse-polling-surface').waitFor();
+   await page.evaluate(()=>{
+     const target=document.querySelector('[data-testid="mouse-polling-surface"]');
+     const base=performance.now()+50;
+     for(let i=0;i<135;i++){
+       const event=new PointerEvent('pointermove',{bubbles:true,pointerType:'mouse'});
+       Object.defineProperty(event,'timeStamp',{value:base+i*10});
+       target.dispatchEvent(event);
+     }
+     window.__fixtureTime=base+1340;
+   });
+   await page.waitForFunction(()=>document.querySelector('[data-testid="mouse-polling-average"]')?.textContent?.trim()==='100',null,{timeout:8000});
+   await page.evaluate(()=>{
+     const target=document.querySelector('[data-testid="mouse-polling-surface"]');
+     for(let i=1;i<=155;i++){
+       const event=new PointerEvent('pointermove',{bubbles:true,pointerType:'mouse'});
+       Object.defineProperty(event,'timeStamp',{value:window.__fixtureTime+i*4});
+       target.dispatchEvent(event);
+     }
+   });
+   await page.waitForFunction(()=>document.querySelector('[data-testid="mouse-polling-average"]')?.textContent?.trim()==='250',null,{timeout:8000});
+   await page.getByRole('button',{name:'Reset Statistics'}).click();
+   await page.waitForFunction(()=>document.querySelector('[data-testid="mouse-polling-average"]')?.textContent?.trim()==='0');
+   await page.evaluate(()=>{
+     for(let i=0;i<20;i++)document.body.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,pointerType:'mouse'}));
+   });
+   await page.waitForTimeout(150);
+   if(Number(await avg.textContent())!==0)throw Error('Outside-pad events were counted');
+  }],
   ['/tools/reaction-time',async page=>{
    const audio=page.getByRole('button',{name:'Audio',exact:true});
    const visual=page.getByRole('button',{name:'Visual',exact:true});
@@ -149,4 +181,4 @@ try{
  for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 6 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 7 interactive functional checks (hardware behaviors not certified).');

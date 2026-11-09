@@ -13,7 +13,6 @@ const MousePollingTest: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
   const [history, setHistory] = useState<number[]>([]);
   const [maxRate, setMaxRate] = useState(0);
-  const [avgRate, setAvgRate] = useState(0);
   const [currentRate, setCurrentRate] = useState(0);
   const [eventCount, setEventCount] = useState(0);
 
@@ -27,7 +26,8 @@ const MousePollingTest: React.FC = () => {
   const reset = () => {
     setHistory([]);
     setMaxRate(0);
-    setAvgRate(0);
+    setIsActive(false);
+    lastActivityRef.current = 0;
     setCurrentRate(0);
     setEventCount(0);
     lastTimeRef.current = 0;
@@ -39,7 +39,10 @@ const MousePollingTest: React.FC = () => {
 
     // 1. High-frequency Input Handler (No React State here)
     const handlePointerMove = (e: PointerEvent) => {
-      const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+      // Observed browser events cannot certify hardware polling frequency.
+      if (e.pointerType !== 'mouse' || !containerRef.current?.contains(e.target as Node)) return;
+      const coalesced = e.getCoalescedEvents?.();
+      const events = coalesced?.length ? coalesced : [e];
       const now = performance.now();
       lastActivityRef.current = now;
 
@@ -115,13 +118,10 @@ const MousePollingTest: React.FC = () => {
     };
   }, [isMobile]);
 
-  // Calculate Running Average (Memoized/Effect for less blocking)
-  useEffect(() => {
-      if (history.length > 0) {
-          const subset = history.slice(-1000); 
-          setAvgRate(Math.round(subset.reduce((a, b) => a + b, 0) / subset.length));
-      }
-  }, [history.length]); 
+  // Length stays at GRAPH_POINTS after saturation: update on each new batch.
+  const avgRate = useMemo(() => history.length
+    ? Math.round(history.reduce((sum, hz) => sum + hz, 0) / history.length)
+    : 0, [history]);
 
   // Generate SVG Path
   const graphPath = useMemo(() => {
@@ -145,8 +145,8 @@ const MousePollingTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Mouse Polling Rate Checker - Test Hz (1000Hz, 8000Hz)" 
-        description="Check your mouse polling rate (Hz) in real-time. Verify if your gaming mouse is truly running at 1000Hz, 4000Hz, or 8000Hz."
+        title="Mouse Browser Pointer Event Rate – Estimated Hz" 
+        description="Estimate browser-observed pointer event cadence. OS scheduling and event coalescing prevent USB hardware polling certification."
         canonical="/tools/mouse-polling"
         keywords={['mouse polling rate test', 'mouse hz checker', 'polling rate test', '1000hz mouse test', 'gaming mouse test']}
         breadcrumbs={[
@@ -181,7 +181,7 @@ const MousePollingTest: React.FC = () => {
                   "name": "How to check my mouse Polling Rate?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Move your mouse quickly in continuous circles on this page. The 'Average' Hz counter will stabilize at your polling rate (usually 125, 500, or 1000)."
+                    "text": "Move your mouse in continuous circles inside the test rectangle. The recent average estimates browser event cadence, which may differ from hardware USB polling frequency."
                   }
                 },
                 {
@@ -199,9 +199,9 @@ const MousePollingTest: React.FC = () => {
               "name": "How to Check Mouse Polling Rate",
               "step": [
                 { "@type": "HowToStep", "text": "Close other CPU-intensive applications for the most accurate reading." },
-                { "@type": "HowToStep", "text": "Move your mouse cursor quickly in continuous circles over the test area." },
+                { "@type": "HowToStep", "text": "Move your mouse inside the sampling area to collect pointer events." },
                 { "@type": "HowToStep", "text": "Observe the 'Live Rate' and 'Average' Hz counters." },
-                { "@type": "HowToStep", "text": "Verify if the average matches your mouse settings (e.g., 1000Hz, 500Hz)." }
+                { "@type": "HowToStep", "text": "Compare the browser estimate with your settings, accounting for coalescing and throttling." }
               ]
             }
           ]
@@ -215,7 +215,7 @@ const MousePollingTest: React.FC = () => {
            </div>
            <h1 className="text-4xl font-bold text-white mb-4">Mouse Polling Rate</h1>
            <p className="text-neutral-400 max-w-lg mx-auto">
-              Move your cursor quickly in circles to test the report rate (Hz) of your mouse.
+              Move the mouse inside the test rectangle to estimate browser-observed pointer event cadence, not certified USB hardware polling frequency.
            </p>
         </div>
 
@@ -243,8 +243,8 @@ const MousePollingTest: React.FC = () => {
 
                {/* Average */}
                <div className="p-8 rounded-2xl bg-neutral-900/30 border border-white/10 flex flex-col items-center justify-center">
-                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Average</div>
-                  <div className="text-6xl font-mono font-bold text-blue-400 tabular-nums">
+                  <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Recent Average</div>
+                  <div data-testid="mouse-polling-average" aria-label="Recent estimated pointer event cadence in hertz" className="text-6xl font-mono font-bold text-[#C5F277] tabular-nums">
                      {avgRate}
                   </div>
                   <div className="text-sm font-bold text-neutral-500 mt-1">Hz</div>
@@ -263,6 +263,8 @@ const MousePollingTest: React.FC = () => {
             {/* Graph Area */}
             <div 
               ref={containerRef}
+              data-testid="mouse-polling-surface"
+              aria-label="Mouse pointer sampling area"
               className="w-full h-64 bg-black border border-white/10 rounded-2xl relative overflow-hidden flex items-center justify-center group cursor-crosshair"
             >
                {history.length > 2 ? (
@@ -285,10 +287,11 @@ const MousePollingTest: React.FC = () => {
                
                {/* Stability Note */}
                <div className="absolute top-4 right-4 text-xs font-mono text-neutral-500 bg-black/50 px-2 py-1 rounded">
-                  Events Processed: {eventCount}
+                  Intervals Sampled: {eventCount}
                </div>
             </div>
 
+            <p className="mt-4 text-xs leading-6 text-neutral-400">Browser pointer events may be coalesced or rate-limited. Recent average and peak estimate observed event intervals only; they do not certify the mouse's actual USB polling frequency.</p>
             <div className="mt-8 flex justify-center">
                <Button onClick={reset} variant="secondary" icon={RotateCcw}>
                   Reset Statistics
