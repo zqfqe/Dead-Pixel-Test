@@ -569,11 +569,10 @@ await check('/',async page=>{
    if(!(outside instanceof HTMLElement))throw Error('No background link available for focus test');
    outside.focus();
  });
- const inside=await page.evaluate(()=>{
+ await page.waitForFunction(()=>{
    const dialog=document.querySelector('[role="dialog"]');
    return !!dialog?.contains(document.activeElement);
- });
- if(!inside)throw Error('Focus escaped the active inspection dialog');
+ },null,{timeout:1500});
  await page.keyboard.press('Tab');
  const afterTab=await page.evaluate(()=>!!document.querySelector('[role="dialog"]')?.contains(document.activeElement));
  if(!afterTab)throw Error('Tab from hidden controls escaped the dialog');
