@@ -64,10 +64,54 @@ const pixelDifferences=isBR?[
 const docType=newPage?.mode==='guide'?'WebPage':'WebApplication';
 const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
 const publicSiteUrl=!isCloudflarePreview && import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
+// Match schema with visible content. Do not invent reviews, lab measurements,
+// FAQ-rich-result eligibility or timestamps that have not been recorded.
+const schemaUrl=(path:string)=>publicSiteUrl?publicSiteUrl+(path==='/'?'/':path.replace(/\/+$/,'')):undefined;
+const crumb=(name:string,path:string,position:number)=>({
+ '@type':'ListItem',position,name,...(schemaUrl(path)?{item:schemaUrl(path)}:{})
+});
+const breadcrumbs=(items:{name:string;path:string}[])=>({
+ '@type':'BreadcrumbList',
+ itemListElement:items.map((item,i)=>crumb(item.name,item.path,i+1))
+});
+const breadcrumbItems=newPage
+ ? [{name:isBR?'Teste de Pixel Morto':'Dead Pixel Test',path:isBR?'/pt-br/':'/'},
+    {name:newPage.h1,path:newPage.path}]
+ : article
+ ? [{name:'Dead Pixel Test',path:'/'},{name:'Screen Testing Guides',path:'/blog'},
+    {name:article.title,path:'/blog/'+article.slug}]
+ : [{name:'Dead Pixel Test',path:'/'},{name:'Screen Testing Guides',path:'/blog'}];
 const structuredData=newPage?{
- '@context':'https://schema.org','@type':docType,name:newPage.h1,
- ...(publicSiteUrl?{url:publicSiteUrl+newPage.path.replace(/\/$/,'')}:{}),description:newPage.description,
- ...(docType==='WebApplication'?{applicationCategory:'UtilitiesApplication',operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}:{})
+ '@context':'https://schema.org',
+ '@graph':[
+  {'@type':docType,name:newPage.h1,
+   ...(schemaUrl(newPage.path)?{url:schemaUrl(newPage.path)}:{}),
+   description:newPage.description,
+   ...(docType==='WebApplication'?{applicationCategory:'UtilitiesApplication',operatingSystem:'Web Browser',
+    offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}:{})},
+  // Do not give the pt-BR homepage a self-only breadcrumb.
+  ...(normalized==='/pt-br'?[]:[breadcrumbs(breadcrumbItems)])
+ ]
+}:article?{
+ '@context':'https://schema.org',
+ '@graph':[
+  {'@type':'BlogPosting',
+   headline:article.title,description:article.excerpt,
+   ...(schemaUrl('/blog/'+article.slug)?{mainEntityOfPage:schemaUrl('/blog/'+article.slug)}:{}),
+   author:{'@type':'Organization',name:'DeadPixelTest',
+    ...(schemaUrl('/about')?{url:schemaUrl('/about')}:{})},
+   publisher:{'@type':'Organization',name:'DeadPixelTest'},
+   ...(Number.isFinite(Date.parse(article.date))?{datePublished:new Date(article.date).toISOString().slice(0,10)}:{})
+  },
+  breadcrumbs(breadcrumbItems)
+ ]
+}:blogIndex?{
+ '@context':'https://schema.org',
+ '@graph':[
+  {'@type':'CollectionPage',name:'Screen Testing Guides',
+   ...(schemaUrl('/blog')?{url:schemaUrl('/blog')}:{})},
+  breadcrumbs(breadcrumbItems)
+ ]
 }:undefined;
 const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];limits:string[]}> = {
  '/tests/refresh-rate':{
@@ -418,7 +462,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
   <main id="main-content" tabindex="-1" class="max-w-4xl mx-auto px-5 pt-12">
     <nav aria-label="Breadcrumb"><a href="/blog" class="text-[#125CC9]">← All guides</a></nav>
     <article class="prose max-w-none py-8">
-      <p class="text-sm uppercase tracking-widest text-[#125CC9]">{article.category} · {article.date}</p>
+      <p class="text-sm uppercase tracking-widest text-[#125CC9]">{article.category} · <time datetime={new Date(article.date).toISOString().slice(0,10)}>{article.date}</time> · By <a href="/about">DeadPixelTest</a></p>
       <h1 class="text-4xl font-bold">{article.title}</h1>
       <p class="text-[#475569] leading-8">{article.excerpt}</p>
       <div class="mt-8 blog-article" set:html={article.content} />
