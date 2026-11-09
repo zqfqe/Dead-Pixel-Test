@@ -867,15 +867,29 @@ await check('/',async page=>{
  if(!html.includes('window.print()'))throw Error('Printable offline report has no explicit print action');
 });
 await check('/tests/refresh-rate',async page=>{
+ // Keep focus regressions visible, but report which exact checkpoint broke.
+ const focused=async(label,predicate)=>{
+  try{
+   await page.waitForFunction(predicate,null,{timeout:12000});
+  }catch(error){
+   const snapshot=await page.evaluate(()=>({
+    active:document.activeElement?.outerHTML.slice(0,320),
+    modal:!!document.querySelector('[role="dialog"][aria-label="Search tools"]'),
+    links:[...document.querySelectorAll('[role="dialog"] a[href]')].length,
+    href:location.pathname
+   }));
+   throw Error('Command palette focus at '+label+' failed: '+JSON.stringify(snapshot)+'; '+String(error));
+  }
+ };
  const opener=page.getByRole('link',{name:'DeadPixelTest Home'});
  await opener.focus();
  await page.keyboard.press('Control+k');
  const dialog=page.getByRole('dialog',{name:'Search tools'});
  const search=dialog.getByRole('textbox',{name:'Search tools'});
  await search.waitFor();
- await page.waitForFunction(()=>document.activeElement===document.querySelector('input[aria-label="Search tools"]'),null,{timeout:12000});
+ await focused('initial input focus',()=>document.activeElement===document.querySelector('input[aria-label="Search tools"]'));
  await page.keyboard.press('Shift+Tab');
- await page.waitForFunction(()=>document.activeElement===Array.from(document.querySelectorAll('[role="dialog"] a[href]')).at(-1),null,{timeout:12000});
+ await focused('reverse Tab wraps to last link',()=>document.activeElement===Array.from(document.querySelectorAll('[role="dialog"] a[href]')).at(-1));
  await page.keyboard.press('Tab');
  if(!await search.evaluate(el=>el===document.activeElement))throw Error('Tab did not wrap back to input');
  await search.fill('impossible query 32589');
@@ -885,11 +899,11 @@ await check('/tests/refresh-rate',async page=>{
   throw Error('Empty-result Tab order did not wrap to close control');
  await page.keyboard.press('Escape');
  await dialog.waitFor({state:'hidden'});
- await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
+ await focused('Escape restores opener',()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
  await page.keyboard.press('Control+k');
  await search.waitFor();
  await dialog.getByRole('button',{name:'Close search'}).click();
- await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
+ await focused('Close button restores opener',()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
 });
 await check('/image-retention-test',async page=>{
  const section=page.getByRole('region',{name:'Manufacturer OLED care resources'});
