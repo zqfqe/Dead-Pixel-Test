@@ -71,7 +71,14 @@ try{
    await sixty.click();
    if(!((await sixty.getAttribute('class'))||'').includes('bg-neutral-700'))throw Error('60-percent layout did not activate');
    await page.keyboard.press('a');
-   await page.getByRole('button',{name:'Full',exact:true}).click();
+   const full=page.getByRole('button',{name:'Full',exact:true});
+   await full.focus();
+   await page.keyboard.press('Tab');
+   if(await full.evaluate(el=>el===document.activeElement))throw Error('Keyboard tester blocked native Tab navigation');
+   await page.keyboard.press('Control+k');
+   await page.getByRole('dialog',{name:'Search tools'}).waitFor();
+   await page.keyboard.press('Escape');
+   await full.click();
    await page.getByRole('button',{name:'Reset All'}).click();
   }],
   ['/tools/double-click-test',async page=>{
@@ -95,6 +102,7 @@ try{
   }],
   ['/tools/ruler',async page=>{
    await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
+   if(await page.getByText(/accurate to within 0\.5mm/).count())throw Error('Unverified ruler precision guarantee is still visible');
    await page.getByRole('button',{name:'Calibrate & Measure'}).click();
    await page.getByRole('heading',{name:'1:1 Physical Scale'}).waitFor();
    await page.getByRole('button',{name:'Recalibrate'}).click();

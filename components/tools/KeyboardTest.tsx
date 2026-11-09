@@ -172,7 +172,10 @@ const KeyboardTest: React.FC = () => {
 
   useEffect(() => {
     const handleDown = (e: KeyboardEvent) => {
-      e.preventDefault();
+      // Do not steal Tab, browser shortcuts or keyboard activation from controls.
+      const target=e.target instanceof Element?e.target:null;
+      const interactive=Boolean(target?.closest('input,textarea,select,button,a[href],[contenteditable="true"]'));
+      if(e.key===' '&&!interactive&&!e.ctrlKey&&!e.metaKey&&!e.altKey)e.preventDefault();
       setLastEvent(e);
       
       const code = e.code;
@@ -193,7 +196,6 @@ const KeyboardTest: React.FC = () => {
     };
 
     const handleUp = (e: KeyboardEvent) => {
-      e.preventDefault();
       setActiveKeys(prev => {
         const next = new Set(prev);
         next.delete(e.code);

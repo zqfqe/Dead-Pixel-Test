@@ -215,7 +215,7 @@ const PhysicalRuler: React.FC = () => {
                        </div>
                        <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                           <h4 className="font-bold text-white text-base mb-2">Is the scale accurate?</h4>
-                          <p className="text-neutral-400 text-sm">Once calibrated correctly with a card, the ruler is typically accurate to within 0.5mm. It is perfect for estimations but use a metal caliper for engineering tasks.</p>
+                          <p className="text-neutral-400 text-sm">The result depends on how accurately you match a physical reference, display scaling, and browser rendering. Verify against a physical ruler before relying on any measurement. This tool is not a substitute for a calibrated caliper in engineering tasks.</p>
                        </div>
                     </div>
                  </div>
