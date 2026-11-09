@@ -231,7 +231,7 @@ const taskGuide=specificGuidance[normalized];
 const legacyGuide=legacyGuides[normalized];
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 ---
-<BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean(newPage && !newPage.indexable)} schema={structuredData}>
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean((newPage && !newPage.indexable) || normalized==='/tests/dead-pixel')} schema={structuredData}>
 {newPage ? (
   <main id="main-content" tabindex="-1" class="max-w-6xl mx-auto px-4 pt-8 md:px-8">
     <nav aria-label="Breadcrumb" class="text-sm text-[#475569] mb-7"><a href={isBR?'/pt-br':'/'} class="hover:text-[#125CC9]">{isBR?'Início':'Home'}</a> / {newPage.h1}</nav>

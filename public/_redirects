@@ -1,0 +1,24 @@
+# Canonicalize the legacy pixel test to the primary, full-featured root inspection.
+/tests/dead-pixel / 301
+/tests/dead-pixel/ / 301
+
+# Astro file-format output uses extensionless URLs without trailing slashes.
+/laptop-screen-dead-pixel-test/ /laptop-screen-dead-pixel-test 301
+/dead-pixel-fixer/ /dead-pixel-fixer 301
+/phone-screen-dead-pixel-test/ /phone-screen-dead-pixel-test 301
+/what-is-a-dead-pixel/ /what-is-a-dead-pixel 301
+/dead-pixel-line-test/ /dead-pixel-line-test 301
+/image-retention-test/ /image-retention-test 301
+/screen-resolution-test/ /screen-resolution-test 301
+/screen-contrast-test/ /screen-contrast-test 301
+/pt-br/ /pt-br 301
+/pt-br/pixel-morto-notebook/ /pt-br/pixel-morto-notebook 301
+/pt-br/pixel-morto-iphone/ /pt-br/pixel-morto-iphone 301
+/pt-br/reparar-pixel-preso/ /pt-br/reparar-pixel-preso 301
+/pt-br/o-que-e-dead-pixel/ /pt-br/o-que-e-dead-pixel 301
+/pt-br/teste-de-cores/ /pt-br/teste-de-cores 301
+/tests/refresh-rate/ /tests/refresh-rate 301
+/tests/local-dimming/ /tests/local-dimming 301
+/tests/color-gradient/ /tests/color-gradient 301
+/tests/audio-sync/ /tests/audio-sync 301
+/tests/test-patterns/ /tests/test-patterns 301

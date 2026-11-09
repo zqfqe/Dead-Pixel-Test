@@ -39,5 +39,48 @@ for(const path of [...priority,...planned]){
 if(origin){if(!robots.includes(origin+'/sitemap.xml'))errors.push('robots sitemap mismatch');}
 else if(locs.length||/Sitemap:/i.test(robots))errors.push('Domainless sitemap/robots leaks an origin');
 if(xml.includes('<lastmod>'))errors.push('Unverified lastmod');
+
+if(origin){
+ // Every advertised Sitemap location must be a real, indexable, self-canonical static HTML page.
+ const visited=new Set();
+ for(const loc of locs){
+  if(visited.has(loc)){errors.push('Duplicate sitemap loc '+loc);continue;}
+  visited.add(loc);
+  let url;
+  try{url=new URL(loc);}catch{errors.push('Malformed sitemap loc '+loc);continue;}
+  if(url.origin!==origin||url.search||url.hash){errors.push('Unexpected origin or query in sitemap '+loc);continue;}
+  const path=url.pathname;
+  if(path!=='/'&&path.endsWith('/'))errors.push('Sitemap uses noncanonical trailing slash '+path);
+  const expected=origin+path;
+  if(loc!==expected)errors.push('Sitemap loc not canonical '+loc);
+  const output=join('dist',path==='/'?'index.html':path.slice(1)+'.html');
+  if(!existsSync(output)){errors.push('Sitemap URL has no generated HTML '+path);continue;}
+  const html=readFileSync(output,'utf8');
+  const canonicalTags=[...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/gi)];
+  if(canonicalTags.length!==1||!canonicalTags[0][0].includes('href="'+expected+'"'))errors.push('Sitemap URL has missing/incorrect self-canonical '+path);
+  if(/<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex/i.test(html))errors.push('Sitemap includes noindex HTML '+path);
+  if(!/<title>[^<]+<\/title>/i.test(html))errors.push('Sitemap URL has no static title '+path);
+ }
+ // All hreflang destinations in the sitemap must actually be included as indexable pages.
+ for(const match of xml.matchAll(/<xhtml:link\b[^>]*href="([^"]+)"/g)){
+  if(!visited.has(match[1]))errors.push('Hreflang targets non-indexable URL '+match[1]);
+ }
+ // Keep the legacy alias available to old clients without advertising a duplicate index page.
+ const legacy=join('dist','tests/dead-pixel.html');
+ if(!existsSync(legacy))errors.push('Legacy dead-pixel route is missing');
+ else{
+  const html=readFileSync(legacy,'utf8');
+  if(!/name="robots" content="noindex,nofollow"/.test(html))errors.push('Legacy dead-pixel alias must not be indexable');
+  if(!/<link\b[^>]*rel="canonical" href="[^"]+\/"/.test(html))errors.push('Legacy dead-pixel alias must canonicalize to homepage');
+ }
+ const redirects=join('dist','_redirects');
+ if(!existsSync(redirects))errors.push('Missing Cloudflare Pages redirect rules');
+ else {
+  const rules=readFileSync(redirects,'utf8');
+  if(!/^\/tests\/dead-pixel\s+\/\s+301\s*$/m.test(rules))errors.push('Missing 301 from legacy pixel URL to root');
+  if(!/^\/pt-br\/\s+\/pt-br\s+301\s*$/m.test(rules))errors.push('Missing pt-BR canonical trailing-slash 301');
+ }
+}
+
 if(errors.length){console.error(errors.join('\n'));process.exit(1);}
 console.log('PASS: legacy indexable routes and 14 SERP-gated landing pages audited.');
