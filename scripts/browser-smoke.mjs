@@ -261,7 +261,7 @@ await check('/what-is-a-dead-pixel',async page=>{
 await check('/pt-br/o-que-e-dead-pixel',async page=>{
  await page.getByRole('heading',{name:'Compare o que você observa'}).waitFor();
  await page.getByRole('heading',{name:'Faixa horizontal ou vertical'}).waitFor();
- const href=await page.getByRole('link',{name:'English'}).getAttribute('href');
+ const href=await page.getByRole('navigation',{name:'Mudar idioma'}).getByRole('link',{name:'English',exact:true}).getAttribute('href');
  if(href!=='/what-is-a-dead-pixel')throw Error('pt-BR locale counterpart is incorrect: '+href);
 });
 await check('/screen-resolution-test',async page=>{
