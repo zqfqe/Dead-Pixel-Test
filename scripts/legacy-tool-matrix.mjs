@@ -23,6 +23,7 @@ async function inspectRoute(path,options={}){
   }catch{}
  });
  try{
+  if(options.beforeNavigate)await options.beforeNavigate(page);
   const response=await page.goto(base+path,{waitUntil:'domcontentloaded',timeout:16000});
   if(response?.status()!==200)throw Error('Unexpected HTTP '+response?.status());
   await page.waitForFunction(path=>{
@@ -225,6 +226,20 @@ try{
   }]
  ];
  for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
+ await inspectRoute('/tools/controller',{
+  beforeNavigate:async page=>await page.addInitScript(()=>{
+   window.__mockPads=[null,{id:'QA Minimal Controller',index:1,connected:true,mapping:'standard',buttons:[{pressed:false,value:0}],axes:[],timestamp:0}];
+   Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>window.__mockPads});
+  }),
+  interact:async page=>{
+   await page.getByRole('heading',{level:1,name:/QA Minimal Controller/}).waitFor();
+   if(await page.getByText(/NaN/).count())throw Error('Sparse controller generated NaN values');
+   await page.evaluate(()=>{window.__mockPads=[null,null];});
+   await page.getByRole('heading',{name:'No Controller Detected'}).waitFor();
+   await page.evaluate(()=>{window.__mockPads=[{id:'QA Reconnected Pad',index:0,connected:true,mapping:'standard',buttons:[{pressed:false,value:0}],axes:[0,0],timestamp:0}];});
+   await page.getByRole('heading',{level:1,name:/QA Reconnected Pad/}).waitFor();
+  }
+ });
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 9 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 10 interactive functional checks (hardware behaviors not certified).');

@@ -21,6 +21,7 @@ const ControllerVisualizer = ({
   layout: ControllerLayout;
 }) => {
   const { buttons, axes } = gamepad;
+  const axis=(i:number)=>Number.isFinite(axes[i])?Math.max(-1,Math.min(1,axes[i])):0;
   
   // Helper to get button state safely
   const isPressed = (idx: number) => buttons[idx]?.pressed;
@@ -82,7 +83,7 @@ const ControllerVisualizer = ({
 
         {/* --- STICKS --- */}
         {/* Left Stick */}
-        <g transform={`translate(${75 + (axes[0] * 15)}, ${90 + (axes[1] * 15)})`}>
+        <g transform={`translate(${75 + (axis(0) * 15)}, ${90 + (axis(1) * 15)})`}>
            <circle r="22" fill="#151515" stroke="#000" />
            <circle r="20" fill="url(#stickGradient)" opacity={isPressed(10) ? 0.9 : 0.4} />
            <defs>
@@ -94,7 +95,7 @@ const ControllerVisualizer = ({
         </g>
 
         {/* Right Stick */}
-        <g transform={`translate(${195 + (axes[2] * 15)}, ${140 + (axes[3] * 15)})`}>
+        <g transform={`translate(${195 + (axis(2) * 15)}, ${140 + (axis(3) * 15)})`}>
            <circle r="22" fill="#151515" stroke="#000" />
            <circle r="20" fill="url(#stickGradient)" opacity={isPressed(11) ? 0.9 : 0.4} />
         </g>
@@ -271,11 +272,13 @@ const ControllerTest: React.FC = () => {
   const lastUpdateRef = useRef<number>(0);
   const frameCountRef = useRef<number>(0);
   const [pollingRate, setPollingRate] = useState(0);
+  const [rumbleStatus,setRumbleStatus] = useState('');
 
   useEffect(() => {
     const scanGamepads = () => {
-      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-      setGamepads(Array.from(gps));
+      let gps:(Gamepad|null)[]=[];
+      try{gps=navigator.getGamepads?Array.from(navigator.getGamepads()):[];}catch{gps=[];}
+      setGamepads(gps);
       
       const now = performance.now();
       frameCountRef.current++;
@@ -288,28 +291,27 @@ const ControllerTest: React.FC = () => {
       reqRef.current = requestAnimationFrame(scanGamepads);
     };
 
-    window.addEventListener("gamepadconnected", scanGamepads);
-    window.addEventListener("gamepaddisconnected", scanGamepads);
-    reqRef.current = requestAnimationFrame(scanGamepads);
-
-    return () => {
-      window.removeEventListener("gamepadconnected", scanGamepads);
-      window.removeEventListener("gamepaddisconnected", scanGamepads);
-      if (reqRef.current) cancelAnimationFrame(reqRef.current);
-    };
+    // The single RAF loop detects connection changes. Re-running scanGamepads
+    // in each gamepad event would create additional self-scheduling RAF loops.
+    reqRef.current=requestAnimationFrame(scanGamepads);
+    return ()=>{if(reqRef.current!==null)cancelAnimationFrame(reqRef.current);};
   }, []);
 
-  const activeGamepad = gamepads[activeIdx];
+  // Gamepad slot indices are sparse; fall back after a selected device disconnects.
+  const activeGamepad=gamepads[activeIdx]??gamepads.find(Boolean)??null;
+  const selectedIndex=activeGamepad?.index??activeIdx;
+  const axis=(i:number)=>Number.isFinite(activeGamepad?.axes[i])?Math.max(-1,Math.min(1,activeGamepad!.axes[i])):0;
 
   const triggerRumble = useCallback((duration: number, weak: number, strong: number) => {
-    if (activeGamepad && activeGamepad.vibrationActuator) {
-      activeGamepad.vibrationActuator.playEffect("dual-rumble", {
-        startDelay: 0,
-        duration: duration,
-        weakMagnitude: weak,
-        strongMagnitude: strong,
-      });
+    const actuator=activeGamepad?.vibrationActuator;
+    if(typeof actuator?.playEffect!=='function'){
+      setRumbleStatus('Vibration is unavailable for this controller or browser.');
+      return;
     }
+    setRumbleStatus('');
+    void actuator.playEffect('dual-rumble',{startDelay:0,duration,weakMagnitude:weak,strongMagnitude:strong})
+      .then(()=>setRumbleStatus('Vibration request sent; the browser cannot verify physical response.'))
+      .catch(()=>setRumbleStatus('Vibration request was rejected by the device or browser.'));
   }, [activeGamepad]);
 
   if (!activeGamepad) {
@@ -422,7 +424,7 @@ const ControllerTest: React.FC = () => {
 
             {/* Polling Rate */}
             <div className="bg-neutral-950 border border-neutral-800 px-4 py-2 rounded-lg flex flex-col items-center min-w-[100px]">
-                <span className="text-[9px] text-neutral-500 uppercase tracking-wider font-bold">Polling Rate</span>
+                <span className="text-[9px] text-neutral-500 uppercase tracking-wider font-bold">Browser Samples</span>
                 <span className={`text-lg font-mono font-bold ${pollingRate > 200 ? 'text-green-500' : 'text-blue-400'}`}>
                   {pollingRate} <span className="text-xs text-neutral-600">Hz</span>
                 </span>
@@ -432,7 +434,7 @@ const ControllerTest: React.FC = () => {
             {gamepads.filter(g => g).length > 1 && (
               <select 
                 className="bg-neutral-800 text-white text-sm p-2 rounded border border-neutral-700 outline-none hover:border-neutral-500 transition-colors"
-                value={activeIdx}
+                value={selectedIndex}
                 onChange={(e) => setActiveIdx(Number(e.target.value))}
               >
                 {gamepads.map((g, i) => g ? <option key={i} value={i}>Gamepad {i+1}</option> : null)}
@@ -458,14 +460,14 @@ const ControllerTest: React.FC = () => {
                 
                 <div className="flex justify-around gap-4">
                   <StickAnalysis 
-                      x={activeGamepad.axes[0]} 
-                      y={activeGamepad.axes[1]} 
+                      x={axis(0)} 
+                      y={axis(1)} 
                       label="Left Stick" 
                       isCircular={true}
                   />
                   <StickAnalysis 
-                      x={activeGamepad.axes[2]} 
-                      y={activeGamepad.axes[3]} 
+                      x={axis(2)} 
+                      y={axis(3)} 
                       label="Right Stick" 
                       isCircular={true} 
                   />
@@ -478,8 +480,8 @@ const ControllerTest: React.FC = () => {
                   <Activity size={16} /> Trigger Linearity
                 </h3>
                 <div className="space-y-6">
-                  <TriggerBar val={activeGamepad.buttons[6].value} label={layout === 'playstation' ? 'L2' : 'LT'} />
-                  <TriggerBar val={activeGamepad.buttons[7].value} label={layout === 'playstation' ? 'R2' : 'RT'} />
+                  <TriggerBar val={activeGamepad.buttons[6]?.value??0} label={layout === 'playstation' ? 'L2' : 'LT'} />
+                  <TriggerBar val={activeGamepad.buttons[7]?.value??0} label={layout === 'playstation' ? 'R2' : 'RT'} />
                 </div>
             </div>
 
@@ -488,7 +490,8 @@ const ControllerTest: React.FC = () => {
                 <h3 className="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Zap size={16} /> Force Feedback
                 </h3>
-                {activeGamepad.vibrationActuator ? (
+                {rumbleStatus && <p role="status" className="mb-3 text-xs leading-5 text-neutral-300">{rumbleStatus}</p>}
+                {typeof activeGamepad.vibrationActuator?.playEffect==='function' ? (
                   <div className="grid grid-cols-2 gap-2">
                       <button onClick={() => triggerRumble(400, 1.0, 1.0)} className="bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold py-3 rounded transition-colors border border-neutral-700">
                         Heavy Rumble
