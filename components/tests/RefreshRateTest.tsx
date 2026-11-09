@@ -30,6 +30,38 @@ const RefreshRateTest: React.FC = () => {
     if (requestRef.current) cancelAnimationFrame(requestRef.current);
   };
 
+  // A timing test must not keep drawing after its tab is hidden or the
+  // browser leaves native fullscreen. Escape also exits the in-page fallback.
+  useEffect(() => {
+    if (!isActive) return;
+
+    const stopWhenHidden = () => {
+      if (document.visibilityState === 'hidden') {
+        setIsActive(false);
+        void exitFullscreen();
+      }
+    };
+    const stopOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setIsActive(false);
+        void exitFullscreen();
+      }
+    };
+    const stopAfterFullscreenExit = () => {
+      if (!document.fullscreenElement) setIsActive(false);
+    };
+
+    document.addEventListener('visibilitychange', stopWhenHidden);
+    document.addEventListener('fullscreenchange', stopAfterFullscreenExit);
+    window.addEventListener('keydown', stopOnEscape);
+    return () => {
+      document.removeEventListener('visibilitychange', stopWhenHidden);
+      document.removeEventListener('fullscreenchange', stopAfterFullscreenExit);
+      window.removeEventListener('keydown', stopOnEscape);
+    };
+  }, [isActive, exitFullscreen]);
+
   useEffect(() => {
     if (!isActive || !canvasRef.current) return;
 
