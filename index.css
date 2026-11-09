@@ -102,3 +102,18 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* V1.2 information layout: bright and readable, immersive tests remain dark. */
+body[data-surface="light"] {
+  background: #F6F8FB;
+  color: #101827;
+}
+body[data-surface="light"] .prose {
+  color: #344256;
+}
+body[data-surface="light"] .prose :is(h1,h2,h3,h4,strong) {
+  color: #101827;
+}
+body[data-surface="light"] .prose a {
+  color: #125CC9;
+}
