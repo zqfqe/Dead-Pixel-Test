@@ -218,9 +218,25 @@ try{
   }],
   ['/tools/ruler',async page=>{
    await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
-   if(await page.getByText(/accurate to within 0\.5mm/).count())throw Error('Unverified ruler precision guarantee is still visible');
+   if(await page.getByText(/accurate to within 0\.5mm/).count())throw Error('Unsupported precision guarantee');
+   await page.setViewportSize({width:360,height:780});
+   const card=page.getByTestId('ruler-reference-card');
+   await page.waitForFunction(()=>{
+     const ref=document.querySelector('[data-testid="ruler-reference-card"]');
+     const area=document.querySelector('[data-testid="ruler-calibration-area"]');
+     return ref&&area&&ref.getBoundingClientRect().width<=area.getBoundingClientRect().width-15;
+   },null,{timeout:5000});
+   const mobileWidth=(await card.boundingBox()).width;
+   await page.setViewportSize({width:900,height:840});
+   await page.waitForFunction(()=>document.querySelector('[data-testid="ruler-reference-card"]')?.getBoundingClientRect().width>300);
+   if(!((await card.boundingBox()).width>mobileWidth))throw Error('Card preview did not respond to available width');
    await page.getByRole('button',{name:'Calibrate & Measure'}).click();
    await page.getByRole('heading',{name:'1:1 Physical Scale'}).waitFor();
+   const countVertical=await page.getByTestId('ruler-vertical-ticks').locator(':scope > div').count();
+   if(countVertical<5)throw Error('Vertical ruler ticks not rendered');
+   const firstCount=await page.getByTestId('ruler-horizontal-ticks').locator(':scope > div').count();
+   await page.setViewportSize({width:600,height:840});
+   await page.waitForFunction(previous=>document.querySelector('[data-testid="ruler-horizontal-ticks"]')?.children.length<previous,firstCount);
    await page.getByRole('button',{name:'Recalibrate'}).click();
    await page.getByRole('heading',{name:'Physical Scale Calibration'}).waitFor();
   }]
