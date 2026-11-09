@@ -636,7 +636,10 @@ await check('/laptop-screen-dead-pixel-test',async page=>{
  if(await link.getAttribute('href')!=='/pt-br/pixel-morto-notebook')throw Error('Laptop locale switch lost its matching topic');
  await link.click();
  await page.getByRole('heading',{level:1,name:'Pixel Morto no Notebook'}).waitFor();
- if(await page.locator('link[rel="alternate"][hreflang]').count())throw Error('Unreviewed pages should not publish SEO hreflang');
+ const languageLinks=page.locator('link[rel="alternate"][hreflang]');
+  if(await languageLinks.count()!==2)throw Error('Approved equivalent pages must publish reciprocal hreflang');
+  const targets=await languageLinks.evaluateAll(nodes=>nodes.map(node=>node.getAttribute('href')));
+  if(!targets.includes(canonicalOrigin+'/laptop-screen-dead-pixel-test')||!targets.includes(canonicalOrigin+'/pt-br/pixel-morto-notebook'))throw Error('Approved notebook hreflang points to incorrect pages: '+targets);
 });
 await check('/pt-br/reparar-pixel-preso',async page=>{
  const link=page.getByRole('link',{name:'English version of this topic'});

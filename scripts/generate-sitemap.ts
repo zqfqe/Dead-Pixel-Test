@@ -23,7 +23,7 @@ if(origin){
   if(!item.isHeader&&item.path.startsWith('/'))allPaths.add(item.path);
  }
  for(const page of SEO_LANDING_PAGES)if(page.indexable)allPaths.add(page.path);
-for(const page of SEO_LANDING_PAGES)if(!page.indexable)allPaths.delete(page.path);
+ for(const page of SEO_LANDING_PAGES)if(!page.indexable)allPaths.delete(page.path);
  for(const post of BLOG_POSTS)allPaths.add('/blog/'+post.slug);
  for(const path of staticPaths)allPaths.add(path);
  allPaths.add('/');

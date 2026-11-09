@@ -43,11 +43,11 @@ for(const path of [...priority,...planned]){
   const expected=origin+(path==='/'?'/':path.replace(/\/+$/,''));
   if(canon.length!==1||!canon[0][0].includes('href="'+expected+'"'))errors.push('Canonical mismatch '+path);
   const noindex=/name="robots" content="noindex,nofollow"/.test(html);
-  const shouldIndex=priority.includes(path);
+  const shouldIndex=priority.includes(path)||planned.includes(path);
   if(shouldIndex&&noindex)errors.push('Legacy route unexpectedly noindex '+path);
-  if(!shouldIndex&&!noindex)errors.push('SERP-gated landing page must remain noindex '+path);
-  if(shouldIndex&&!locs.includes(expected))errors.push('Sitemap missing legacy URL '+expected);
-  if(!shouldIndex&&locs.includes(expected))errors.push('Sitemap includes unverified landing page '+expected);
+  if(!shouldIndex&&!noindex)errors.push('Excluded route unexpectedly indexable '+path);
+  if(shouldIndex&&!locs.includes(expected))errors.push('Sitemap missing published URL '+expected);
+  if(!shouldIndex&&locs.includes(expected))errors.push('Sitemap includes excluded URL '+expected);
  }else if(canon.length||!/<meta name="robots" content="noindex,nofollow"/.test(html))errors.push('Domainless route must be noindex without canonical '+path);
  if(path.startsWith('/pt-br/')&&!/lang="pt-BR"/.test(html))errors.push('Missing pt-BR language '+path);
 }
@@ -106,4 +106,4 @@ else{
  if((headers.match(/X-Robots-Tag: noindex/g)||[]).length<2)errors.push('Missing noindex directive for both Pages host shapes');
 }
 if(errors.length){console.error(errors.join('\n'));process.exit(1);}
-console.log('PASS: legacy indexable routes and 14 SERP-gated landing pages audited.');
+console.log('PASS: legacy routes and 14 newly index-admitted landing pages audited (noindex only on preview/domainless).');

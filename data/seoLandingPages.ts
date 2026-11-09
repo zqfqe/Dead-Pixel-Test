@@ -3,7 +3,7 @@ export type InspectionMode = 'pixels' | 'fixer' | 'lines' | 'retention' | 'resol
 export interface SeoLandingPage {
   path: string;
   lang: 'en' | 'pt-BR';
-  indexable?: boolean; // Explicitly false until SERP and unique-value gates pass.
+  indexable?: boolean; // Explicit publishing decision. Preview and domainless builds remain noindex.
   title: string;
   description: string;
   h1: string;
@@ -17,10 +17,11 @@ export interface SeoLandingPage {
 
 // Each page has a separate user task and real testing/diagnostic value.
 // The source keyword list is the US+BR Semrush export reviewed in V1.2.
-// Search volume/KD are research inputs; they are NOT published as product claims.
+// Search volume/KD are research inputs, NOT published as product claims.
+// Indexing was explicitly authorized on 2026-11-09; this does not certify SERP/quality review.
 export const SEO_LANDING_PAGES: SeoLandingPage[] = [
   {
-    path: '/laptop-screen-dead-pixel-test/', lang:'en',
+    path: '/laptop-screen-dead-pixel-test/', lang:'en', indexable:true,
     title:'Laptop Dead Pixel Test – Check Your Screen Online',
     description:'Inspect a laptop screen for dead, bright and stuck pixels using full-screen colors and a laptop-specific checklist. Free visual test.',
     h1:'Laptop Screen Dead Pixel Test', lead:'Check the built-in laptop display with solid colors, then compare suspect spots across several colors. This is a visual self-check, not an automatic hardware scan.',
@@ -30,7 +31,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Can a website detect a dead laptop pixel automatically?',answer:'No. The browser draws test patterns; you visually identify and record a suspect location.'},{question:'What if I see a full line?',answer:'A continuous horizontal or vertical line can have several causes. Compare with an external display and follow the dedicated line test.'}]
   },
   {
-    path:'/dead-pixel-fixer/',lang:'en',
+    path:'/dead-pixel-fixer/',lang:'en', indexable:true,
     title:'Dead Pixel Fixer? Check Stuck Pixels Safely',
     description:'Inspect a suspected stuck pixel using a movable static color patch and a safe retest workflow. No dangerous rapid flashing or repair guarantee.',
     h1:'Stuck Pixel Check & Safe Retest',lead:'A stuck pixel may stay red, green or blue. A truly damaged pixel cannot be repaired by a webpage. Use the movable static patch to compare the area without rapid flashing.',
@@ -40,7 +41,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Can software fix a dead pixel?',answer:'Software cannot repair a physically failed pixel. Some temporary color anomalies may change, but no result is guaranteed.'},{question:'Why no flashing repair mode?',answer:'Rapid light changes may cause photosensitivity problems and are unnecessary for a basic visual diagnosis.'}]
   },
   {
-    path:'/phone-screen-dead-pixel-test/',lang:'en',
+    path:'/phone-screen-dead-pixel-test/',lang:'en', indexable:true,
     title:'Phone Screen Dead Pixel Test – iPhone & Android',
     description:'Check iPhone and Android screens for dead and stuck pixels with touch-friendly full-screen colors and visual follow-up steps.',
     h1:'Phone Screen Dead Pixel Test',lead:'Use touch-friendly static colors to check a phone or tablet. Fullscreen APIs differ by mobile browser, so the test also works as an edge-to-edge overlay.',
@@ -50,7 +51,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Does this work on iPhone?',answer:'Yes, although native fullscreen support varies. The color overlay provides a fallback.'},{question:'Can I use a screenshot as evidence?',answer:'A normal digital screenshot usually cannot show faults that exist only in the physical screen panel.'}]
   },
   {
-    path:'/what-is-a-dead-pixel/',lang:'en',
+    path:'/what-is-a-dead-pixel/',lang:'en', indexable:true,
     title:'What Is a Dead Pixel? Dead vs Stuck vs Bright',
     description:'Understand dead, stuck and bright pixels; distinguish dust and image retention; use a free multi-color self-check.',
     h1:'What Is a Dead Pixel?',lead:'A dead pixel fails to display its expected light. A stuck subpixel may remain colored, while dirt on the glass can look similar. Test with several static backgrounds before drawing conclusions.',
@@ -60,7 +61,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Are dead and stuck pixels identical?',answer:'No. A dead pixel does not produce the intended output; a stuck subpixel can remain in a particular color.'},{question:'Is dust always a dead pixel?',answer:'No. Clean the glass and inspect the same spot on multiple backgrounds first.'}]
   },
   {
-    path:'/dead-pixel-line-test/',lang:'en',
+    path:'/dead-pixel-line-test/',lang:'en', indexable:true,
     title:'Dead Pixel Line Test – Vertical & Horizontal Screen Lines',
     description:'Inspect horizontal and vertical screen-line symptoms with solid-color fields, coarse stripes and fine CSS-pixel grids. Manual visual check only.',
     h1:'Screen Line & Dead Pixel Line Test',lead:'A whole row or column of abnormal pixels is different from one isolated dead pixel. Compare solid colors, coarse stripes and fine line patterns, then record the location for follow-up.',
@@ -70,7 +71,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Can a browser fix a vertical or horizontal line?',answer:'No. The page helps you compare and document the symptom; it cannot repair a panel, cable or graphics connection.'},{question:'Is a row of dead pixels the same as one dead pixel?',answer:'No. A continuous row or column is a different symptom and needs broader troubleshooting.'}]
   },
   {
-    path:'/image-retention-test/',lang:'en',
+    path:'/image-retention-test/',lang:'en', indexable:true,
     title:'Image Retention Test – Check Screen Persistence',
     description:'Use neutral gray and brief solid-color patterns to visually inspect possible image persistence. Learn the limits of checking temporary retention versus permanent OLED burn-in.',
     h1:'Image Retention & Screen Persistence Test',lead:'Look for a faint outline of previous content on a neutral gray field after the original content has changed. This is a visual comparison only: a browser cannot diagnose temporary retention or confirm permanent OLED burn-in.',
@@ -80,7 +81,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'How can I tell temporary image retention from permanent burn-in?',answer:'Temporary retention may fade after the image changes or the display rests. Burn-in is persistent uneven panel aging that can remain visible across different content. This browser test cannot confirm the cause; follow the manufacturer’s guidance or seek service if it persists.'},{question:'Can this page fix or measure OLED burn-in?',answer:'No. It only displays brief visual patterns. It cannot reverse pixel wear, measure degradation or guarantee that a retained image will disappear.'}]
   },
   {
-    path:'/screen-resolution-test/',lang:'en',
+    path:'/screen-resolution-test/',lang:'en', indexable:true,
     title:'Screen Resolution Test – CSS Pixels & DPR',
     description:'See screen and viewport CSS pixel sizes, device pixel ratio and available screen dimensions. Learn the limits of browser resolution detection.',
     h1:'Browser Screen Resolution Checker',lead:'Read the dimensions your browser exposes, including CSS screen size, viewport and device pixel ratio. These are not guaranteed to equal the panel’s native physical resolution.',
@@ -90,7 +91,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Is screen.width the native pixel resolution?',answer:'Not necessarily. The Screen API reports CSS pixel dimensions.'},{question:'Does DPR mean DPI?',answer:'No. DPR is a scaling ratio between device and CSS pixels, not a physical dots-per-inch measurement.'}]
   },
   {
-    path:'/screen-contrast-test/',lang:'en',
+    path:'/screen-contrast-test/',lang:'en', indexable:true,
     title:'Screen Contrast Test – Grayscale & Color Gradients',
     description:'Use grayscale ramps, black/white fields and color bands to visually inspect a monitor’s contrast and banding.',
     h1:'Screen Contrast & Grayscale Test',lead:'Examine dark and light shade separation with static patterns. This is an observational test, not a photometer-based measurement of contrast ratio or brightness in nits.',
@@ -100,7 +101,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Can this measure a 1000:1 contrast ratio?',answer:'No. That requires physical light measurements.'},{question:'What is color banding?',answer:'Banding is a visibly abrupt transition where a smoother gradient is expected.'}]
   },
   {
-    path:'/pt-br/',lang:'pt-BR',
+    path:'/pt-br/',lang:'pt-BR', indexable:true,
     title:'Teste de Pixel Morto Online – Monitor e Tela',
     description:'Faça um teste de pixel morto grátis com cores em tela cheia. Confira pontos pretos, brilhantes e pixels presos no monitor ou notebook.',
     h1:'Teste de Pixel Morto',lead:'Verifique pontos pretos, claros ou coloridos usando fundos estáticos. O resultado depende da observação visual; o site não detecta defeitos físicos automaticamente.',
@@ -110,7 +111,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'O teste detecta pixel morto sozinho?',answer:'Não. O navegador exibe cores e você observa a tela.'},{question:'O que é pixel preso?',answer:'É um subpixel que permanece aceso ou travado em determinada cor.'}]
   },
   {
-    path:'/pt-br/pixel-morto-notebook/',lang:'pt-BR',
+    path:'/pt-br/pixel-morto-notebook/',lang:'pt-BR', indexable:true,
     title:'Pixel Morto no Notebook – Teste de Tela Gratuito',
     description:'Confira pixel morto no notebook com cores em tela cheia e um passo a passo para diferenciar defeitos isolados e linhas na tela.',
     h1:'Pixel Morto no Notebook',lead:'Teste a tela integrada do notebook e compare pontos suspeitos em várias cores. Um pixel defeituoso é diferente de uma faixa inteira na tela.',
@@ -120,7 +121,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Posso testar a tela do notebook online?',answer:'Sim. As cores em tela cheia permitem uma inspeção visual.'},{question:'Uma linha na tela é pixel morto?',answer:'Uma linha contínua pode ter causas diferentes de um pixel isolado.'}]
   },
   {
-    path:'/pt-br/pixel-morto-iphone/',lang:'pt-BR',
+    path:'/pt-br/pixel-morto-iphone/',lang:'pt-BR', indexable:true,
     title:'Pixel Morto no iPhone – Teste de Tela Online',
     description:'Teste pixel morto no iPhone com cores estáticas, controle por toque e instruções para identificar manchas e pontos suspeitos.',
     h1:'Pixel Morto no iPhone',lead:'Confira a tela do iPhone com fundos de cores sólidas, sem baixar aplicativo. No Safari, o teste pode usar uma sobreposição em vez de tela cheia nativa.',
@@ -130,7 +131,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Funciona no Safari do iPhone?',answer:'Sim, com modo de sobreposição quando a API de tela cheia não estiver disponível.'},{question:'Um ponto preto é sempre pixel morto?',answer:'Não. Poeira, película e outros defeitos podem parecer semelhantes.'}]
   },
   {
-    path:'/pt-br/reparar-pixel-preso/',lang:'pt-BR',
+    path:'/pt-br/reparar-pixel-preso/',lang:'pt-BR', indexable:true,
     title:'Pixel Preso – Verificar e Tentar Identificar com Segurança',
     description:'Entenda a diferença entre pixel morto e pixel preso. Use uma área estática de cores para conferir um ponto sem flashes rápidos.',
     h1:'Pixel Preso: Verificação Segura',lead:'Um pixel preso pode permanecer em uma cor específica. A página oferece comparação com cores estáticas, sem prometer conserto físico.',
@@ -140,7 +141,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Dá para consertar pixel morto online?',answer:'Não há garantia. Um pixel fisicamente danificado não é reparado por uma página web.'},{question:'Por que o teste não pisca rápido?',answer:'A verificação estática evita expor visitantes a flashes intensos desnecessários.'}]
   },
   {
-    path:'/pt-br/o-que-e-dead-pixel/',lang:'pt-BR',
+    path:'/pt-br/o-que-e-dead-pixel/',lang:'pt-BR', indexable:true,
     title:'O Que É Dead Pixel? Pixel Morto, Preso e Queimado',
     description:'Entenda o que é dead pixel, diferenças entre pixel morto, preso e ponto brilhante, além de como fazer uma inspeção visual.',
     h1:'O Que É Dead Pixel?',lead:'Dead pixel é um defeito em que o pixel não apresenta a saída esperada. Um pixel preso ou uma mancha de poeira pode parecer similar à primeira vista.',
@@ -150,7 +151,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     faq:[{question:'Dead pixel e pixel preso são iguais?',answer:'Não. Um pixel preso pode permanecer em determinada cor; um pixel morto não exibe o resultado esperado.'},{question:'Pixel queimado é sempre burn-in?',answer:'Não. A expressão popular pode se referir a diferentes problemas da tela.'}]
   },
   {
-    path:'/pt-br/teste-de-cores/',lang:'pt-BR',
+    path:'/pt-br/teste-de-cores/',lang:'pt-BR', indexable:true,
     title:'Teste de Cores do Monitor – Gradiente e Contraste',
     description:'Faça um teste de cores, brilho visual e contraste com gradientes, preto, branco e níveis de cinza. Gratuito, direto no navegador.',
     h1:'Teste de Cores e Contraste',lead:'Compare cores, gradações e detalhes perto do preto e branco. O navegador exibe padrões visuais, mas não mede brilho em nits ou cobertura de espaço de cor.',

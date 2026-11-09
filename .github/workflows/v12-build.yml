@@ -54,7 +54,9 @@ jobs:
           test -s dist/pt-br.html
           test -s dist/pt-br/pixel-morto-notebook.html
           grep -q 'tests/local-dimming' dist/sitemap.xml
-          ! grep -q 'laptop-screen-dead-pixel-test' dist/sitemap.xml
+          grep -q 'laptop-screen-dead-pixel-test' dist/sitemap.xml
+          grep -q 'pt-br/pixel-morto-notebook' dist/sitemap.xml
+          ! grep -q 'noindex,nofollow' dist/pt-br/pixel-morto-notebook.html
       - name: Install Chromium, Firefox and WebKit
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Run browser checks
