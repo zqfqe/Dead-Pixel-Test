@@ -6,7 +6,7 @@
 - Cloudflare Pages **main** builds now use this verified domain automatically through `scripts/build-site.mjs`, even when `PUBLIC_SITE_URL` is not set in the Pages dashboard. Branch previews are always `noindex` with empty sitemaps; domainless local builds remain `noindex`.
 - All core V1.2 features F01–F08 are implemented in code. Automated tests do not replace real iPhone, Android, physical-panel, NVDA/VoiceOver or Lighthouse acceptance.
 - The 400-row Semrush research produced **134** KD≤29 region-qualified keyword groups, of which **87** are target *candidates*. Their individual SERP top-ten and editorial ranking-opportunity reviews are not complete. No claim that 87 queries already rank.
-- See [the current acceptance addendum](docs/V1.2-ACCEPTANCE-20261109.md) and the latest [GitHub Actions checks](https://github.com/zqfqe/Dead-Pixel-Test/actions). Production-domain-specific GitHub smoke currently skips when its independent `PUBLIC_SITE_URL` Actions variable is unset.
+- See [the current acceptance addendum](docs/V1.2-ACCEPTANCE-20261109.md) and the latest [GitHub Actions checks](https://github.com/zqfqe/Dead-Pixel-Test/actions). The live-domain workflow no longer skips without a GitHub Actions variable; it now also requires **the exact Git commit** to have reached the Cloudflare production site before passing.
 
 Astro 6 static site with React islands for browser-based screen diagnostics.
 
@@ -33,6 +33,20 @@ npm run preview
 - Any `PUBLIC_SITE_URL` override on production must match `https://deadpixeltest.cc`, or the build intentionally fails instead of publishing the wrong canonical host.
 
 
+## Cloudflare release-provenance and GEO verification
+
+A successful Astro build or an HTTP 200 check may still describe an **older deployed version**. On a real Cloudflare Pages production `main` build, `CF_PAGES_COMMIT_SHA` is provided by Cloudflare and `npm run build` writes `dist/site-release.json`. The custom-domain URL `https://deadpixeltest.cc/site-release.json` publicly reports the deployed Git SHA; it is not included in Sitemap and has no-store/noindex response headers.
+
+GitHub Actions now separates three independent checks:
+
+1. **Astro Static Build and SEO Routes** verifies current code, 50 sitemap URLs, GEO answer blocks, type safety, browser behavior and a simulated production commit marker.
+2. **Live Production HTTP and SEO Smoke** verifies the public site's canonical routes, hreflang, sitemap, robots and redirects, then polls for the **specific triggering GitHub SHA** (up to 10 minutes). If the endpoint is missing/stale, that workflow **fails** rather than falsely calling the latest release deployed.
+3. **Production GEO content smoke** runs only after the commit matches, checking actual public HTML for all 15 answer blocks, language consistency, caveats and the `/about` source explanation.
+
+If the live release check fails, inspect **Cloudflare dashboard → Workers & Pages → DeadPixelTest Pages project → Deployments**. Confirm source repository `zqfqe/Dead-Pixel-Test`, production branch `main`, automatic production deployment enabled, build command `npm run build`, output `dist` and latest build logs. If the project points to another repository or production branch, changing GitHub code alone cannot update the site. Cloudflare dashboard access is required to repair that external configuration.
+
+Do not publish the marker with fake / placeholder SHA, or interpret a passed GitHub smoke as an AI citation or a Search Console indexing event. See [GEO implementation record](docs/GEO-IMPLEMENTATION-20261109.md).
+
 ## Architecture
 
 - Astro owns static HTML, routing and SEO metadata.
@@ -48,7 +62,7 @@ Existing GSC routes such as \`/tests/refresh-rate\`, \`/tests/local-dimming\`, \
 
 ## Verification
 
-GitHub Actions validates TypeScript, Astro static builds, domainless/preview isolation, indexable production canonical routes, the 50-URL sitemap, Chromium interaction smoke, Firefox/WebKit responsiveness, legacy routes and mobile viewports. Browser checks can still fail; read the **latest run**, not a historical count. Production domain smoke is an independent workflow currently skipped when its GitHub Actions variable is unset. Passing CI alone cannot establish Google's actual indexing, physical-device performance or accessibility certification.
+GitHub Actions validates TypeScript, Astro static builds, domainless/preview isolation, indexable production canonical routes, the 50-URL sitemap, Chromium interaction smoke, Firefox/WebKit responsiveness, legacy routes and mobile viewports. Browser checks can still fail; read the **latest run**, not a historical count. The live-domain workflow now tests canonical/index status, waits for the exact commit in `/site-release.json`, and checks all 15 GEO answer pages plus the About methodology. **The local build workflow alone never proves Cloudflare published its commit.** Passing both workflows does not establish Google indexing, AI citations, physical-device performance or accessibility certification.
 
 
 ## Privacy and safety
