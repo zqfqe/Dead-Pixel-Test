@@ -940,7 +940,7 @@ await check('/tests/refresh-rate',async page=>{
  const mobile=page.getByRole('navigation',{name:'Mobile navigation'});
  await mobile.getByRole('link',{name:'Uniformity',exact:true}).waitFor();
  await page.getByRole('button',{name:'Close Menu'}).click();
- if(await mobile.getAttribute('aria-hidden')!=='true')throw Error('Legacy mobile menu failed to close');
+ await page.waitForFunction(()=>document.querySelector('#mobile-site-menu')?.getAttribute('aria-hidden')==='true',null,{timeout:5000});
 });
 
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
