@@ -137,6 +137,16 @@ const modeHint=mode==='lines'
  dialog.current?.querySelector<HTMLElement>('button')?.focus();
  return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',key);document.removeEventListener('focusin',focusGuard);document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',full);};
  },[active,exit,next,prev]);
+ useEffect(()=>{
+   if(!active)return;
+   const frame=requestAnimationFrame(()=>{
+     const panel=dialog.current;
+     if(panel&&!panel.contains(document.activeElement)){
+       panel.querySelector<HTMLElement>('button')?.focus();
+     }
+   });
+   return()=>cancelAnimationFrame(frame);
+ },[active,hideControls]);
  const start=async()=>{touchStart.current=null;setHideControls(false);setCompactCorner(0);setIndex(0);setMarkMode(false);setShowMarks(false);setActive(true);setWarning(false);setRan(true);setStarted(x=>x||new Date().toISOString());if(root.current&&typeof root.current.requestFullscreen==='function'){try{await root.current.requestFullscreen();native.current=true;}catch{setWarning(true);}}else setWarning(true);};
  const mark=(e:React.MouseEvent<HTMLDivElement>)=>{if(!markMode&&!isFixer)return;const b=e.currentTarget.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y=Math.max(0,Math.min(1,(e.clientY-b.top)/b.height));if(isFixer&&!markMode){setPatchPos({x:x*100,y:y*100});return;}if(marks.length>=50)return;const id=crypto.randomUUID?.()??String(Date.now());setMarks(v=>[...v,{id,x,y,colors:[current.name],notVisibleOn:[],category:'unclassified',notes:'',viewport:view()}]);setSelected(id);setShowMarks(true);};
  const update=(id:string,p:Partial<Mark>)=>setMarks(v=>v.map(m=>m.id===id?{...m,...p}:m));
