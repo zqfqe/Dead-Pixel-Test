@@ -350,7 +350,7 @@ for(const [slug,headline,internalLink] of editorialPages){
  const html=readFileSync(file,'utf8');
  if(!html.includes('<h1')||!html.includes(headline))errors.push('Guide missing its specific crawlable H1 '+path);
  if(!html.includes('href="'+internalLink+'"'))errors.push('Guide lacks relevant internal tool link '+path);
- if(!html.includes('By <a href="/about">DeadPixelTest</a>'))errors.push('Guide lacks honest visible author label '+path);
+ if(!html.includes('By <a href="/about" rel="author">DeadPixelTest</a>'))errors.push('Guide lacks honest visible author label '+path);
  if(unsafeBlogClaims.some(term=>html.includes(term)))errors.push('Guide retains unsafe or unsupported claim '+path);
  const schemaScripts=[...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
  const nodes=[];
