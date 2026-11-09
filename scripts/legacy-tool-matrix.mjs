@@ -101,7 +101,7 @@ try{
    await page.getByText('91.79',{exact:false}).first().waitFor();
   }],
   ['/tools/mouse-polling',async page=>{
-   await page.getByRole('heading',{name:'Mouse Polling Rate'}).waitFor();
+   await page.getByRole('heading',{level:1,name:'Mouse Polling Rate',exact:true}).waitFor();
    const avg=page.getByTestId('mouse-polling-average');
    await page.getByTestId('mouse-polling-surface').waitFor();
    await page.evaluate(()=>{
