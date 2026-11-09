@@ -18,11 +18,17 @@ const topLinks=[
 ];
 const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
 const publicSiteUrl=!isCloudflarePreview && import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
+// Identify the actual site name separately from the free browser application.
 const schema={
- '@context':'https://schema.org','@type':'WebApplication',
- name:'Dead Pixel Test — Screen Visual Inspection',...(publicSiteUrl?{url:publicSiteUrl+'/'}:{}),
- description:page.description,applicationCategory:'UtilitiesApplication',
- operatingSystem:'Web Browser',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}
+ '@context':'https://schema.org',
+ '@graph':[
+  ...(publicSiteUrl?[{'@type':'WebSite',name:'DeadPixelTest',url:publicSiteUrl+'/'}]:[]),
+  {'@type':'WebApplication',
+   name:'Dead Pixel Test — Screen Visual Inspection',...(publicSiteUrl?{url:publicSiteUrl+'/'}:{}),
+   description:page.description,inLanguage:'en',
+   applicationCategory:'UtilitiesApplication',operatingSystem:'Web Browser',
+   offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}
+ ]
 };
 ---
 
