@@ -93,6 +93,24 @@ await check('/tests/refresh-rate',async page=>{
   });
   await start.waitFor({timeout:8000});
 });
+await check('/tools/burn-in-wiper',async page=>{
+  // The optional legacy demo is deliberately not a repair treatment.
+  // Its canvas and countdown must stop on Escape and when the tab is hidden.
+  const start=page.getByRole('button',{name:'Launch Pattern Demo'});
+  await start.waitFor({timeout:12000});
+  await start.click();
+  await page.getByText(/Time Remaining:/).waitFor({timeout:8000});
+  await page.keyboard.press('Escape');
+  await start.waitFor({timeout:8000});
+
+  await start.click();
+  await page.getByText(/Time Remaining:/).waitFor({timeout:8000});
+  await page.evaluate(()=>{
+    Object.defineProperty(document,'visibilityState',{configurable:true,get:()=> 'hidden'});
+    document.dispatchEvent(new Event('visibilitychange'));
+  });
+  await start.waitFor({timeout:8000});
+});
 await check('/tools/mouse-polling',async page=>{
   // Idle pages schedule no sampling frames; pointer input must still wake the
   // sampler and produce a nonzero browser-observed estimate.
