@@ -26,13 +26,15 @@ const navigation = lang==='pt-BR'
     ];
 const hasSchema=Boolean(schema);
 const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+const currentPath=normalizePath(Astro.url.pathname);
+const isNavCurrent=(href:string)=>currentPath===normalizePath(href);
 ---
 <!doctype html>
 <html lang={lang} data-astro-site="true" data-surface={legacy?'dark':'light'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#08090c" />
+    <meta name="theme-color" content={legacy?"#08090c":"#F6F8FB"} />
     {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
     <meta name="description" content={description} />
     {shouldNoindex && <meta name="robots" content="noindex,nofollow" />}
@@ -48,14 +50,14 @@ const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
     {hasSchema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g,'\\u003c')} />}
   </head>
   <body data-surface={legacy?'dark':'light'} class={legacy?'min-h-screen bg-[#08090c] text-white antialiased':'min-h-screen bg-[#F6F8FB] text-[#101827] antialiased'}>
-    {!legacy && <a href="#main-content" class="skip-link">Skip to main content</a>}
+    {!legacy && <a href="#main-content" class="skip-link">{lang==="pt-BR"?"Pular para o conteúdo principal":"Skip to main content"}</a>}
     {!legacy && <header class="sticky top-0 z-40 border-b border-[#DCE3EA] bg-white/95 backdrop-blur-lg shadow-sm">
       <div class="mx-auto max-w-7xl flex min-h-16 items-center gap-4 px-4 md:px-8">
         <a href={lang==='pt-BR'?'/pt-br':'/'} class="flex items-center gap-2 font-bold text-[#101827] shrink-0">
           <img src="/logo.svg" alt="" width="28" height="28" /><span>DeadPixelTest</span>
         </a>
         <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-[#344256] ml-auto">
-          {navigation.map(n=><a href={normalizePath(n.href)} class="hover:text-[#125CC9] focus:text-[#125CC9] rounded-md px-1 py-3">{n.label}</a>)}
+          {navigation.map(n=><a href={normalizePath(n.href)} aria-current={isNavCurrent(n.href)?"page":undefined} class:list={["focus:text-[#125CC9] rounded-md px-1 py-3 hover:text-[#125CC9]",isNavCurrent(n.href)?"text-[#125CC9] font-bold underline underline-offset-8":""]}>{n.label}</a>)}
         </nav>
         <div class="shrink-0 flex gap-2 text-xs border-l border-[#DCE3EA] pl-3">
           <a href="/" lang="en" class={lang==='en'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>EN</a>
@@ -67,7 +69,7 @@ const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
     {!legacy && <footer class="mt-20 border-t border-[#DCE3EA] bg-white px-4 py-10 text-sm text-[#344256]">
       <div class="mx-auto max-w-7xl flex flex-wrap justify-between gap-5">
         <p>© {new Date().getUTCFullYear()} DeadPixelTest — {lang==='pt-BR'?'Inspeção visual, não laudo técnico.':'Visual self-check, not a hardware certificate.'}</p>
-        <nav class="flex flex-wrap gap-5"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a></nav>
+        <nav aria-label={lang==="pt-BR"?"Informações legais":"Legal and information"} class="flex flex-wrap gap-5"><a href="/about">{lang==="pt-BR"?"Sobre":"About"}</a><a href="/contact">{lang==="pt-BR"?"Contato":"Contact"}</a><a href="/privacy-policy">{lang==="pt-BR"?"Privacidade":"Privacy"}</a><a href="/terms-of-service">{lang==="pt-BR"?"Termos":"Terms"}</a></nav>
       </div>
     </footer>}
   </body>
