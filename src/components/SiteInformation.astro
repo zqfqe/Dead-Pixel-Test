@@ -1,0 +1,134 @@
+---
+interface Props {
+  route: '/about' | '/contact' | '/privacy-policy' | '/terms-of-service';
+}
+const { route } = Astro.props;
+const isAbout=route==='/about';
+const isContact=route==='/contact';
+const isPrivacy=route==='/privacy-policy';
+const isTerms=route==='/terms-of-service';
+---
+<main id="main-content" tabindex="-1" class="mx-auto max-w-4xl px-5 py-12 text-[#101827] md:py-16">
+  {isAbout && <>
+    <p class="text-xs font-semibold uppercase tracking-widest text-[#31583F]">About the project</p>
+    <h1 class="mt-3 text-4xl font-bold tracking-tight md:text-5xl">About DeadPixelTest</h1>
+    <p class="mt-5 max-w-3xl text-lg leading-8 text-[#344256]">DeadPixelTest provides browser-based visual checks for monitors, laptop screens and mobile displays. It displays patterns and lets visitors record what they observe; it cannot inspect a panel’s hardware directly.</p>
+    <div class="mt-10 grid gap-5 md:grid-cols-2">
+      <section class="rounded-xl border border-[#DCE3EA] bg-white p-6">
+        <h2 class="text-xl font-bold">What you can do</h2>
+        <p class="mt-3 leading-7 text-[#344256]">Check a screen with eight static colors, manually mark suspect spots, compare the same location on different backgrounds, and export a user-observed report. Additional tools offer grayscale, line, image-retention and browser input comparisons.</p>
+        <a class="mt-4 inline-block font-semibold text-[#125CC9] underline" href="/">Start the dead pixel test</a>
+      </section>
+      <section class="rounded-xl border border-[#DCE3EA] bg-white p-6">
+        <h2 class="text-xl font-bold">What you cannot conclude</h2>
+        <p class="mt-3 leading-7 text-[#344256]">A website cannot automatically locate damaged physical pixels, measure actual panel brightness or contrast, isolate a failed component or certify warranty eligibility. Screenshots and exported coordinates are not proof of a hardware defect.</p>
+        <a class="mt-4 inline-block font-semibold text-[#125CC9] underline" href="/what-is-a-dead-pixel">Understand pixel symptoms</a>
+      </section>
+    </div>
+    <section class="mt-10 rounded-xl border border-[#DCE3EA] bg-white p-7">
+      <h2 class="text-2xl font-bold">How we approach testing</h2>
+      <ol class="mt-4 list-decimal space-y-3 pl-5 leading-7 text-[#344256]">
+        <li><strong>Static-first inspection:</strong> Color changes are under the visitor’s control. We do not advertise high-frequency flashing as a pixel repair.</li>
+        <li><strong>Evidence over diagnosis:</strong> Recheck suspect locations on several colors and record exactly what you see, including environmental limitations.</li>
+        <li><strong>Local processing:</strong> Screen-inspection reports and selected media are handled in the browser by the application; check the <a href="/privacy-policy" class="text-[#125CC9] underline">privacy policy</a> for the distinction between app data and hosting logs.</li>
+        <li><strong>Manufacturer guidance:</strong> Treat browser tests as a starting point; follow your specific display maker’s warranty and care instructions.</li>
+      </ol>
+      <p class="mt-5 leading-7 text-[#344256]">This is an independent screen-testing website, not a manufacturer-affiliated laboratory or an accredited inspection service. Read the <a href="/blog" class="text-[#125CC9] underline">screen testing guides</a> or <a href="/contact" class="text-[#125CC9] underline">share public technical feedback</a>.</p>
+    </section>
+  </>}
+
+  {isContact && <>
+    <p class="text-xs font-semibold uppercase tracking-widest text-[#31583F]">Support and feedback</p>
+    <h1 class="mt-3 text-4xl font-bold tracking-tight md:text-5xl">Contact &amp; Feedback</h1>
+    <p class="mt-5 max-w-3xl text-lg leading-8 text-[#344256]">For bugs and non-sensitive feature suggestions, the project’s public GitHub issue tracker is currently the documented feedback channel. A verified private support email has not yet been published.</p>
+    <section class="mt-10 rounded-xl border border-[#DCE3EA] bg-white p-7">
+      <h2 class="text-2xl font-bold">Bug reports and feature requests</h2>
+      <p class="mt-3 leading-7 text-[#344256]">Describe the affected tool URL, browser, approximate device type and reproducible steps. Please avoid posting passwords, personal contact details, device serial numbers, identifiable photos or any other sensitive information in a public issue.</p>
+      <a class="mt-5 inline-flex min-h-11 items-center rounded-lg bg-[#31583F] px-5 py-3 font-semibold text-white hover:bg-[#244631]" href="https://github.com/zqfqe/Dead-Pixel-Test/issues" target="_blank" rel="noopener noreferrer">Open GitHub Issues</a>
+    </section>
+    <section class="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-6">
+      <h2 class="text-xl font-bold">Privacy requests</h2>
+      <p class="mt-3 leading-7 text-[#344256]">Do not submit sensitive privacy requests through GitHub Issues. There is not yet a verified private contact channel published on this website. This is an outstanding operational requirement; the public issue tracker is not a substitute.</p>
+      <p class="mt-3 text-sm leading-6 text-[#344256]">For records stored only in your browser, clearing this site’s browser data removes local copies. See the <a href="/privacy-policy" class="text-[#125CC9] underline">privacy policy</a> for limits, including hosting-provider logs.</p>
+    </section>
+    <section class="mt-10 rounded-xl border border-[#DCE3EA] bg-white p-7">
+      <h2 class="text-2xl font-bold">Common questions</h2>
+      <h3 class="mt-5 text-lg font-semibold">Can the test repair my display?</h3>
+      <p class="mt-2 leading-7 text-[#344256]">No. The browser shows reference patterns and allows manual observations; it cannot physically repair failed pixels.</p>
+      <h3 class="mt-5 text-lg font-semibold">Are my screen marks and snapshots uploaded?</h3>
+      <p class="mt-2 leading-7 text-[#344256]">The currently published test workflow handles user-created screen marks and media locally in your browser; downloaded files are produced only when you choose to export them. Hosting network requests are separate from test record storage.</p>
+    </section>
+  </>}
+
+  {isPrivacy && <>
+    <p class="text-xs font-semibold uppercase tracking-widest text-[#31583F]">Site policy</p>
+    <h1 class="mt-3 text-4xl font-bold tracking-tight md:text-5xl">Privacy Policy</h1>
+    <p class="mt-3 text-sm text-[#475569]">Last updated: November 9, 2026</p>
+    <p class="mt-6 leading-8 text-[#344256]">This policy describes the data practices of the published DeadPixelTest browser tools as reviewed in the application code. It distinguishes information processed in the page from basic technical requests processed by the hosting provider. Practices may change if third-party services are added.</p>
+    <div class="mt-8 space-y-8 leading-8 text-[#344256]">
+      <section><h2 class="text-2xl font-bold text-[#101827]">1. Visual tests and local storage</h2>
+        <p class="mt-3">The screen patterns run in your browser. The dead-pixel, line and image-retention tools do not automatically inspect physical hardware. The site's application code does not send your manual marks, color-by-color observations or exported reports to an application server.</p>
+        <p class="mt-3">Some legacy tools store preferences or test reports in the browser's local storage. The current screen-inspection workflow keeps active observations in page memory until you leave or export. To remove locally stored records and preferences, clear this site's data in your browser. A previously exported JSON file is validated and read locally when imported.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">2. Camera, microphone and selected files</h2>
+        <p class="mt-3">Media tools request camera or microphone access only after you initiate the feature and approve the browser permission. Camera previews, images selected for color simulation and webcam snapshots are processed locally by the app. A snapshot or report download is created only when you choose that action. The current application does not upload those files to its server.</p>
+        <p class="mt-3">You may stop a media tool and revoke device permissions through your browser or operating-system settings.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">3. Hosting requests</h2>
+        <p class="mt-3">DeadPixelTest is deployed as a static website using Cloudflare Pages. The host and network infrastructure may process request information, including IP address, URL, timestamps, user-agent and security metadata, to operate and protect the service. Hosting-provider logging and retention follow the provider's policies and are separate from the browser's locally stored tool data.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">4. Cookies, analytics and advertising</h2>
+        <p class="mt-3">As reviewed on November 9, 2026, the current application code does not include Google Analytics, advertising tags or third-party tracking pixels, and it does not intentionally set first-party cookies. Browser local storage is separate from cookies. If analytics or advertising is introduced, this notice and any required consent controls must be reviewed before activation.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">5. Third-party links</h2>
+        <p class="mt-3">External manufacturer instructions and the public GitHub issue tracker have their own terms and privacy practices. Do not submit sensitive information to public issue trackers.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">6. Choices and deletion</h2>
+        <ul class="mt-3 list-disc space-y-2 pl-6">
+          <li>Clear this site's browser data to remove locally saved settings and reports.</li>
+          <li>Revoke browser permissions when camera or microphone access is no longer needed.</li>
+          <li>Review any downloaded test-report notes before sharing them with another person.</li>
+        </ul>
+        <p class="mt-3">The test workflow does not offer user accounts or a server-side database for those reports. The browser-data controls above cannot remove network logs held by the hosting provider.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">7. Updates and private contact</h2>
+        <p class="mt-3">We will revise this notice when the service's data handling changes. A verified private privacy-contact channel is not yet published. Until one exists, do not send sensitive personal information via the public <a href="/contact" class="text-[#125CC9] underline">feedback page</a> or GitHub issue tracker.</p>
+      </section>
+    </div>
+  </>}
+
+  {isTerms && <>
+    <p class="text-xs font-semibold uppercase tracking-widest text-[#31583F]">Site policy</p>
+    <h1 class="mt-3 text-4xl font-bold tracking-tight md:text-5xl">Terms of Use</h1>
+    <p class="mt-3 text-sm text-[#475569]">Last updated: November 9, 2026</p>
+    <section class="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-6">
+      <h2 class="text-xl font-bold">Visual sensitivity and display care</h2>
+      <p class="mt-2 leading-7 text-[#344256]">Some optional tools show motion or changing high-contrast patterns. Avoid them if you are sensitive to flashing or motion, and stop immediately if you feel discomfort. Use comfortable brightness and avoid leaving static high-contrast screens on OLED panels for extended periods.</p>
+    </section>
+    <div class="mt-8 space-y-8 leading-8 text-[#344256]">
+      <section><h2 class="text-2xl font-bold text-[#101827]">1. Service scope</h2>
+        <p class="mt-3">DeadPixelTest provides browser-based visual patterns and device-interaction checks for informational self-assessment only. It does not automatically scan a physical panel, issue a certified diagnosis, establish warranty eligibility or replace qualified service.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">2. No repair or measurement guarantee</h2>
+        <p class="mt-3">The tools cannot repair failed pixels, reverse permanent OLED burn-in, guarantee that retention disappears, or measure calibrated luminance, physical contrast ratio or native panel resolution. Browser and operating-system settings can affect the result.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">3. Safe use</h2>
+        <ul class="mt-3 list-disc space-y-2 pl-6">
+          <li>Do not press, heat, strike or dismantle a display to change a test result.</li>
+          <li>Keep any static test session brief, particularly on OLED panels.</li>
+          <li>Use the device manufacturer's panel-care functions only as instructed.</li>
+          <li>Stop any moving or color-changing demonstration that causes discomfort.</li>
+        </ul>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">4. Availability and changes</h2>
+        <p class="mt-3">Features may change and may be temporarily unavailable. This service is provided on an as-available basis; self-check results depend on the user's equipment and observation.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">5. External websites</h2>
+        <p class="mt-3">Links to manufacturers and other providers are offered for reference only. Their own terms and privacy policies apply.</p>
+      </section>
+      <section><h2 class="text-2xl font-bold text-[#101827]">6. Contact</h2>
+        <p class="mt-3">A verified private support channel has not yet been published. Public <a href="/contact" class="text-[#125CC9] underline">feedback instructions</a> cover non-sensitive technical reports only; do not post personal or confidential information in GitHub Issues.</p>
+      </section>
+    </div>
+  </>}
+</main>
