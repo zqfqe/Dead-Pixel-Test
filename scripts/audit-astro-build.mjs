@@ -129,6 +129,20 @@ for(const [path,expected] of [
  if(!html.includes('<title>'+expected))errors.push('Informational route has generic SEO title '+path);
 }
 
+// Main tool pages must expose actual crawlable links to the corrected help
+// articles; including routes in sitemap alone is not a complete link strategy.
+const homeHtml=readFileSync(join('dist','index.html'),'utf8');
+for(const slug of [
+ 'dead-pixel-vs-stuck-pixel-ultimate-guide',
+ 'ips-glow-vs-backlight-bleed-guide',
+ 'monitor-calibration-guide-no-hardware'
+]){
+ if(!homeHtml.includes('href="/blog/'+slug+'"'))errors.push('Homepage lacks contextual guide link '+slug);
+}
+if(!homeHtml.includes('Browse all screen testing guides'))errors.push('Homepage blog hub CTA missing');
+const laptopHtml=readFileSync(join('dist','laptop-screen-dead-pixel-test.html'),'utf8');
+if(!laptopHtml.includes('href="/blog"'))errors.push('Site footer lacks crawlable blog link');
+
 // The three legacy editorial guides are indexable and must not undermine
 // the safe static-pixel workflow with unverified fixes or fake expert teams.
 const editorialPages=[
