@@ -281,7 +281,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 <BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean((newPage && !newPage.indexable) || normalized==='/tests/dead-pixel')} schema={structuredData}>
 {newPage ? (
   <main id="main-content" tabindex="-1" class="ui-site-main max-w-6xl mx-auto px-4 pt-7 md:px-8 md:pt-10">
-    <nav aria-label="Breadcrumb" class="text-sm text-[#475569] mb-7"><a href={isBR?'/pt-br':'/'} class="hover:text-[#125CC9]">{isBR?'Início':'Home'}</a> / {newPage.h1}</nav>
+    <nav aria-label="Breadcrumb" class="ui-breadcrumb mb-7"><a href={isBR?'/pt-br':'/'}>{isBR?'Início':'Home'}</a><span aria-hidden="true">/</span><span aria-current="page">{newPage.h1}</span></nav>
     <header class="ui-landing-hero ui-enter rounded-2xl border border-[#DCE3EA] bg-white shadow-sm p-6 md:p-10">
       <p class="ui-eyebrow uppercase tracking-widest text-xs text-[#125CC9] font-bold"><span class="ui-status-dot" aria-hidden="true"></span>{isBR?'Ferramenta online gratuita':'Free browser-based screen check'}</p>
        <div class="ui-swatch-track ui-swatch-track-sm" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
@@ -336,12 +336,12 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
        )}
        <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
     </header>
-    <section class="ui-section mt-12 grid md:grid-cols-[2fr_1fr] gap-6 lg:gap-10">
+    <section class="ui-procedure ui-section mt-12 grid md:grid-cols-[2fr_1fr] gap-6 lg:gap-10" aria-label={isBR?"Instruções do teste":"Test instructions"}>
       <div>
-        <h2 class="text-2xl font-bold mb-5">{isBR?'Como fazer o teste':'How to run this check'}</h2>
+        <p class="ui-overline">{isBR?'PROCEDIMENTO / PASSO A PASSO':'PROCEDURE / STEP BY STEP'}</p><h2 class="text-2xl font-bold mb-5">{isBR?'Como fazer o teste':'How to run this check'}</h2>
         <ol class="ui-numbered-steps space-y-4">{newPage.steps.map((step,i)=><li class="flex items-start gap-4 text-[#344256] leading-7"><span class="ui-step-number">{i+1}</span><span>{step}</span></li>)}</ol>
       </div>
-      <aside class="ui-help-card border border-[#DCE3EA] bg-white rounded-xl p-5">
+      <aside class="ui-guide-aside ui-help-card border border-[#DCE3EA] bg-white rounded-xl p-5">
         <h2 class="text-lg font-bold mb-3">{isBR?'Antes de começar':'Before you start'}</h2>
         <p class="text-[#344256] leading-7">{isBR?'Limpe a tela, evite reflexos e confira filtros de luz azul ou HDR.':'Clean the screen, reduce reflections, and note HDR, zoom and adaptive brightness settings.'}</p>
       </aside>
@@ -379,8 +379,8 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       </div>
       <p class="mt-4 text-sm leading-6 text-[#475569]">Model and firmware menus differ. Avoid leaving static patterns on an OLED for prolonged periods; if marks persist, contact the manufacturer.</p>
     </section>}
-    <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
-      <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="ui-info-card border border-[#DCE3EA] bg-white p-5 rounded-xl text-[#344256] leading-7">{note}</p>)}</div>
+    <section class="ui-content-section mt-12"><p class="ui-overline">{isBR?'SEGURANÇA / INFORMAÇÃO IMPORTANTE':'SAFETY / IMPORTANT INFORMATION'}</p><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
+      <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="ui-safety-note ui-info-card border border-[#DCE3EA] bg-white p-5 rounded-xl text-[#344256] leading-7">{note}</p>)}</div>
     </section>
     {newPage.mode==='guide' && <section class="mt-12">
       <h2 class="text-2xl font-bold mb-4">{isBR?'Compare o que você observa':'Compare what you see'}</h2>
@@ -397,15 +397,21 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       <h2 class="text-2xl font-bold mb-3">{isBR?'Como usar a área de cor estática':'How to use the static color patch'}</h2>
       <p class="leading-7 text-[#344256]">{isBR?'Abra o teste, toque na região suspeita para posicionar a área estática, escolha a cor e ajuste o tamanho. A comparação é manual, sem flashes rápidos e sem promessa de reparo.':'Start the test, click or tap the suspicious area to position the static patch, choose a patch color and adjust its size. This is a manual comparison, not rapid flashing or a guaranteed repair.'}</p>
     </section>}
-    <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Perguntas frequentes':'Frequently asked questions'}</h2>
-      <div class="space-y-4">{newPage.faq.map(item=><article class="ui-info-card rounded-xl border border-[#DCE3EA] bg-white p-5"><h3 class="font-semibold text-lg">{item.question}</h3><p class="text-[#344256] leading-7 mt-3">{item.answer}</p></article>)}</div>
+    <section class="ui-content-section mt-12"><p class="ui-overline">{isBR?'RESPOSTAS / DÚVIDAS FREQUENTES':'HELP / FREQUENT QUESTIONS'}</p><h2 class="text-2xl font-bold mb-5">{isBR?'Perguntas frequentes':'Frequently asked questions'}</h2>
+      <div class="ui-faq-list space-y-4">{newPage.faq.map(item=><article class="ui-info-card rounded-xl border border-[#DCE3EA] bg-white p-5"><h3 class="font-semibold text-lg">{item.question}</h3><p class="text-[#344256] leading-7 mt-3">{item.answer}</p></article>)}</div>
     </section>
-    <nav class="mt-10 flex flex-wrap items-center gap-3 border-t border-[#DCE3EA] pt-6 text-sm" aria-label={isBR?'Mudar idioma':'Switch language'}>
+    <nav class="ui-topic-language mt-10 flex flex-wrap items-center gap-3 border-t border-[#DCE3EA] pt-6 text-sm" aria-label={isBR?'Mudar idioma':'Switch language'}>
       <span class="text-[#475569]">{isBR?'Outros idiomas:':'Other language:'}</span>
-      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-[#DCE3EA] px-4 py-3 text-[#125CC9] hover:border-blue-400">{isBR?(localePair?'English':'English (home page)'):(localePair?'Português (Brasil)':'Português (página inicial)')}</a>
+      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="ui-locale-action min-h-[44px] rounded-lg border border-[#DCE3EA] px-4 py-3">{isBR?(localePair?'English':'English (home page)'):(localePair?'Português (Brasil)':'Português (página inicial)')}</a>
     </nav>
-    <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Testes relacionados':'Related tests'}</h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="ui-feature-card rounded-lg p-4 border border-[#DCE3EA] bg-white text-[#101827]" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>
+    <section class="ui-content-section mt-12" aria-label={isBR?'Testes relacionados':'Related tests'}>
+      <p class="ui-overline">{isBR?'PRÓXIMO / OUTRAS FERRAMENTAS':'NEXT / OTHER TOOLS'}</p>
+      <h2 class="text-2xl font-bold mb-5">{isBR?'Testes relacionados':'Related tests'}</h2>
+      <div class="ui-related-links grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {others.map(other=><a class="ui-related-link" href={other.path.replace(/\/$/,'')}>
+          <span class="ui-related-link-title">{other.h1}</span><span class="ui-related-link-arrow" aria-hidden="true">↗</span>
+        </a>)}
+      </div>
     </section>
   </main>
 ) : article ? (

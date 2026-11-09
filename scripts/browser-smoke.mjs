@@ -943,6 +943,29 @@ await check('/tests/refresh-rate',async page=>{
  await page.waitForFunction(()=>document.querySelector('#mobile-site-menu')?.getAttribute('aria-hidden')==='true',null,{timeout:5000});
 });
 
+await check('/pt-br/pixel-morto-notebook',async page=>{
+ const links=page.locator('.ui-related-link');
+ if(await links.count()<3)throw Error('Localized related-test links missing');
+ for(const link of await links.all()){
+  const metrics=await link.evaluate(el=>el.getBoundingClientRect().height);
+  if(metrics>118)throw Error('Related-test link has unnecessary vertical blank space: '+metrics);
+  if(!await link.locator('.ui-related-link-arrow').count())throw Error('Related link has no directional cue');
+ }
+ await page.setViewportSize({width:360,height:780});
+ const width=await page.evaluate(()=>({viewport:innerWidth,document:document.documentElement.scrollWidth}));
+ if(width.document>width.viewport+2)throw Error('Localized SEO page has mobile horizontal overflow: '+JSON.stringify(width));
+ await page.getByRole('heading',{name:'Como fazer o teste'}).waitFor();
+ if(!await page.locator('.ui-safety-note').count())throw Error('Localized safety guidance omitted');
+});
+await check('/laptop-screen-dead-pixel-test',async page=>{
+ const related=page.locator('section[aria-label="Related tests"] a.ui-related-link');
+ if(await related.count()<3)throw Error('EN SEO page has no relevant tool links');
+ for(const link of await related.all()){
+  const href=await link.getAttribute('href');
+  if(!href?.startsWith('/'))throw Error('Related link is not same-origin path');
+ }
+});
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -960,4 +983,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+86+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+88+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

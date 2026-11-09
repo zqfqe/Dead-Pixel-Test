@@ -284,3 +284,32 @@ body[data-surface="light"] footer a:hover{color:#132C20}
  .ui-feature-card,.ui-info-card,.ui-disclosure,.ui-nav-link,.ui-lang-link,.ui-card-arrow{transition:none!important}
  .ui-feature-card:hover,.ui-feature-card:focus-visible,.ui-card-arrow{transform:none!important}
 }
+
+
+/* Information route QA: concise, scannable EN/PT guides and resource links. */
+.ui-breadcrumb{display:flex;align-items:center;gap:.6rem;min-width:0;font-size:.81rem;line-height:1.55;color:#64736b}
+.ui-breadcrumb a{flex:none;color:#31583e;font-weight:750;text-decoration:none}
+.ui-breadcrumb a:hover{text-decoration:underline;text-underline-offset:3px}
+.ui-breadcrumb>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ui-procedure{padding:28px 30px 30px;background:#fff;border:1px solid var(--lab-border);border-radius:16px}
+.ui-procedure h2,.ui-content-section h2{color:#182720;letter-spacing:-.035em;line-height:1.18}
+.ui-procedure .ui-numbered-steps{max-width:740px}
+.ui-procedure .ui-numbered-steps li{align-items:center;min-height:48px}
+.ui-guide-aside{align-self:start;margin:0!important;background:#f0f5ed!important;border-color:#dce9d9!important;box-shadow:none!important}
+.ui-guide-aside h2{color:#253d2d}
+.ui-safety-note{border-left:3px solid #7da388!important;background:#f9fbf8!important;color:#42564a;box-shadow:none!important}
+.ui-faq-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ui-faq-list>article{margin:0!important}
+.ui-faq-list article h3{color:#172821}
+.ui-faq-list article p{color:#506159}
+.ui-locale-action{background:#fff;color:#28513b!important;font-weight:800;border-color:#b8d0bd!important;text-decoration:none}
+.ui-locale-action:hover{background:#e7f4dd;border-color:#7fa389!important}
+.ui-related-link{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:72px;min-width:0;padding:16px 17px;border:1px solid var(--lab-border);border-radius:10px;background:#fff;color:#21372c;text-decoration:none;transition:background-color .17s,border-color .17s,box-shadow .17s}
+.ui-related-link:hover,.ui-related-link:focus-visible{background:#f2f8ee;border-color:#9cbda6;box-shadow:0 6px 16px rgba(30,65,35,.035)}
+.ui-related-link-title{font-size:.86rem;line-height:1.4;font-weight:730;letter-spacing:-.013em}
+.ui-related-link-arrow{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:6px;color:#355d41;background:#e5f3de;font-size:1rem}
+body[data-surface="light"] :is(a,button,input,select,textarea,summary):focus-visible{outline-color:#4d785a;outline-width:3px;outline-offset:3px}
+body[data-surface="light"] :is(.ui-landing-hero,.ui-home-stage,.ui-inspection-shell) :is(a,button,input,select,textarea,summary):focus-visible{outline-color:var(--lab-lime)}
+@media(max-width:767px){.ui-procedure{padding:22px 20px}.ui-faq-list{grid-template-columns:1fr;gap:12px}}
+@media(max-width:420px){.ui-related-links{gap:9px}.ui-related-link{min-height:64px;padding:13px 14px}}
+@media(prefers-reduced-motion:reduce){.ui-related-link{transition:none!important}}
