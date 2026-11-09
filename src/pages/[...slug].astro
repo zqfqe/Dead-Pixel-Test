@@ -234,34 +234,34 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 <BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean(newPage && !newPage.indexable)} schema={structuredData}>
 {newPage ? (
   <main id="main-content" tabindex="-1" class="max-w-6xl mx-auto px-4 pt-8 md:px-8">
-    <nav aria-label="Breadcrumb" class="text-sm text-neutral-400 mb-7"><a href={isBR?'/pt-br':'/'} class="hover:text-blue-400">{isBR?'Início':'Home'}</a> / {newPage.h1}</nav>
-    <header class="rounded-2xl border border-blue-500/20 bg-neutral-950 p-6 md:p-10">
-      <p class="uppercase tracking-widest text-xs text-blue-400 font-bold">{isBR?'Ferramenta online gratuita':'Free browser-based screen check'}</p>
+    <nav aria-label="Breadcrumb" class="text-sm text-[#475569] mb-7"><a href={isBR?'/pt-br':'/'} class="hover:text-[#125CC9]">{isBR?'Início':'Home'}</a> / {newPage.h1}</nav>
+    <header class="rounded-2xl border border-[#DCE3EA] bg-white shadow-sm p-6 md:p-10">
+      <p class="uppercase tracking-widest text-xs text-[#125CC9] font-bold">{isBR?'Ferramenta online gratuita':'Free browser-based screen check'}</p>
       <h1 class="text-3xl md:text-5xl font-bold mt-3 tracking-tight">{newPage.h1}</h1>
-      <p class="text-neutral-300 max-w-3xl text-lg leading-8 mt-5 mb-7">{newPage.lead}</p>
+      <p class="text-[#344256] max-w-3xl text-lg leading-8 mt-5 mb-7">{newPage.lead}</p>
       {newPage.mode==='resolution' ? (
          <div class="grid md:grid-cols-2 gap-4">
-           <div class="border border-white/10 p-4 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-neutral-300">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
-           <div class="border border-white/10 p-4 rounded-lg">
-             <dl id="screen-metrics" aria-live="off" class="font-mono text-sm text-neutral-300">Enable JavaScript for live screen and viewport metrics.</dl>
-             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white">Copy browser metrics</button>
-             <p id="copy-screen-status" role="status" class="mt-2 text-xs text-neutral-400" aria-live="polite"></p>
+           <div class="border border-[#DCE3EA] p-4 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-[#344256]">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
+           <div class="border border-[#DCE3EA] p-4 rounded-lg">
+             <dl id="screen-metrics" aria-live="off" class="font-mono text-sm text-[#344256]">Enable JavaScript for live screen and viewport metrics.</dl>
+             <button id="copy-screen-metrics" type="button" class="mt-3 min-h-[44px] rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-[#101827]">Copy browser metrics</button>
+             <p id="copy-screen-status" role="status" class="mt-2 text-xs text-[#475569]" aria-live="polite"></p>
            </div>
-           <div class="md:col-span-2 rounded-xl border border-blue-500/20 bg-white/5 p-5">
+           <div class="md:col-span-2 rounded-xl border border-blue-500/20 bg-white p-5">
              <h2 class="text-xl font-semibold mb-2">Optional PPI calculator — user-confirmed panel resolution</h2>
-             <p class="text-sm leading-6 text-neutral-300">Use the display's stated <strong>native physical pixel resolution</strong> and measured diagonal size, not the browser-reported CSS width or height above. No value is filled in automatically.</p>
+             <p class="text-sm leading-6 text-[#344256]">Use the display's stated <strong>native physical pixel resolution</strong> and measured diagonal size, not the browser-reported CSS width or height above. No value is filled in automatically.</p>
              <form id="manual-ppi" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" novalidate>
                <label class="block text-sm text-neutral-200">Native width (physical pixels)
-                 <input id="native-width" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1920" class="mt-2 w-full rounded-lg border border-white/25 bg-neutral-950 px-3 py-3 text-white" />
+                 <input id="native-width" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1920" class="mt-2 w-full rounded-lg border border-white/25 bg-white px-3 py-3 text-[#101827]" />
                </label>
                <label class="block text-sm text-neutral-200">Native height (physical pixels)
-                 <input id="native-height" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1080" class="mt-2 w-full rounded-lg border border-white/25 bg-neutral-950 px-3 py-3 text-white" />
+                 <input id="native-height" inputmode="numeric" type="number" min="1" max="20000" step="1" placeholder="e.g. 1080" class="mt-2 w-full rounded-lg border border-white/25 bg-white px-3 py-3 text-[#101827]" />
                </label>
                <label class="block text-sm text-neutral-200">Screen diagonal (inches)
-                 <input id="native-diagonal" inputmode="decimal" type="number" min="0.1" max="300" step="any" placeholder="e.g. 24" class="mt-2 w-full rounded-lg border border-white/25 bg-neutral-950 px-3 py-3 text-white" />
+                 <input id="native-diagonal" inputmode="decimal" type="number" min="0.1" max="300" step="any" placeholder="e.g. 24" class="mt-2 w-full rounded-lg border border-white/25 bg-white px-3 py-3 text-[#101827]" />
                </label>
                <div class="flex flex-col justify-end">
-                 <button type="submit" class="min-h-[48px] rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white hover:bg-blue-600">Calculate PPI</button>
+                 <button type="submit" class="min-h-[48px] rounded-lg bg-blue-700 px-4 py-3 font-semibold text-[#101827] hover:bg-blue-600">Calculate PPI</button>
                </div>
                <label class="sm:col-span-2 lg:col-span-4 flex items-start gap-3 text-sm text-neutral-200">
                  <input id="native-confirmed" type="checkbox" class="mt-1 h-4 w-4 shrink-0" />
@@ -269,111 +269,111 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
                </label>
              </form>
              <p id="ppi-result" role="status" aria-live="polite" class="mt-4 text-sm font-semibold text-blue-200">Enter values and confirm they describe your display's physical pixel resolution.</p>
-             <p class="mt-2 text-xs text-neutral-400">PPI = √(width² + height²) ÷ diagonal inches. This is a calculated estimate from user-supplied specifications, not a measurement of the panel.</p>
+             <p class="mt-2 text-xs text-[#475569]">PPI = √(width² + height²) ÷ diagonal inches. This is a calculated estimate from user-supplied specifications, not a measurement of the panel.</p>
            </div>
          </div>
        ) : (
-         <div class="p-5 rounded-xl border border-white/10 bg-black">
+         <div class="p-5 rounded-xl border border-[#20283C] bg-[#0A0B0E] text-white">
            <ScreenInspection client:only="react" mode={inspectionMode} lang={newPage.lang} />
          </div>
        )}
-       <p class="mt-5 text-xs text-neutral-500">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
+       <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
     </header>
     <section class="mt-12 grid md:grid-cols-[2fr_1fr] gap-10">
       <div>
         <h2 class="text-2xl font-bold mb-5">{isBR?'Como fazer o teste':'How to run this check'}</h2>
-        <ol class="space-y-4">{newPage.steps.map((step,i)=><li class="flex gap-4 text-neutral-300 leading-7"><span class="text-blue-400 font-bold">{i+1}.</span><span>{step}</span></li>)}</ol>
+        <ol class="space-y-4">{newPage.steps.map((step,i)=><li class="flex gap-4 text-[#344256] leading-7"><span class="text-[#125CC9] font-bold">{i+1}.</span><span>{step}</span></li>)}</ol>
       </div>
-      <aside class="border border-white/10 bg-white/5 rounded-xl p-5">
+      <aside class="border border-[#DCE3EA] bg-[#F6F8FB] rounded-xl p-5">
         <h2 class="text-lg font-bold mb-3">{isBR?'Antes de começar':'Before you start'}</h2>
-        <p class="text-neutral-300 leading-7">{isBR?'Limpe a tela, evite reflexos e confira filtros de luz azul ou HDR.':'Clean the screen, reduce reflections, and note HDR, zoom and adaptive brightness settings.'}</p>
+        <p class="text-[#344256] leading-7">{isBR?'Limpe a tela, evite reflexos e confira filtros de luz azul ou HDR.':'Clean the screen, reduce reflections, and note HDR, zoom and adaptive brightness settings.'}</p>
       </aside>
     </section>
     {taskGuide && <section class="mt-12">
       <h2 class="text-2xl font-bold mb-3">{taskGuide.heading}</h2>
-      <p class="max-w-3xl text-neutral-300 leading-7 mb-6">{taskGuide.intro}</p>
-      <div class="grid gap-4 md:grid-cols-2">{taskGuide.checks.map(check=><article class="rounded-xl border border-white/10 bg-neutral-950 p-5">
-        <h3 class="text-lg font-semibold text-white">{check.title}</h3>
-        <p class="mt-3 leading-7 text-neutral-300">{check.body}</p>
+      <p class="max-w-3xl text-[#344256] leading-7 mb-6">{taskGuide.intro}</p>
+      <div class="grid gap-4 md:grid-cols-2">{taskGuide.checks.map(check=><article class="rounded-xl border border-[#DCE3EA] bg-white shadow-sm p-5">
+        <h3 class="text-lg font-semibold text-[#101827]">{check.title}</h3>
+        <p class="mt-3 leading-7 text-[#344256]">{check.body}</p>
       </article>)}</div>
     </section>}
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
-      <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="border border-white/10 bg-white/5 p-5 rounded-xl text-neutral-300 leading-7">{note}</p>)}</div>
+      <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="border border-[#DCE3EA] bg-white p-5 rounded-xl text-[#344256] leading-7">{note}</p>)}</div>
     </section>
     {newPage.mode==='guide' && <section class="mt-12">
       <h2 class="text-2xl font-bold mb-4">{isBR?'Compare o que você observa':'Compare what you see'}</h2>
-      <p class="max-w-3xl text-neutral-300 leading-7 mb-5">{isBR?'Os exemplos abaixo ajudam a escolher o próximo passo. Eles não identificam o defeito automaticamente.':'These examples guide your next visual check; they do not automatically diagnose your display.'}</p>
+      <p class="max-w-3xl text-[#344256] leading-7 mb-5">{isBR?'Os exemplos abaixo ajudam a escolher o próximo passo. Eles não identificam o defeito automaticamente.':'These examples guide your next visual check; they do not automatically diagnose your display.'}</p>
       <div class="grid gap-4 md:grid-cols-2">
-        {pixelDifferences.map(item=><article class="rounded-xl border border-white/10 bg-neutral-950 p-5">
-          <h3 class="text-lg font-semibold text-white">{item.appearance}</h3>
-          <p class="mt-3 text-sm leading-7 text-neutral-300">{item.meaning}</p>
-          <p class="mt-3 border-t border-white/10 pt-3 text-sm leading-7 text-blue-200"><strong>{isBR?'Próximo passo':'Next step'}:</strong> {item.action}</p>
+        {pixelDifferences.map(item=><article class="rounded-xl border border-[#DCE3EA] bg-white p-5">
+          <h3 class="text-lg font-semibold text-[#101827]">{item.appearance}</h3>
+          <p class="mt-3 text-sm leading-7 text-[#344256]">{item.meaning}</p>
+          <p class="mt-3 border-t border-[#DCE3EA] pt-3 text-sm leading-7 text-blue-200"><strong>{isBR?'Próximo passo':'Next step'}:</strong> {item.action}</p>
         </article>)}
       </div>
     </section>}
     {newPage.mode==='fixer' && <section class="mt-12 rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 md:p-7">
       <h2 class="text-2xl font-bold mb-3">{isBR?'Como usar a área de cor estática':'How to use the static color patch'}</h2>
-      <p class="leading-7 text-neutral-300">{isBR?'Abra o teste, toque na região suspeita para posicionar a área estática, escolha a cor e ajuste o tamanho. A comparação é manual, sem flashes rápidos e sem promessa de reparo.':'Start the test, click or tap the suspicious area to position the static patch, choose a patch color and adjust its size. This is a manual comparison, not rapid flashing or a guaranteed repair.'}</p>
+      <p class="leading-7 text-[#344256]">{isBR?'Abra o teste, toque na região suspeita para posicionar a área estática, escolha a cor e ajuste o tamanho. A comparação é manual, sem flashes rápidos e sem promessa de reparo.':'Start the test, click or tap the suspicious area to position the static patch, choose a patch color and adjust its size. This is a manual comparison, not rapid flashing or a guaranteed repair.'}</p>
     </section>}
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Perguntas frequentes':'Frequently asked questions'}</h2>
-      <div class="space-y-4">{newPage.faq.map(item=><article class="rounded-xl border border-white/10 p-5"><h3 class="font-semibold text-lg">{item.question}</h3><p class="text-neutral-300 leading-7 mt-3">{item.answer}</p></article>)}</div>
+      <div class="space-y-4">{newPage.faq.map(item=><article class="rounded-xl border border-[#DCE3EA] p-5"><h3 class="font-semibold text-lg">{item.question}</h3><p class="text-[#344256] leading-7 mt-3">{item.answer}</p></article>)}</div>
     </section>
-    <nav class="mt-10 flex flex-wrap items-center gap-3 border-t border-white/10 pt-6 text-sm" aria-label={isBR?'Mudar idioma':'Switch language'}>
-      <span class="text-neutral-400">{isBR?'Outros idiomas:':'Other language:'}</span>
-      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-white/20 px-4 py-3 text-blue-300 hover:border-blue-400">{isBR?'English':'Português (Brasil)'}</a>
+    <nav class="mt-10 flex flex-wrap items-center gap-3 border-t border-[#DCE3EA] pt-6 text-sm" aria-label={isBR?'Mudar idioma':'Switch language'}>
+      <span class="text-[#475569]">{isBR?'Outros idiomas:':'Other language:'}</span>
+      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-[#DCE3EA] px-4 py-3 text-[#125CC9] hover:border-blue-400">{isBR?'English':'Português (Brasil)'}</a>
     </nav>
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Testes relacionados':'Related tests'}</h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="rounded-lg p-4 border border-white/10 hover:border-blue-500/60 text-neutral-200" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="rounded-lg p-4 border border-[#DCE3EA] hover:border-blue-500/60 text-neutral-200" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>
     </section>
   </main>
 ) : article ? (
   <main id="main-content" tabindex="-1" class="max-w-4xl mx-auto px-5 pt-12">
-    <nav aria-label="Breadcrumb"><a href="/blog" class="text-blue-400">← All guides</a></nav>
-    <article class="prose prose-invert max-w-none py-8">
-      <p class="text-sm uppercase tracking-widest text-blue-400">{article.category} · {article.date}</p>
+    <nav aria-label="Breadcrumb"><a href="/blog" class="text-[#125CC9]">← All guides</a></nav>
+    <article class="prose max-w-none py-8">
+      <p class="text-sm uppercase tracking-widest text-[#125CC9]">{article.category} · {article.date}</p>
       <h1 class="text-4xl font-bold">{article.title}</h1>
-      <p class="text-neutral-400 leading-8">{article.excerpt}</p>
+      <p class="text-[#475569] leading-8">{article.excerpt}</p>
       <div class="mt-8 blog-article" set:html={article.content} />
     </article>
-    <a href="/" class="inline-block text-blue-400 mt-5">Open the dead pixel test →</a>
+    <a href="/" class="inline-block text-[#125CC9] mt-5">Open the dead pixel test →</a>
   </main>
 ) : blogIndex ? (
   <main id="main-content" tabindex="-1" class="max-w-6xl mx-auto px-5 py-12">
-    <h1 class="text-4xl font-bold mb-4">Screen Testing Guides</h1><p class="text-neutral-400 mb-8">Practical explanations and display troubleshooting articles.</p>
-    <div class="grid md:grid-cols-2 gap-5">{BLOG_POSTS.map(post=><a href={'/blog/'+post.slug} class="border border-white/10 rounded-xl p-5 hover:border-blue-500/60">
-      <h2 class="text-xl font-bold mb-2">{post.title}</h2><p class="text-neutral-400">{post.excerpt}</p></a>)}</div>
+    <h1 class="text-4xl font-bold mb-4">Screen Testing Guides</h1><p class="text-[#475569] mb-8">Practical explanations and display troubleshooting articles.</p>
+    <div class="grid md:grid-cols-2 gap-5">{BLOG_POSTS.map(post=><a href={'/blog/'+post.slug} class="border border-[#DCE3EA] rounded-xl p-5 hover:border-blue-500/60">
+      <h2 class="text-xl font-bold mb-2">{post.title}</h2><p class="text-[#475569]">{post.excerpt}</p></a>)}</div>
   </main>
 ) : (
   <>
     <App client:only="react" />
-    <section class="mx-auto max-w-5xl px-6 pb-16 pt-5 text-neutral-300 leading-7" aria-label="Display test information">
+    <section class="mx-auto max-w-5xl px-6 pb-16 pt-5 text-[#344256] leading-7" aria-label="Display test information">
       {legacyGuide ? (
         <>
-          <h2 class="text-2xl font-semibold text-white mb-4">{legacyGuide.heading}</h2>
+          <h2 class="text-2xl font-semibold text-[#101827] mb-4">{legacyGuide.heading}</h2>
           <p class="max-w-3xl">{legacyGuide.intro}</p>
           <div class="mt-8 grid gap-8 md:grid-cols-2">
             <div>
-              <h3 class="text-lg font-semibold text-white mb-3">Practical inspection steps</h3>
+              <h3 class="text-lg font-semibold text-[#101827] mb-3">Practical inspection steps</h3>
               <ol class="list-decimal pl-5 space-y-3">{legacyGuide.steps.map(step=><li>{step}</li>)}</ol>
             </div>
             <div>
-              <h3 class="text-lg font-semibold text-white mb-3">What the result cannot prove</h3>
+              <h3 class="text-lg font-semibold text-[#101827] mb-3">What the result cannot prove</h3>
               <ul class="list-disc pl-5 space-y-3">{legacyGuide.limits.map(limit=><li>{limit}</li>)}</ul>
             </div>
           </div>
         </>
       ) : (
         <>
-          <h2 class="text-xl font-semibold text-white mb-3">About {title}</h2>
+          <h2 class="text-xl font-semibold text-[#101827] mb-3">About {title}</h2>
           <p>{description}</p>
           <p class="mt-3">The interactive tool loads in your browser. This is a user-operated visual check, not a hardware certification. Browser and display settings affect results.</p>
         </>
       )}
       <nav aria-label="Related display tests" class="mt-8 flex flex-wrap gap-3">
-        <a class="text-blue-400 hover:underline" href="/">Dead Pixel Test</a>
-        <a class="text-blue-400 hover:underline" href="/tests/local-dimming">Local Dimming</a>
-        <a class="text-blue-400 hover:underline" href="/tests/color-gradient">Color Gradient</a>
-        <a class="text-blue-400 hover:underline" href="/tests/refresh-rate">Browser FPS</a>
+        <a class="text-[#125CC9] hover:underline" href="/">Dead Pixel Test</a>
+        <a class="text-[#125CC9] hover:underline" href="/tests/local-dimming">Local Dimming</a>
+        <a class="text-[#125CC9] hover:underline" href="/tests/color-gradient">Color Gradient</a>
+        <a class="text-[#125CC9] hover:underline" href="/tests/refresh-rate">Browser FPS</a>
       </nav>
     </section>
   </>
