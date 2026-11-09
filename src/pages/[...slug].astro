@@ -25,7 +25,7 @@ const {routePath} = Astro.props;
 const route=String(routePath);
 const normalized=route.replace(/\/$/,'')||'/';
 const newPage=SEO_LANDING_PAGES.find(p=>(p.path.replace(/\/$/,'')||'/')===normalized);
-const geoAnswer=GEO_ANSWERS[normalized];
+const geoAnswer=GEO_ANSWERS[normalized] ?? GEO_ANSWERS[normalized+'/'];
 const article=BLOG_POSTS.find(p=>'/blog/'+p.slug===normalized);
 const blogIndex=normalized==='/blog';
 const informationalRoutes=['/about','/contact','/privacy-policy','/terms-of-service'] as const;
