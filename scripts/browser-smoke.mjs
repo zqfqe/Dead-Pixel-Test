@@ -582,6 +582,22 @@ await check('/',async page=>{
  const restored=await page.evaluate(()=>document.activeElement?.textContent?.includes('Start full-screen inspection'));
  if(!restored)throw Error('Exit did not restore focus to inspection start');
 });
+await check('/phone-screen-dead-pixel-test',async page=>{
+ await page.getByRole('button',{name:'Start full-screen inspection'}).tap();
+ await page.getByRole('button',{name:'Hide controls'}).tap();
+ const compact=page.locator('[data-compact-controls="true"]');
+ if(await compact.getAttribute('data-corner')!=='0')throw Error('Compact controls did not start in first corner');
+ if(await page.getByRole('button',{name:'Next color'}).count())throw Error('Full toolbar remains visible in compact mode');
+ const move=page.getByRole('button',{name:'Move controls to next corner'});
+ for(let i=1;i<=4;i++){
+   await move.tap();
+   if(await compact.getAttribute('data-corner')!==String(i%4))throw Error('Compact control corner did not advance to '+i%4);
+ }
+ await page.getByRole('button',{name:'Show controls'}).tap();
+ await page.getByRole('button',{name:'Next color'}).tap();
+ await page.getByText('White (2/8)',{exact:true}).waitFor();
+ await page.getByRole('button',{name:/Exit test/}).tap();
+},{mobile:true,denyFullscreen:true});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -599,4 +615,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+54+' Chromium browser scenarios, including modal focus containment, locale navigation and per-mark evidence');
+console.log('PASS all '+55+' Chromium browser scenarios, including movable compact controls and per-mark evidence');
