@@ -105,6 +105,8 @@ const AstroDocumentNavigation:React.FC=()=>{
       !staticDocumentPaths.has(normalizeDocumentPath(destination.pathname)))return;
    event.preventDefault();
    event.stopImmediatePropagation();
+   // Avoid reliance on Cloudflare-only slash redirects in Astro preview and SPA links.
+   destination.pathname=normalizeDocumentPath(destination.pathname);
    window.location.assign(destination.href);
   };
   document.addEventListener('click',onClick,true);

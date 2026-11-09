@@ -2,6 +2,7 @@ import React, {useEffect,useRef,useState} from 'react';
 import {Search,ArrowRight,CornerDownLeft,Command} from 'lucide-react';
 import {MENU_ITEMS} from '../../data/menu';
 
+const canonicalToolPath=(path:string)=>path==='/'?'/':path.replace(/\/+$/,'');
 const matchingTools=(query:string)=>MENU_ITEMS.filter(item=>
   !item.isHeader&&item.title.toLocaleLowerCase().includes(query.toLocaleLowerCase())
 );
@@ -54,7 +55,7 @@ const CommandPalette:React.FC=()=>{
     event.preventDefault();
     // Each tool URL is an Astro static document. Do not keep stale SPA
     // canonical/robots metadata by performing a React Router soft transition.
-    window.location.assign(chosen.path);
+    window.location.assign(canonicalToolPath(chosen.path));
    }
   };
   window.addEventListener('keydown',handleNav);
@@ -77,7 +78,7 @@ const CommandPalette:React.FC=()=>{
      {filteredItems.length===0 ? (
       <p role="status" className="px-4 py-8 text-center text-neutral-400 text-sm">No results found.</p>
      ) : filteredItems.map((item,idx)=>(
-      <a key={item.path} href={item.path} onMouseEnter={()=>{selectedRef.current=idx;setSelectedIndex(idx);}}
+      <a key={item.path} href={canonicalToolPath(item.path)} onMouseEnter={()=>{selectedRef.current=idx;setSelectedIndex(idx);}}
        className={'mx-2 flex items-center justify-between rounded-lg px-4 py-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 '+
         (idx===selectedIndex?'bg-blue-600 text-white':'text-neutral-300 hover:text-white hover:bg-white/10')}>
        <span className="flex items-center gap-3">

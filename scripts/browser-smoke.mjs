@@ -775,7 +775,12 @@ await check('/tests/refresh-rate',async page=>{
  await field.press('Enter');
  // React Router can first push a same-document history entry. Only accept Astro's
  // new HTML after both language and surface metadata have changed.
- await page.locator('html[lang="pt-BR"][data-surface="light"]').waitFor({timeout:15000});
+ try{
+  await page.locator('html[lang="pt-BR"][data-surface="light"]').waitFor({timeout:15000});
+ }catch(error){
+  throw Error('Command palette landed at '+page.url()+' with HTML lang '+
+   await page.locator('html').getAttribute('lang')+'; '+String(error));
+ }
  await page.getByRole('heading',{level:1,name:'Teste de Pixel Morto'}).waitFor();
  const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
  if(canonical!==canonicalOrigin+'/pt-br')
