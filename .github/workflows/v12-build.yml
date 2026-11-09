@@ -22,6 +22,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Typecheck application
         run: npm run check:types
+      - name: Verify reciprocal language and index-admission gates
+        run: npx --no-install tsx scripts/test-hreflang-gates.ts
       - name: Build domainless safe deployment
         run: npm run build
       - name: Audit noindex and route output without a domain

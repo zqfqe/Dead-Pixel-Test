@@ -172,11 +172,16 @@ export const LOCALE_PAIRS: Array<[string,string]> = [
 ];
 
 export function pageAlternates(path: string): { lang: string; path: string }[] {
-  const pair=LOCALE_PAIRS.find(([a,b])=>a===path||b===path);
+  const normalize=(candidate:string)=>candidate.replace(/\/+$/,'')||'/';
+  const pair=LOCALE_PAIRS.find(([en,pt])=>normalize(en)===normalize(path)||normalize(pt)===normalize(path));
   if(!pair)return [];
-  const byPath=new Map(SEO_LANDING_PAGES.map(page=>[page.path.replace(/\/$/,'')||'/',page]));
-  const en=byPath.get(pair[0].replace(/\/$/,'')||'/');
-  const pt=byPath.get(pair[1].replace(/\/$/,'')||'/');
-  if(!en?.indexable||!pt?.indexable)return [];
+  const byPath=new Map(SEO_LANDING_PAGES.map(page=>[normalize(page.path),page]));
+  const en=byPath.get(normalize(pair[0]));
+  const pt=byPath.get(normalize(pair[1]));
+  // The indexable English homepage is defined in src/pages/index.astro,
+  // not in SEO_LANDING_PAGES. It becomes the valid reciprocal partner
+  // only after the actual Portuguese homepage has been editorially approved.
+  const englishReady=normalize(pair[0])==='/'||en?.indexable===true;
+  if(!englishReady||pt?.indexable!==true)return [];
   return [{lang:'en',path:pair[0]},{lang:'pt-BR',path:pair[1]}];
 }
