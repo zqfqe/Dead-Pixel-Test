@@ -35,21 +35,48 @@ const BurnInWiper: React.FC = () => {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  // Timer Logic
+  // Keep state updates pure: never call stopTest() inside the React
+  // setState updater (it can trigger another render/fullscreen transition).
   useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      timerRef.current = window.setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            stopTest();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    if (!isActive) return;
+    timerRef.current = window.setInterval(() => {
+      setTimeLeft(previous => Math.max(0, previous - 1));
+    }, 1000);
+    return () => {
+      if (timerRef.current !== null) window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
   }, [isActive]);
+
+  useEffect(() => {
+    if (isActive && timeLeft === 0) {
+      setIsActive(false);
+      void exitFullscreen();
+    }
+  }, [isActive, timeLeft, exitFullscreen]);
+
+  // Do not keep a moving or color-changing canvas active in hidden tabs.
+  // Escape and exiting native fullscreen must also stop fallback rendering.
+  useEffect(() => {
+    if (!isActive) return;
+    const stop = () => {
+      setIsActive(false);
+      void exitFullscreen();
+    };
+    const onVisibility = () => { if (document.visibilityState === 'hidden') stop(); };
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') stop(); };
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) setIsActive(false);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isActive, exitFullscreen]);
 
   // Formatting Time
   const formatTime = (seconds: number) => {
