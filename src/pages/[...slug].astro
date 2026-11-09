@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteInformation from '../components/SiteInformation.astro';
 import App from '../../App';
 import ScreenInspection from '../../components/tests/ScreenInspection';
 import { BLOG_POSTS } from '../../data/blog';
@@ -25,7 +26,9 @@ const normalized=route.replace(/\/$/,'')||'/';
 const newPage=SEO_LANDING_PAGES.find(p=>(p.path.replace(/\/$/,'')||'/')===normalized);
 const article=BLOG_POSTS.find(p=>'/blog/'+p.slug===normalized);
 const blogIndex=normalized==='/blog';
-const isLegacy=!newPage && !article && !blogIndex;
+const informationalRoutes=['/about','/contact','/privacy-policy','/terms-of-service'] as const;
+const infoPage=informationalRoutes.includes(normalized as (typeof informationalRoutes)[number]);
+const isLegacy=!newPage && !article && !blogIndex && !infoPage;
 const legacySeoGuides: Record<string,{seoTitle:string;heading:string;intro:string;steps:string[];limits:string[]}> = {
   "/tests/uniformity": {
     "seoTitle": "Screen Uniformity Test – Black, White & Gray | DeadPixelTest",
@@ -451,6 +454,11 @@ const structuredData=newPage?{
    ...(schemaUrl('/blog')?{url:schemaUrl('/blog')}:{})},
   breadcrumbs(breadcrumbItems)
  ]
+}:infoPage?{
+ '@context':'https://schema.org',
+ '@type':normalized==='/about'?'AboutPage':normalized==='/contact'?'ContactPage':'WebPage',
+ name:title,description,
+ ...(schemaUrl(normalized)?{url:schemaUrl(normalized)}:{})
 }:undefined;
 const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];limits:string[]}> = {
  ...legacySeoGuides,
@@ -815,6 +823,8 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
     <div class="grid md:grid-cols-2 gap-5">{BLOG_POSTS.map(post=><a href={'/blog/'+post.slug} class="border border-[#DCE3EA] rounded-xl p-5 hover:border-blue-500/60">
       <h2 class="text-xl font-bold mb-2">{post.title}</h2><p class="text-[#475569]">{post.excerpt}</p></a>)}</div>
   </main>
+) : infoPage ? (
+  <SiteInformation route={normalized as '/about' | '/contact' | '/privacy-policy' | '/terms-of-service'} />
 ) : (
   <>
     <App client:only="react" />
