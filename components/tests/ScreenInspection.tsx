@@ -74,9 +74,26 @@ const modeHint=mode==='lines'
  : mode==='retention'
  ? (lang==='pt-BR'?'Observe um fundo cinza neutro em busca de contornos residuais. Alterne cores por pouco tempo; este teste não distingue nem repara burn-in permanente.':'Look for a ghost outline on neutral gray. Change patterns briefly; this test cannot distinguish or repair permanent burn-in.')
  : mode==='contrast' ? (lang==='pt-BR'?'Compare níveis de preto e branco, gradientes suaves e barras de cor. Isto não mede nits, contraste físico ou cobertura de gama.':'Compare black and white levels, smooth color ramps and color bars. This is not a calibrated measurement of nits, physical contrast or gamut.') : t.hint;
+ const [,setViewportRevision]=useState(0);
  const [importStatus,setImportStatus]=useState(''),[active,setActive]=useState(false),[index,setIndex]=useState(0),[viewed,setViewed]=useState<Name[]>([]),[hideControls,setHideControls]=useState(false),[compactCorner,setCompactCorner]=useState(0),[markMode,setMarkMode]=useState(false),[showMarks,setShowMarks]=useState(false),[marks,setMarks]=useState<Mark[]>([]),[selected,setSelected]=useState(''),[device,setDevice]=useState<Device>(defaultDevice),[started,setStarted]=useState(''),[ran,setRan]=useState(false),[warning,setWarning]=useState(false),[patchColor,setPatchColor]=useState('#f00'),[patchSize,setPatchSize]=useState(140),[patchPos,setPatchPos]=useState({x:50,y:50});
  const root=useRef<HTMLDivElement>(null),dialog=useRef<HTMLDivElement>(null),startButton=useRef<HTMLButtonElement>(null),native=useRef(false);
  const touchStart=useRef<{x:number;y:number}|null>(null);
+ useEffect(()=>{
+   let frame=0;
+   const onLayoutChange=()=>{
+     if(frame)cancelAnimationFrame(frame);
+     frame=requestAnimationFrame(()=>{frame=0;setViewportRevision(v=>v+1);});
+   };
+   window.addEventListener('resize',onLayoutChange,{passive:true});
+   window.addEventListener('orientationchange',onLayoutChange);
+   window.visualViewport?.addEventListener('resize',onLayoutChange);
+   return ()=>{
+     window.removeEventListener('resize',onLayoutChange);
+     window.removeEventListener('orientationchange',onLayoutChange);
+     window.visualViewport?.removeEventListener('resize',onLayoutChange);
+     if(frame)cancelAnimationFrame(frame);
+   };
+ },[]);
  const patternLabel=(name:Name)=>lang==='pt-BR'?(PT_PATTERN_NAMES[name]??name):name;
  const current=patterns[index]??patterns[0],isFixer=mode==='fixer';
  const layoutChanged=marks.some(m=>{
