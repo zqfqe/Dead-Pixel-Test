@@ -630,6 +630,26 @@ await check('/',async page=>{
   await page.getByRole('button',{name:'Still visible on this color'}).waitFor();
   await page.getByRole('button',{name:/Exit test/}).click();
 });
+// Localized task navigation must keep the same task where an equivalent page exists.
+await check('/laptop-screen-dead-pixel-test',async page=>{
+ const link=page.getByRole('link',{name:'Portuguese version of this topic'});
+ if(await link.getAttribute('href')!=='/pt-br/pixel-morto-notebook')throw Error('Laptop locale switch lost its matching topic');
+ await link.click();
+ await page.getByRole('heading',{level:1,name:'Pixel Morto no Notebook'}).waitFor();
+ if(await page.locator('link[rel="alternate"][hreflang]').count())throw Error('Unreviewed pages should not publish SEO hreflang');
+});
+await check('/pt-br/reparar-pixel-preso',async page=>{
+ const link=page.getByRole('link',{name:'English version of this topic'});
+ if(await link.getAttribute('href')!=='/dead-pixel-fixer')throw Error('Fixer locale switch lost its matching topic');
+ await link.click();
+ await page.getByRole('heading',{level:1,name:'Stuck Pixel Check & Safe Retest'}).waitFor();
+});
+await check('/phone-screen-dead-pixel-test',async page=>{
+ const link=page.getByRole('link',{name:'Portuguese home page'});
+ if(await link.getAttribute('href')!=='/pt-br')throw Error('Non-equivalent phone page should link to Portuguese homepage');
+ const text=await page.locator('nav[aria-label="Switch language"]').innerText();
+ if(!text.includes('página inicial'))throw Error('Language switch fallback not explained to readers');
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -647,4 +667,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+57+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+60+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
