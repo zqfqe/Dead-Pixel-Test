@@ -1,13 +1,12 @@
 # Dead Pixel Test — Astro Static Display Tools
 
-## Current release: 2026-11-09
+## Current live deployment (2026-11-09)
 
-- The user explicitly authorized search-index admission for all 14 additional landing pages (8 EN, 6 pt-BR). The configured-origin build includes them in a 50-URL canonical sitemap. This is a publishing decision, not completed SERP top-10 review or Google indexing.
-- A verified production HTTPS `PUBLIC_SITE_URL` is required to remove `noindex` and emit real canonical and sitemap URLs; domainless builds and Cloudflare previews remain noindex.
-- The light Astro information UI received responsive bilingual navigation, stronger tool entrances, refined feature cards, numbered steps and reduced-motion-safe transitions. Fullscreen inspection patterns remain static.
-- Verified code revision: `8dad168e8eff731bd81899c60959f8d2eeefd452`; [GitHub Actions run 42560731606](https://github.com/zqfqe/Dead-Pixel-Test/actions/runs/42560731606) passed: 83 Chromium, 14 Firefox/WebKit, 27 legacy route checks, 5 mobile overflow checks and 6 legacy tool interactions.
-- Formal Cloudflare production-domain smoke and GSC verification are still pending. Older sections below document historical pre-release states and should not be read as the current indexing configuration.
-
+- Public production domain: **https://deadpixeltest.cc**. The 9 English and 6 pt-BR V1.2 landing pages are live, do not emit `noindex`, and declare self-canonical URLs. The published sitemap lists **50** canonical URLs and robots.txt advertises it. Google indexing/rankings still require Search Console evidence.
+- Cloudflare Pages **main** builds now use this verified domain automatically through `scripts/build-site.mjs`, even when `PUBLIC_SITE_URL` is not set in the Pages dashboard. Branch previews are always `noindex` with empty sitemaps; domainless local builds remain `noindex`.
+- All core V1.2 features F01–F08 are implemented in code. Automated tests do not replace real iPhone, Android, physical-panel, NVDA/VoiceOver or Lighthouse acceptance.
+- The 400-row Semrush research produced **134** KD≤29 region-qualified keyword groups, of which **87** are target *candidates*. Their individual SERP top-ten and editorial ranking-opportunity reviews are not complete. No claim that 87 queries already rank.
+- See [the current acceptance addendum](docs/V1.2-ACCEPTANCE-20261109.md) and the latest [GitHub Actions checks](https://github.com/zqfqe/Dead-Pixel-Test/actions). Production-domain-specific GitHub smoke currently skips when its independent `PUBLIC_SITE_URL` Actions variable is unset.
 
 Astro 6 static site with React islands for browser-based screen diagnostics.
 
@@ -24,18 +23,15 @@ npm run preview
 
 ## Cloudflare Pages
 
-- Build command: \`npm run build\`
-- Output directory: \`dist\`
+- Build command: `npm run build`
+- Output directory: `dist`
 - Node.js: 22.12+
-- The V1.2 project brief did not specify a purchased production domain.
-- Do not use the competitor's \`.org\` domain or guess a \`pages.dev\` hostname as canonical.
-- Once the real domain is purchased and connected, set \`PUBLIC_SITE_URL\` in Cloudflare Pages production and preview build environments to the HTTPS origin only (for example, \`https://your-domain.com\`).
+- Custom production domain: `https://deadpixeltest.cc`
+- On a Cloudflare Pages **main** build, `scripts/build-site.mjs` selects this domain and generates canonical, hreflang, robots.txt and a populated sitemap even if no dashboard override is set.
+- On non-main Cloudflare preview branches, indexing is disabled and no production canonical URLs leak into the preview.
+- On local builds without `PUBLIC_SITE_URL`, the result remains `noindex,nofollow` and the sitemap is empty; use an explicit HTTPS test origin only for build audits.
+- Any `PUBLIC_SITE_URL` override on production must match `https://deadpixeltest.cc`, or the build intentionally fails instead of publishing the wrong canonical host.
 
-Without \`PUBLIC_SITE_URL\`, builds deliberately:
-- add \`noindex,nofollow\` to every page;
-- omit canonical and hreflang tags;
-- emit an empty sitemap;
-- omit a guessed Sitemap URL from robots.txt.
 
 ## Architecture
 
@@ -52,7 +48,7 @@ Existing GSC routes such as \`/tests/refresh-rate\`, \`/tests/local-dimming\`, \
 
 ## Verification
 
-GitHub Actions checks domainless and configured builds, static routes, metadata and 29 Chromium browser scenarios (including mobile emulation, keyboard access, visual-test reports, camera/media cleanup and same-origin request audit). Failure screenshots are retained for debugging. Production smoke is explicitly skipped when the PUBLIC_SITE_URL GitHub Actions variable is not configured; a deployment or build success does not establish custom-domain availability or Google indexing.
+GitHub Actions validates TypeScript, Astro static builds, domainless/preview isolation, indexable production canonical routes, the 50-URL sitemap, Chromium interaction smoke, Firefox/WebKit responsiveness, legacy routes and mobile viewports. Browser checks can still fail; read the **latest run**, not a historical count. Production domain smoke is an independent workflow currently skipped when its GitHub Actions variable is unset. Passing CI alone cannot establish Google's actual indexing, physical-device performance or accessibility certification.
 
 
 ## Privacy and safety
@@ -66,7 +62,9 @@ GitHub Actions checks domainless and configured builds, static routes, metadata 
 - A verified private support/privacy contact address remains a pre-launch requirement.
 - Do not enable analytics or advertising until the privacy notice and any required consent controls are reviewed and updated.
 
-## V1.2 P1 follow-up: accessibility, performance and established SEO routes (2026-11-09)
+## Historical engineering change log (earlier stage; see current status above)
+
+### V1.2 P1 follow-up: accessibility, performance and established SEO routes (2026-11-09)
 
 - Added first-focus skip links and actual `#main-content` targets for Astro pages and legacy React tool pages; the keyboard link is visible on focus.
 - Desktop navigation dropdowns now open on keyboard focus as well as hover. The mobile menu has `aria-expanded`, `aria-controls`, an accessibility-hidden closed state and Escape support. Closed off-screen links are no longer focusable.
@@ -77,7 +75,7 @@ GitHub Actions checks domainless and configured builds, static routes, metadata 
 - Automated browser suite now covers 22 scenarios, including skip navigation, mobile closed-menu focus behavior and reduced-motion treatment. These are Chromium checks, not NVDA, VoiceOver or real Safari tests.
 - The production-domain smoke workflow still skips without a configured GitHub Actions `PUBLIC_SITE_URL`. This does not independently establish the Cloudflare deployment or indexing status.
 
-## Follow-up: inspection gestures and page-specific guidance (2026-11-09)
+### Follow-up: inspection gestures and page-specific guidance (2026-11-09)
 
 Implementation:
 - Mobile inspection now supports horizontal swipes between patterns. Swipes are disabled in mark mode and in static patch mode, preventing accidental navigation while marking or positioning a patch.
