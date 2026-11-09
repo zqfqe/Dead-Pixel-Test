@@ -37,6 +37,7 @@ const DoubleClickTest: React.FC = () => {
     setClickCount(0);
     setFaultCount(0);
     setLogs([]);
+    setLastButton(null);
     lastClickTimes.current = {};
   };
 
@@ -50,14 +51,14 @@ const DoubleClickTest: React.FC = () => {
         // but for UX let's just process it if they click the big box.
     }
 
-    const now = performance.now();
+    const now = Number.isFinite(e.timeStamp) && e.timeStamp > 0 ? e.timeStamp : performance.now();
     const btn = e.button;
-    const prevTime = lastClickTimes.current[btn] || 0;
-    const diff = prevTime === 0 ? 0 : now - prevTime;
+    const prevTime = lastClickTimes.current[btn];
+    const diff = prevTime === undefined ? 0 : Math.max(0,now-prevTime);
     
     // Logic: If diff is extremely small (e.g. < 80ms) and > 0, it's likely a bounce (fault).
     // Note: First click (diff 0) is never a fault.
-    const isFault = diff > 0 && diff <= threshold;
+    const isFault = prevTime !== undefined && diff >= 0 && diff <= threshold;
 
     // Update Refs
     lastClickTimes.current[btn] = now;
@@ -74,22 +75,13 @@ const DoubleClickTest: React.FC = () => {
     const newLog: ClickLog = {
         id: logIdCounter.current,
         button: btn,
-        timestamp: now,
+        timestamp: Date.now(),
         diff: diff,
         isFault
     };
 
     setLogs(prev => [newLog, ...prev].slice(0, 50)); // Keep last 50
   };
-
-  // Prevent Context Menu on Right Click in the test area
-  useEffect(() => {
-    const handleContext = (e: MouseEvent) => {
-        if (isActive) e.preventDefault();
-    };
-    document.addEventListener('contextmenu', handleContext);
-    return () => document.removeEventListener('contextmenu', handleContext);
-  }, [isActive]);
 
   const getButtonColor = (btn: number) => {
       switch(btn) {
@@ -133,7 +125,7 @@ const DoubleClickTest: React.FC = () => {
                     <h1 className="text-3xl md:text-4xl font-bold text-white">Double Click Test</h1>
                 </div>
                 <p className="text-neutral-400 max-w-lg">
-                    Click the box below to check if your mouse registers multiple clicks when you only press once (Switch Bouncing).
+                    Click once per deliberate press. Rapid repeats of the same button may indicate switch bounce, but do not prove a hardware fault.
                 </p>
             </div>
 
@@ -141,13 +133,13 @@ const DoubleClickTest: React.FC = () => {
             <div className="flex gap-4">
                 <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl text-center min-w-[100px]">
                     <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Clicks</div>
-                    <div className="text-3xl font-mono font-bold text-white">{clickCount}</div>
+                    <div data-testid="click-count" className="text-3xl font-mono font-bold text-white">{clickCount}</div>
                 </div>
                 <div className={`bg-neutral-900 border p-4 rounded-xl text-center min-w-[100px] ${faultCount > 0 ? 'border-red-500/50 bg-red-900/10' : 'border-neutral-800'}`}>
                     <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
                         {faultCount > 0 && <AlertTriangle size={12} className="text-red-500" />} Faults
                     </div>
-                    <div className={`text-3xl font-mono font-bold ${faultCount > 0 ? 'text-red-500' : 'text-green-500'}`}>{faultCount}</div>
+                    <div data-testid="rapid-click-count" className={`text-3xl font-mono font-bold ${faultCount > 0 ? 'text-red-500' : 'text-green-500'}`}>{faultCount}</div>
                 </div>
             </div>
         </div>
@@ -162,6 +154,8 @@ const DoubleClickTest: React.FC = () => {
                     role="region"
                     aria-label="Mouse click test pad"
                     onMouseDown={handleMouseDown}
+                    onContextMenu={e=>e.preventDefault()}
+                    data-testid="double-click-pad"
                     className={`
                         w-full aspect-[4/3] md:aspect-video rounded-3xl border-2 cursor-pointer transition-all duration-75 relative overflow-hidden group select-none
                         flex flex-col items-center justify-center
@@ -182,7 +176,7 @@ const DoubleClickTest: React.FC = () => {
                         ) : (
                             <>
                                 <div className={`text-6xl font-bold mb-2 ${logs[0]?.isFault ? 'text-red-500' : 'text-white'}`}>
-                                    {logs[0]?.isFault ? 'DOUBLE CLICKED!' : 'SINGLE CLICK'}
+                                    {logs[0]?.isFault ? 'RAPID REPEAT' : 'SINGLE CLICK'}
                                 </div>
                                 <div className="text-lg font-mono text-neutral-400">
                                     {BUTTON_NAMES[lastButton as keyof typeof BUTTON_NAMES] || `Button ${lastButton}`} 
@@ -204,7 +198,7 @@ const DoubleClickTest: React.FC = () => {
                     <div className="flex items-center gap-4 flex-1">
                         <div className="flex items-center gap-2 text-neutral-400">
                             <Settings size={18} />
-                            <span className="text-sm font-bold">Failure Threshold</span>
+                            <span className="text-sm font-bold">Rapid Interval Threshold</span>
                         </div>
                         <div className="flex items-center gap-3 flex-1 max-w-xs">
                             <input 
@@ -259,7 +253,7 @@ const DoubleClickTest: React.FC = () => {
                                     <span className={`font-bold w-12 ${getButtonColor(log.button)}`}>
                                         {BUTTON_NAMES[log.button as keyof typeof BUTTON_NAMES]?.toUpperCase().slice(0,3) || `B${log.button}`}
                                     </span>
-                                    <span className="text-neutral-500 text-xs font-mono">
+                                    <span data-testid="click-event-clock" className="text-neutral-500 text-xs font-mono">
                                         {new Date(log.timestamp).toLocaleTimeString([], {hour12:false, minute:'2-digit', second:'2-digit'})}.{Math.floor(log.timestamp % 1000).toString().padStart(3,'0')}
                                     </span>
                                 </div>

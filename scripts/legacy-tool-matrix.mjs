@@ -109,10 +109,32 @@ try{
    await page.getByRole('button',{name:'Start Touch Test'}).waitFor();
   }],
   ['/tools/double-click-test',async page=>{
-   await page.getByRole('region',{name:'Mouse click test pad'}).click();
+   const pad=page.getByRole('region',{name:'Mouse click test pad'});
+   await pad.click();
    await page.getByText('SINGLE CLICK',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Reset',exact:true}).click();
    await page.getByText('Click here to test',{exact:true}).waitFor();
+   await page.evaluate(()=>{
+     const target=document.querySelector('[data-testid="double-click-pad"]');
+     for(const stamp of [1500,1530,1700]){
+       const event=new MouseEvent('mousedown',{bubbles:true,button:0});
+       Object.defineProperty(event,'timeStamp',{value:stamp});
+       target.dispatchEvent(event);
+     }
+   });
+   await page.waitForFunction(()=>document.querySelector('[data-testid="click-count"]')?.textContent==='3');
+   if((await page.getByTestId('rapid-click-count').textContent())!=='1')
+     throw Error('Expected exactly one rapid repeat at 30ms');
+   if(!/^\d{2}:\d{2}/.test((await page.getByTestId('click-event-clock').first().textContent())?.trim()||''))
+     throw Error('Missing real wall-clock log timestamp');
+   const allowed=await page.evaluate(()=>{
+     const e=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});
+     document.body.dispatchEvent(e);return !e.defaultPrevented;
+   });
+   if(!allowed)throw Error('Outside test pad right-click was intercepted');
+   await page.getByRole('button',{name:'Reset',exact:true}).click();
+   if((await page.getByTestId('rapid-click-count').textContent())!=='0')
+     throw Error('Reset did not clear rapid repeat counter');
   }],
   ['/tools/speaker-test',async page=>{
    await page.getByRole('heading',{level:1,name:'Audio System Test'}).waitFor();
