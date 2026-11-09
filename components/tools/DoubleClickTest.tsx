@@ -159,6 +159,8 @@ const DoubleClickTest: React.FC = () => {
                 
                 {/* The Click Pad */}
                 <div 
+                    role="region"
+                    aria-label="Mouse click test pad"
                     onMouseDown={handleMouseDown}
                     className={`
                         w-full aspect-[4/3] md:aspect-video rounded-3xl border-2 cursor-pointer transition-all duration-75 relative overflow-hidden group select-none

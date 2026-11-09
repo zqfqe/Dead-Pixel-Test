@@ -82,7 +82,7 @@ try{
    await page.getByRole('button',{name:'Reset All'}).click();
   }],
   ['/tools/double-click-test',async page=>{
-   await page.getByText('Click here to test',{exact:true}).click();
+   await page.getByRole('region',{name:'Mouse click test pad'}).click();
    await page.getByText('SINGLE CLICK',{exact:true}).waitFor();
    await page.getByRole('button',{name:'Reset',exact:true}).click();
    await page.getByText('Click here to test',{exact:true}).waitFor();
