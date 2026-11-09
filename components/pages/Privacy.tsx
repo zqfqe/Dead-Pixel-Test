@@ -13,7 +13,7 @@ const Privacy: React.FC = () => {
       />
       <main className="max-w-3xl mx-auto py-12 px-6">
         <h1 className="text-4xl font-bold text-white mb-4">Privacy Policy</h1>
-        <p className="text-neutral-500 mb-8">Last updated: November 8, 2026</p>
+        <p className="text-neutral-500 mb-8">Last updated: November 9, 2026</p>
         <div className="prose prose-invert prose-neutral max-w-none text-neutral-300">
           <p>
             This policy describes the current preview version of DeadPixelTest and the data practices visible in its application code. It may change before public launch as hosting, analytics, advertising or support services are configured.
@@ -24,7 +24,7 @@ const Privacy: React.FC = () => {
             The screen patterns and visual inspection controls run in your browser. The dead-pixel, screen-line and image-retention checks ask you to inspect the display yourself; they do not automatically scan the physical panel. The current application code does not send your marked screen locations, test observations or screenshots to an application server.
           </p>
           <p>
-            Some existing tools save settings and test-report entries in your browser's local storage. These values remain in that browser profile and are not uploaded by the site's application code. You can remove them by clearing this site's stored data in your browser. Exported JSON, HTML reports and snapshots are created as downloads only when you choose to export them.
+            Some existing tools save settings and test-report entries in your browser's local storage. These values remain in that browser profile and are not uploaded by the site's application code. You can remove them by clearing this site's stored data in your browser. Exported JSON, HTML reports and snapshots are created as downloads only when you choose to export them. The current screen-inspection workflow stores the active observation session in page memory, without automatic account or cloud synchronization. If you choose to import a previously exported JSON report, its contents are validated and read in your browser, not uploaded to the site's application server.
           </p>
 
           <h2>2. Camera, microphone and selected images</h2>
