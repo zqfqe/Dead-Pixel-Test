@@ -351,11 +351,13 @@ await check('/pt-br/teste-de-cores',async page=>{
  await page.getByRole('button',{name:/Sair do teste/i}).click();
 });
 await check('/laptop-screen-dead-pixel-test',async page=>{
+ if(await page.getByRole('combobox',{name:'Device'}).inputValue()!=='laptop')throw Error('Laptop route did not select laptop device');
  await page.getByRole('heading',{name:'Laptop-specific troubleshooting before requesting repair'}).waitFor();
  await page.getByRole('heading',{name:'Internal panel versus external monitor'}).waitFor();
  await page.getByRole('heading',{name:'Angle and power changes'}).waitFor();
 });
 await check('/pt-br/pixel-morto-iphone',async page=>{
+ if(await page.getByRole('combobox',{name:'Dispositivo'}).inputValue()!=='phone')throw Error('Portuguese iPhone route did not select phone device');
  await page.getByRole('heading',{name:'Verificações específicas para iPhone e celular'}).waitFor();
  await page.getByRole('heading',{name:'Safari e tela cheia'}).waitFor();
 });
