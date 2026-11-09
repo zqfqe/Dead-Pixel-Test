@@ -705,6 +705,36 @@ await check('/screen-resolution-test',async page=>{
  finally{await ctx.close();}
 }
 
+
+for(const path of ['/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
+ await check(path,async page=>{
+  const guide=page.locator('#legacy-static-guide');
+  await guide.waitFor();
+  const ratio=await guide.evaluate(el=>{
+   const luminance=(color)=>{
+    const rgb=(color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+    if(rgb.length!==3)return NaN;
+    const [r,g,b]=rgb.map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4);
+    return 0.2126*r+0.7152*g+0.0722*b;
+   };
+   const bg=getComputedStyle(el).backgroundColor;
+   const fg=getComputedStyle(el).color;
+   const a=luminance(bg),b=luminance(fg);
+   return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+  });
+  if(!(ratio>=4.5))throw Error('Static guide text contrast below 4.5:1: '+ratio);
+  const headingRatio=await guide.locator('h2').evaluate(h=>{
+   const rgb=(s)=>(s.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+   const lum=(s)=>{const [r,g,b]=rgb(s).map(v=>v/255).map(v=>v<=0.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*r+.7152*g+.0722*b;};
+   const text=lum(getComputedStyle(h).color),back=lum(getComputedStyle(h.closest('section')).backgroundColor);
+   return (Math.max(text,back)+.05)/(Math.min(text,back)+.05);
+  });
+  if(!(headingRatio>=4.5))throw Error('Static guide heading is visually unreadable: '+headingRatio);
+  if(!await guide.getByText('Practical inspection steps').count())throw Error('Legacy static guide steps missing');
+  if(!await guide.getByText('What the result cannot prove').count())throw Error('Legacy static guide limitations missing');
+ });
+}
+
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -722,4 +752,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+66+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+71+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
