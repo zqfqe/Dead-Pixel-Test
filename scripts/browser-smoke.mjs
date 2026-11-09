@@ -850,6 +850,16 @@ await check('/tests/refresh-rate',async page=>{
  await dialog.getByRole('button',{name:'Close search'}).click();
  await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='DeadPixelTest Home');
 });
+await check('/image-retention-test',async page=>{
+ const section=page.getByRole('region',{name:'Manufacturer OLED care resources'});
+ await section.getByRole('heading',{name:'Manufacturer OLED panel-care guides'}).waitFor();
+ const samsung=await section.getByRole('link',{name:/Samsung OLED monitor/}).getAttribute('href');
+ const lg=await section.getByRole('link',{name:/LG OLED TV/}).getAttribute('href');
+ if(!samsung?.startsWith('https://www.samsung.com/sg/support/displays/')||!lg?.startsWith('https://www.lg.com/us/support/help-library/'))
+  throw Error('Manufacturer source targets are missing or changed');
+ if(!await section.getByText(/not features of this website/).count())
+  throw Error('Manufacturer maintenance functions not distinguished from web testing');
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -867,4 +877,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+79+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+80+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

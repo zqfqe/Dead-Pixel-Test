@@ -24,6 +24,9 @@ for(const path of [...priority,...planned]){
  if(!existsSync(file)){errors.push('Missing HTML '+path);continue;}
  const html=readFileSync(file,'utf8'),canon=[...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/gi)];
  const guideTitle=staticGuides.get(path);
+ if(path==='/image-retention-test/' && (!html.includes('Manufacturer OLED panel-care guides')||!html.includes('www.samsung.com/sg/support/displays/')||!html.includes('www.lg.com/us/support/help-library/'))){
+  errors.push('Retention guide missing source-verified manufacturer references');
+ }
  const symptomTitle=taskSpecificGuides.get(path);
  if(symptomTitle && (!html.includes(symptomTitle)||!html.includes('data-symptom-decision')||!html.includes('<details')||!html.includes('www.dell.com/support/kbdoc/'))){
   errors.push('Missing independent static laptop/fixer triage content on '+path);
