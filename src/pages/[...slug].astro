@@ -274,7 +274,8 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
          </div>
        ) : (
          <div class="p-5 rounded-xl border border-[#20283C] bg-[#0A0B0E] text-white">
-           <ScreenInspection client:only="react" mode={inspectionMode} lang={newPage.lang} />
+           <ScreenInspection client:only="react" mode={inspectionMode} lang={newPage.lang}
+             defaultDevice={/laptop|notebook/.test(normalized)?'laptop':/phone|iphone/.test(normalized)?'phone':'monitor'} />
          </div>
        )}
        <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
