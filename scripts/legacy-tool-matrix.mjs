@@ -81,6 +81,32 @@ try{
    await full.click();
    await page.getByRole('button',{name:'Reset All'}).click();
   }],
+  ['/tools/touch',async page=>{
+   await page.getByRole('button',{name:'Start Touch Test'}).click();
+   const canvas=page.getByTestId('touch-test-canvas'),count=page.getByTestId('touch-active-count');
+   await canvas.waitFor();
+   await page.evaluate(()=>{
+     const el=document.querySelector('[data-testid="touch-test-canvas"]');
+     const a=new Touch({identifier:1,target:el,clientX:80,clientY:120,force:0});
+     const b=new Touch({identifier:2,target:el,clientX:140,clientY:190,force:0.7});
+     el.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,touches:[a,b],targetTouches:[a,b],changedTouches:[a,b]}));
+   });
+   await count.getByText('Points: 2').waitFor();
+   await page.getByText('F:0.00').waitFor();
+   const blocked=await page.evaluate(()=>{
+     const e=new TouchEvent('touchmove',{bubbles:true,cancelable:true});
+     document.body.dispatchEvent(e);return e.defaultPrevented;
+   });
+   if(blocked)throw Error('Touch tester blocks touch interactions on the entire body');
+   await page.evaluate(()=>{
+     const el=document.querySelector('[data-testid="touch-test-canvas"]');
+     el.dispatchEvent(new TouchEvent('touchend',{bubbles:true,touches:[],targetTouches:[],changedTouches:[]}));
+   });
+   await page.getByText('Points: 0').waitFor();
+   await page.getByRole('button',{name:'Clear'}).click();
+   await page.getByRole('button',{name:'Exit'}).click();
+   await page.getByRole('button',{name:'Start Touch Test'}).waitFor();
+  }],
   ['/tools/double-click-test',async page=>{
    await page.getByRole('region',{name:'Mouse click test pad'}).click();
    await page.getByText('SINGLE CLICK',{exact:true}).waitFor();
@@ -181,4 +207,4 @@ try{
  for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 7 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 8 interactive functional checks (hardware behaviors not certified).');
