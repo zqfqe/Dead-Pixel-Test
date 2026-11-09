@@ -28,7 +28,7 @@ const hasSchema=Boolean(schema);
 const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
 ---
 <!doctype html>
-<html lang={lang} data-astro-site="true">
+<html lang={lang} data-astro-site="true" data-surface={legacy?'dark':'light'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
