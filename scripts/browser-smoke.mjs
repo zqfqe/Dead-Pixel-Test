@@ -189,7 +189,7 @@ await check('/tools/color-blindness',async page=>{
 },{media:true});
 await check('/tools/color-blindness',async page=>{
  await page.getByRole('button',{name:/Use Camera/i}).waitFor({timeout:10000});
- const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WDCoQAAAABJRU5ErkJggg==','base64');
+ const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGM4YWQDAAL8ATdGk8MjAAAAAElFTkSuQmCC','base64');
  await page.locator('input[type="file"]').setInputFiles({name:'local-test.png',mimeType:'image/png',buffer:pixel});
  const img=page.locator('img[alt="Uploaded source image with approximate color-vision filter"]');
  await img.waitFor({timeout:8000});

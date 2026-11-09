@@ -112,7 +112,7 @@ try{
    const file=page.locator('input[type="file"]');
    await file.setInputFiles({name:'unsafe.svg',mimeType:'image/svg+xml',buffer:Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>')});
    await page.getByText(/Choose a PNG, JPEG, WebP, GIF or AVIF/).waitFor();
-   const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WDCoQAAAABJRU5ErkJggg==','base64');
+   const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGM4YWQDAAL8ATdGk8MjAAAAAElFTkSuQmCC','base64');
    await file.setInputFiles({name:'tiny.png',mimeType:'image/png',buffer:pixel});
    const layer=page.getByTestId('cvd-filtered-layer');
    await layer.waitFor();
