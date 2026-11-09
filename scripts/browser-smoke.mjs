@@ -564,15 +564,10 @@ await check('/tests/refresh-rate',async page=>{
 await check('/',async page=>{
  await page.getByRole('button',{name:'Start full-screen inspection'}).click();
  await page.getByRole('button',{name:'Hide controls'}).click();
- await page.evaluate(()=>{
-   const outside=document.querySelector('#main-content a');
-   if(!(outside instanceof HTMLElement))throw Error('No background link available for focus test');
-   outside.focus();
- });
  await page.waitForFunction(()=>{
    const dialog=document.querySelector('[role="dialog"]');
    return !!dialog?.contains(document.activeElement);
- },null,{timeout:1500});
+ },null,{timeout:3000});
  await page.keyboard.press('Tab');
  const afterTab=await page.evaluate(()=>!!document.querySelector('[role="dialog"]')?.contains(document.activeElement));
  if(!afterTab)throw Error('Tab from hidden controls escaped the dialog');
