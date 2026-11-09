@@ -18,7 +18,7 @@ const topLinks=[
  {path:'/tests/color-gradient',name:'Color Banding Test',sub:'Inspect smooth gradient transitions'},
  {path:'/tests/audio-sync',name:'Audio / Video Sync',sub:'Check apparent sound synchronization'}
 ];
-const highlightedPaths=new Set(topLinks.map(item=>item.path.replace(/\\/+$/,'') || '/'));
+const highlightedPaths=new Set(topLinks.map(item=>item.path.replace(/\/+$/,'') || '/'));
 const moreToolGroups: Array<{title:string;items:Array<{title:string;path:string}>}> = [];
 let group: (typeof moreToolGroups)[number] | null = null;
 for (const item of MENU_ITEMS) {
@@ -28,8 +28,8 @@ for (const item of MENU_ITEMS) {
   if (group) moreToolGroups.push(group);
   continue;
  }
- const path=(item.path||'').replace(/\\/+$/,'')||'/';
- if (group && /^\\/(?:tests|tools)\\//.test(path) && !highlightedPaths.has(path)) {
+ const path=(item.path||'').replace(/\/+$/,'')||'/';
+ if (group && /^\/(?:tests|tools)\//.test(path) && !highlightedPaths.has(path)) {
   group.items.push({title:item.title,path});
  }
 }
