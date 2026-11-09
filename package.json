@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run sitemap && astro build && npm run audit:routes",
+    "build": "node scripts/build-site.mjs",
     "preview": "astro preview",
     "sitemap": "tsx scripts/generate-sitemap.ts",
     "audit:routes": "node scripts/audit-astro-build.mjs",
     "check:types": "tsc --noEmit",
     "smoke:browser": "node scripts/browser-smoke.mjs",
     "smoke:crossbrowser": "node scripts/cross-browser-smoke.mjs",
-    "smoke:legacy": "node scripts/legacy-tool-matrix.mjs"
+    "smoke:legacy": "node scripts/legacy-tool-matrix.mjs",
+    "build:astro": "astro build"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
