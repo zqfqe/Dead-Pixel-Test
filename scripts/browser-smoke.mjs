@@ -496,6 +496,11 @@ await check('/',async page=>{
  });
  await page.getByText(/not a valid self-check report/i).waitFor();
  if(await page.getByRole('button',{name:'Export self-check JSON'}).count())throw Error('Invalid report entered a saved test session');
+ const wrongMode={...invalid,testMode:'lines',marks:[{...invalid.marks[0],xRatio:0.5}]};
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+   name:'wrong-mode.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(wrongMode))
+ });
+ if(await page.getByRole('button',{name:'Export self-check JSON'}).count())throw Error('Wrong test mode was imported into pixel report');
 });
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
