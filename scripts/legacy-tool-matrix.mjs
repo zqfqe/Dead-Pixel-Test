@@ -108,6 +108,21 @@ try{
    await page.getByRole('button',{name:'Exit'}).click();
    await page.getByRole('button',{name:'Start Touch Test'}).waitFor();
   }],
+  ['/tools/color-blindness',async page=>{
+   const file=page.locator('input[type="file"]');
+   await file.setInputFiles({name:'unsafe.svg',mimeType:'image/svg+xml',buffer:Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>')});
+   await page.getByText(/Choose a PNG, JPEG, WebP, GIF or AVIF/).waitFor();
+   const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WDCoQAAAABJRU5ErkJggg==','base64');
+   await file.setInputFiles({name:'tiny.png',mimeType:'image/png',buffer:pixel});
+   const layer=page.getByTestId('cvd-filtered-layer');
+   await layer.waitFor();
+   const mode=page.getByRole('button',{name:'Protanopia (Red-Blind)'});
+   await mode.click();
+   if(!(await layer.getAttribute('style'))?.includes('#protanopia'))throw Error('Selected color filter was not applied');
+   if((await mode.getAttribute('aria-pressed'))!=='true')throw Error('Filter mode aria-pressed incorrect');
+   await page.getByRole('button',{name:'Change Source'}).click();
+   await page.getByText('Upload Image').waitFor();
+  }],
   ['/tools/webcam',async page=>{
    await page.getByRole('button',{name:'Start Camera'}).first().click();
    await page.locator('video').waitFor();
@@ -302,4 +317,4 @@ try{
  });
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 11 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 12 interactive functional checks (hardware behaviors not certified).');

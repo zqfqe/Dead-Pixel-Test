@@ -26,8 +26,7 @@ const ColorBlindnessTest: React.FC = () => {
   const imageUrlRef = useRef<string | null>(null);
   const requestTokenRef = useRef(0);
 
-  // SVG Filters Definitions (Standard matrices for CVD simulation)
-  // Source: libdaltonia / color-blindness-simulation research
+  // Simplified illustrative color transforms, not individually validated clinical simulations.
   const filters = (
     <svg style={{ display: 'none' }}>
       <defs>
@@ -94,6 +93,7 @@ const ColorBlindnessTest: React.FC = () => {
     const token = requestTokenRef.current;
     setError(null);
     try {
+      if(!navigator.mediaDevices?.getUserMedia)throw Error('Camera API unavailable');
       const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 } }, audio: false });
       if (token !== requestTokenRef.current) {
         stream.getTracks().forEach(t => t.stop());
@@ -122,8 +122,9 @@ const ColorBlindnessTest: React.FC = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/') || file.size > 15 * 1024 * 1024) {
-      setError('Please choose an image smaller than 15 MB.');
+    const allowed=['image/png','image/jpeg','image/webp','image/gif','image/avif'];
+    if(!allowed.includes(file.type)||file.size>15*1024*1024){
+      setError('Choose a PNG, JPEG, WebP, GIF or AVIF image no larger than 15 MB.');
       e.target.value = '';
       return;
     }
@@ -150,8 +151,8 @@ const ColorBlindnessTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Color Blindness Simulator - View World as Colorblind" 
-        description="Simulate Red-Green (Deuteranopia), Red (Protanopia), and Blue-Yellow (Tritanopia) color blindness using your camera or images. Essential tool for accessible design."
+        title="Color Vision Deficiency Simulator – Illustrative Filter Preview" 
+        description="Preview approximate color vision deficiency filters on photos or live camera. Not for diagnosis or WCAG compliance certification."
         canonical="/tools/color-blindness"
         keywords={['color blindness simulator', 'cvd simulator', 'colorblind camera', 'protanopia filter', 'deuteranopia filter', 'accessibility testing']}
         breadcrumbs={[
@@ -166,10 +167,14 @@ const ColorBlindnessTest: React.FC = () => {
         <div className="text-center mb-12">
            <h1 className="text-4xl font-bold text-white mb-4">Color Blindness Simulator</h1>
            <p className="text-neutral-400 max-w-2xl mx-auto">
-             Visualize how people with different types of color vision deficiencies see the world. 
-             Use your camera to explore your environment or upload a design to test accessibility.
+             Compare approximate color-vision deficiency filters using your camera or a local image.
+             This tool cannot diagnose a condition or certify accessibility.
            </p>
         </div>
+
+        <p className="mb-8 max-w-3xl mx-auto rounded-lg border border-amber-400/20 bg-amber-400/5 p-4 text-xs leading-6 text-amber-100">
+          Illustrative preview only. These filters cannot reproduce an individual's vision, diagnose color blindness or verify WCAG conformance. Check contrast and information conveyed by color separately.
+        </p>
 
         {/* Input Selection */}
         {!sourceType && (
@@ -182,11 +187,11 @@ const ColorBlindnessTest: React.FC = () => {
                    <Camera size={40} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Use Camera</h3>
-                <p className="text-neutral-500 text-sm text-center">Real-time AR simulation using your webcam.</p>
+                <p className="text-neutral-500 text-sm text-center">Approximate live color-filter preview.</p>
              </button>
 
              <label className="flex flex-col items-center justify-center p-12 bg-neutral-900 border border-white/10 rounded-3xl hover:bg-neutral-800 hover:border-green-500/50 transition-all group cursor-pointer">
-                <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif" onChange={handleFileUpload} className="hidden" />
                 <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-6 group-hover:scale-110 transition-transform">
                    <Upload size={40} />
                 </div>
@@ -213,6 +218,7 @@ const ColorBlindnessTest: React.FC = () => {
                     {MODES.map(m => (
                        <button
                          key={m.id}
+                         aria-pressed={activeMode===m.id}
                          onClick={() => setActiveMode(m.id)}
                          className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${activeMode === m.id ? 'bg-white text-black' : 'bg-neutral-800 text-neutral-400 hover:text-white'}`}
                        >
@@ -223,6 +229,7 @@ const ColorBlindnessTest: React.FC = () => {
 
                  <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                     <button 
+                      aria-pressed={splitView}
                       onClick={() => setSplitView(!splitView)}
                       className={`p-2 rounded-lg transition-all ${splitView ? 'bg-blue-600 text-white' : 'bg-neutral-800 text-neutral-400'}`}
                       title="Toggle Split View"
@@ -244,7 +251,7 @@ const ColorBlindnessTest: React.FC = () => {
                  
                  {/* Layer 1: Simulated (Filtered) - Full width or Right Half */}
                  <div 
-                    className="absolute inset-0 z-10 bg-black"
+                    data-testid="cvd-filtered-layer" className="absolute inset-0 z-10 bg-black"
                     style={{ 
                         filter: activeMode !== 'normal' ? `url(#${activeMode})` : 'none',
                         clipPath: splitView ? 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)' : 'none'
@@ -253,7 +260,7 @@ const ColorBlindnessTest: React.FC = () => {
                     {sourceType === 'camera' ? (
                         <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-contain" />
                     ) : (
-                        <img src={imageSrc!} alt="Test" className="w-full h-full object-contain" />
+                        <img src={imageSrc!} alt="Uploaded source image with approximate color-vision filter" className="w-full h-full object-contain" onError={()=>setError("Unable to decode the selected image.")} />
                     )}
                  </div>
 
