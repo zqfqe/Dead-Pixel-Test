@@ -6,6 +6,7 @@ const baseOrigin=new URL(base).origin;
 mkdirSync('smoke-screenshots',{recursive:true});
 const browser=await chromium.launch({headless:true});
 const failures=[];
+let checksPassed=0;
 async function check(url,fn,{mobile=false,denyFullscreen=false,media=false,width}={}){
  const ctx=await browser.newContext(mobile?{...devices['iPhone 13'],browserName:undefined}:{viewport:{width:width||1366,height:900}});
  const page=await ctx.newPage();
@@ -33,7 +34,8 @@ async function check(url,fn,{mobile=false,denyFullscreen=false,media=false,width
   if(remoteResources.length)throw Error('Third-party script/frame resources: '+remoteResources.join(', '));
   if(networkViolations.length)throw Error('Privacy network audit: '+networkViolations.join('; '));
   if(errors.length)throw Error('JS errors: '+errors.join('; '));
-  console.log('PASS browser: '+url+(mobile?' mobile':' desktop'));
+  checksPassed++;
+   console.log('PASS browser: '+url+(mobile?' mobile':' desktop'));
  }catch(e){
   failures.push(url+': '+e.message);console.error('FAIL browser '+url+': '+e.message);
   await page.screenshot({path:'smoke-screenshots/failure-'+url.replaceAll('/','_').replace(/[^a-z0-9_-]/gi,'')+'.png',fullPage:true}).catch(()=>{});
@@ -1031,6 +1033,7 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
   await page.getByText(message,{exact:true}).waitFor({timeout:5000});
   if(await page.getByRole('button',{name:/Start full-screen inspection|Iniciar inspeção em tela cheia/}).count())throw Error('Hydrated start button unexpectedly available without JavaScript');
   if(!await page.locator('main#main-content').count())throw Error('No static accessible content');
+  checksPassed++;
   console.log('PASS browser: no-JavaScript fallback '+route);
  }catch(error){
   failures.push('no-JS '+route+': '+error.message);
@@ -1039,4 +1042,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+89+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+checksPassed+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
