@@ -366,6 +366,8 @@ await check('/image-retention-test',async page=>{
 await check('/',async page=>{
  const body=await page.evaluate(()=>({surface:document.body.dataset.surface,bg:getComputedStyle(document.body).backgroundColor,ink:getComputedStyle(document.body).color}));
  if(body.surface!=='light'||body.bg!=='rgb(246, 248, 251)'||body.ink!=='rgb(16, 24, 39)')throw Error('Information page does not use light palette: '+JSON.stringify(body));
+ const extent=await page.evaluate(()=>({body:document.body.getBoundingClientRect().height,document:document.documentElement.scrollHeight}));
+ if(extent.body<extent.document-5)throw Error('Light page body ends before full page content, exposing dark root: '+JSON.stringify(extent));
  const workspace=page.getByText('Start your screen check',{exact:true}).locator('..');
  const bg=await workspace.evaluate(el=>getComputedStyle(el).backgroundColor);
  if(bg!=='rgb(10, 11, 14)')throw Error('Immersive workspace is not dark: '+bg);
@@ -374,6 +376,8 @@ await check('/',async page=>{
 await check('/pt-br',async page=>{
  const bg=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
  if(bg!=='rgb(246, 248, 251)')throw Error('Brazilian information page is not light');
+ const extent=await page.evaluate(()=>({body:document.body.getBoundingClientRect().height,document:document.documentElement.scrollHeight}));
+ if(extent.body<extent.document-5)throw Error('Brazilian page body ends before content: '+JSON.stringify(extent));
  await page.screenshot({path:'smoke-screenshots/site-pt-br-mobile.png',fullPage:true});
 },{mobile:true});
 await check('/tests/refresh-rate',async page=>{
