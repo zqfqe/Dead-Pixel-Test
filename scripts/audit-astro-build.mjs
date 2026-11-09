@@ -97,6 +97,64 @@ if(origin){
  }
 }
 
+
+// Answer-first GEO quality gate: every original V1.2 page gets a specific,
+// extractable answer in the static HTML. This is an editorial consistency
+// check, NOT proof of AI citation, indexing, or a special Google ranking factor.
+const geoPaths=['/',
+ '/laptop-screen-dead-pixel-test','/dead-pixel-fixer',
+ '/phone-screen-dead-pixel-test','/what-is-a-dead-pixel',
+ '/dead-pixel-line-test','/image-retention-test',
+ '/screen-resolution-test','/screen-contrast-test',
+ '/pt-br','/pt-br/pixel-morto-notebook',
+ '/pt-br/pixel-morto-iphone','/pt-br/reparar-pixel-preso',
+ '/pt-br/o-que-e-dead-pixel','/pt-br/teste-de-cores'
+];
+const geoQuestions=new Set();
+for(const path of geoPaths){
+ const htmlFile=join('dist',path==='/'?'index.html':path.slice(1)+'.html');
+ if(!existsSync(htmlFile)){errors.push('GEO page has no output '+path);continue;}
+ const html=readFileSync(htmlFile,'utf8');
+ const section=html.match(/<section\b[^>]*data-geo-answer[^>]*>[\s\S]*?<\/section>/);
+ if(!section){errors.push('GEO answer absent in initial static HTML '+path);continue;}
+ const snippet=section[0];
+ const question=snippet.match(/<h2\b[^>]*id="quick-answer-heading"[^>]*>([^<]+)<\/h2>/)?.[1];
+ if(!question || geoQuestions.has(question))errors.push('GEO answer question missing or duplicated '+path);
+ if(question)geoQuestions.add(question);
+ const br=path==='/pt-br'||path.startsWith('/pt-br/');
+ if(!snippet.includes(br?'RESPOSTA DIRETA':'IN BRIEF / DIRECT ANSWER'))
+  errors.push('GEO answer locale heading missing '+path);
+ if(!snippet.includes(br?'Limite da ferramenta':'What this cannot prove'))
+  errors.push('GEO answer lacks explicit limits '+path);
+ if(!snippet.includes(br?'O que verificar':'Practical checks') && path!=='/')
+  errors.push('GEO answer missing practical checks '+path);
+ if((snippet.match(/<li\b/g)||[]).length<2)errors.push('GEO answer is too thin '+path);
+ if(path==='/'&&!snippet.includes('href="https://www.dell.com/support/kbdoc/'))
+  errors.push('Homepage answer lacks manufacturer reference');
+ if(!/<h1[\s>]/.test(html))errors.push('GEO page missing crawlable H1 '+path);
+ if(/"@type"\s*:\s*"FAQPage"/.test(html))
+  errors.push('GEO page adds ineligible FAQPage rich-result markup '+path);
+ // The answer must not be client-only, and must retain the established locale.
+ if(br&&!html.includes('lang="pt-BR"'))errors.push('GEO Portuguese answer language mismatch '+path);
+ else if(!br&&!html.includes('lang="en"'))errors.push('GEO English answer language mismatch '+path);
+}
+// Landing-page JSON-LD describes visible tools and actual locale; it must not
+// invent ratings, testimonials or lab-tested outcomes.
+for(const path of geoPaths.filter(x=>x!=='/')){
+ const html=readFileSync(join('dist',path.slice(1)+'.html'),'utf8');
+ const scripts=[...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+ let valid=false;
+ for(const match of scripts){
+  try{
+   const data=JSON.parse(match[1]);
+   const entries=data['@graph']||[data];
+   if(entries.some(x=>['WebPage','WebApplication'].includes(x['@type'])&&x.inLanguage===(path.startsWith('/pt-br')?'pt-BR':'en')))valid=true;
+   if(entries.some(x=>x.aggregateRating||x.review||x.ratingValue))errors.push('Unsupported review or rating claims '+path);
+  }catch{errors.push('Invalid GEO JSON-LD '+path)}
+ }
+ if(!valid)errors.push('Structured data does not identify page and visible locale '+path);
+}
+
 // Existing URLs should not depend entirely on a hydrated React island for
 // their primary explanation. They need distinct indexable metadata and real
 // per-tool guidance in the original Astro HTML.
