@@ -47,27 +47,27 @@ const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim()
     {origin && <meta property="og:image" content={new URL(image,origin).toString()} />}
     {hasSchema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g,'\\u003c')} />}
   </head>
-  <body class="min-h-screen bg-[#08090c] text-white antialiased">
+  <body data-surface={legacy?'dark':'light'} class={legacy?'min-h-screen bg-[#08090c] text-white antialiased':'min-h-screen bg-[#F6F8FB] text-[#101827] antialiased'}>
     {!legacy && <a href="#main-content" class="skip-link">Skip to main content</a>}
-    {!legacy && <header class="sticky top-0 z-40 border-b border-white/10 bg-[#08090c]/95 backdrop-blur-lg">
+    {!legacy && <header class="sticky top-0 z-40 border-b border-[#DCE3EA] bg-white/95 backdrop-blur-lg shadow-sm">
       <div class="mx-auto max-w-7xl flex min-h-16 items-center gap-4 px-4 md:px-8">
-        <a href={lang==='pt-BR'?'/pt-br':'/'} class="flex items-center gap-2 font-bold text-white shrink-0">
+        <a href={lang==='pt-BR'?'/pt-br':'/'} class="flex items-center gap-2 font-bold text-[#101827] shrink-0">
           <img src="/logo.svg" alt="" width="28" height="28" /><span>DeadPixelTest</span>
         </a>
-        <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-neutral-300 ml-auto">
-          {navigation.map(n=><a href={normalizePath(n.href)} class="hover:text-white rounded-md px-1 py-3">{n.label}</a>)}
+        <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-[#344256] ml-auto">
+          {navigation.map(n=><a href={normalizePath(n.href)} class="hover:text-[#125CC9] focus:text-[#125CC9] rounded-md px-1 py-3">{n.label}</a>)}
         </nav>
-        <div class="shrink-0 flex gap-2 text-xs border-l border-white/20 pl-3">
-          <a href="/" lang="en" class={lang==='en'?'font-bold text-blue-400':'hover:text-white'}>EN</a>
+        <div class="shrink-0 flex gap-2 text-xs border-l border-[#DCE3EA] pl-3">
+          <a href="/" lang="en" class={lang==='en'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>EN</a>
           <a href="/pt-br" lang="pt-BR" class={lang==='pt-BR'?'font-bold text-blue-400':'hover:text-white'}>PT-BR</a>
         </div>
       </div>
     </header>}
     <slot />
-    {!legacy && <footer class="mt-20 border-t border-white/10 bg-black/50 px-4 py-10 text-sm text-neutral-400">
+    {!legacy && <footer class="mt-20 border-t border-[#DCE3EA] bg-white px-4 py-10 text-sm text-[#344256]">
       <div class="mx-auto max-w-7xl flex flex-wrap justify-between gap-5">
         <p>© {new Date().getUTCFullYear()} DeadPixelTest — {lang==='pt-BR'?'Inspeção visual, não laudo técnico.':'Visual self-check, not a hardware certificate.'}</p>
-        <nav class="flex gap-5"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a></nav>
+        <nav class="flex flex-wrap gap-5"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy-policy">Privacy</a><a href="/terms-of-service">Terms</a></nav>
       </div>
     </footer>}
   </body>
