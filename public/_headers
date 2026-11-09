@@ -1,0 +1,7 @@
+# Never index Cloudflare's default or preview hostnames. The owned custom domain
+# is unaffected. Preview builds also emit noindex HTML and an empty sitemap.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex

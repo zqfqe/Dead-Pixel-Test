@@ -26,6 +26,19 @@ jobs:
         run: npm run build
       - name: Audit noindex and route output without a domain
         run: node scripts/audit-astro-build.mjs
+      - name: Cloudflare preview must remain noindex even with production origin available
+        env:
+          PUBLIC_SITE_URL: https://deadpixeltest.example
+          CF_PAGES: '1'
+          CF_PAGES_BRANCH: feature/review-preview
+        run: |
+          npm run build
+          grep -q 'name="robots" content="noindex,nofollow"' dist/index.html
+          ! grep -q 'rel="canonical"' dist/index.html
+          ! grep -q '<loc>' dist/sitemap.xml
+          ! grep -q 'Sitemap:' dist/robots.txt
+          grep -q 'X-Robots-Tag: noindex' dist/_headers
+          grep -q 'noindex,nofollow' dist/pt-br.html
       - name: Build configured SEO origin using test-only domain
         env:
           PUBLIC_SITE_URL: https://deadpixeltest.example

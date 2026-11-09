@@ -62,7 +62,8 @@ const pixelDifferences=isBR?[
  {appearance:'Faint outline of previous content',meaning:'Could be temporary persistence or permanent aging; a browser cannot identify the cause.',action:'Resume normal varied content, follow manufacturer guidance and recheck later.'}
 ];
 const docType=newPage?.mode==='guide'?'WebPage':'WebApplication';
-const publicSiteUrl=import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
+const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
+const publicSiteUrl=!isCloudflarePreview && import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
 const structuredData=newPage?{
  '@context':'https://schema.org','@type':docType,name:newPage.h1,
  ...(publicSiteUrl?{url:publicSiteUrl+newPage.path.replace(/\/$/,'')}:{}),description:newPage.description,
@@ -329,7 +330,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
     </section>
     <nav class="mt-10 flex flex-wrap items-center gap-3 border-t border-[#DCE3EA] pt-6 text-sm" aria-label={isBR?'Mudar idioma':'Switch language'}>
       <span class="text-[#475569]">{isBR?'Outros idiomas:':'Other language:'}</span>
-      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-[#DCE3EA] px-4 py-3 text-[#125CC9] hover:border-blue-400">{isBR?'English':'Português (Brasil)'}</a>
+      <a href={switchLocaleHref} hreflang={isBR?'en':'pt-BR'} class="min-h-[44px] rounded-lg border border-[#DCE3EA] px-4 py-3 text-[#125CC9] hover:border-blue-400">{isBR?(localePair?'English':'English (home page)'):(localePair?'Português (Brasil)':'Português (página inicial)')}</a>
     </nav>
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Testes relacionados':'Related tests'}</h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">{others.map(other=><a class="rounded-lg p-4 border border-[#DCE3EA] hover:border-blue-500/60 text-[#101827]" href={other.path.replace(/\/$/,'')}>{other.h1}</a>)}</div>

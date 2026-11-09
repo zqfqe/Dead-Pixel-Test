@@ -1,7 +1,9 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 
-const configuredSiteUrl = process.env.PUBLIC_SITE_URL?.trim();
+// Defense in depth: a Cloudflare preview must not inherit production canonical URLs.
+const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
+const configuredSiteUrl = isCloudflarePreview ? '' : process.env.PUBLIC_SITE_URL?.trim();
 let site;
 
 if (configuredSiteUrl) {

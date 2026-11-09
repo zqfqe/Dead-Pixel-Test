@@ -3,7 +3,8 @@ import {MENU_ITEMS} from '../data/menu';
 import {BLOG_POSTS} from '../data/blog';
 import {SEO_LANDING_PAGES, pageAlternates} from '../data/seoLandingPages';
 
-const configuredSiteUrl=process.env.PUBLIC_SITE_URL?.trim();
+const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
+const configuredSiteUrl=isCloudflarePreview?'':process.env.PUBLIC_SITE_URL?.trim();
 let origin='';
 if(configuredSiteUrl){
  const parsed=new URL(configuredSiteUrl);

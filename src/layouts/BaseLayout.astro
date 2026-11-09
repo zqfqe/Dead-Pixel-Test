@@ -1,13 +1,14 @@
 ---
 import '../../index.css';
-import { pageAlternates } from '../../data/seoLandingPages';
+import { pageAlternates, LOCALE_PAIRS } from '../../data/seoLandingPages';
 interface Props {
   title: string; description: string; canonicalPath: string;
   lang?: 'en' | 'pt-BR'; legacy?: boolean; noindex?: boolean;
   image?: string; schema?: Record<string, unknown>;
 }
 const {title,description,canonicalPath,lang='en',legacy=false,noindex=false,image='/logo.svg',schema}=Astro.props;
-const configuredSiteUrl = import.meta.env.PUBLIC_SITE_URL?.trim();
+const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
+const configuredSiteUrl = isCloudflarePreview ? '' : import.meta.env.PUBLIC_SITE_URL?.trim();
 const origin = configuredSiteUrl ? new URL(configuredSiteUrl).origin : '';
 const normalizePath = (path: string) => path === '/' ? '/' : path.replace(/\/+$/, '');
 const canonical = origin ? new URL(normalizePath(canonicalPath), origin).toString() : undefined;
@@ -28,6 +29,11 @@ const hasSchema=Boolean(schema);
 const googleVerification=import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
 const currentPath=normalizePath(canonicalPath);
 const isNavCurrent=(href:string)=>currentPath===normalizePath(href);
+const matchedLocalePair=LOCALE_PAIRS.find(pair=>pair.some(path=>normalizePath(path)===currentPath));
+// Preserve the user's current task only when a real, same-purpose translation exists.
+const englishHref=matchedLocalePair ? normalizePath(matchedLocalePair[0]) : '/';
+const portugueseHref=matchedLocalePair ? normalizePath(matchedLocalePair[1]) : '/pt-br';
+const languageFallback=!matchedLocalePair;
 ---
 <!doctype html>
 <html lang={lang} data-astro-site="true" data-surface={legacy?'dark':'light'}>
@@ -60,8 +66,8 @@ const isNavCurrent=(href:string)=>currentPath===normalizePath(href);
           {navigation.map(n=><a href={normalizePath(n.href)} aria-current={isNavCurrent(n.href)?"page":undefined} class:list={["focus:text-[#125CC9] rounded-md px-1 py-3 hover:text-[#125CC9]",isNavCurrent(n.href)?"text-[#125CC9] font-bold underline underline-offset-8":""]}>{n.label}</a>)}
         </nav>
         <div class="shrink-0 flex gap-2 text-xs border-l border-[#DCE3EA] pl-3">
-          <a href="/" lang="en" class={lang==='en'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>EN</a>
-          <a href="/pt-br" lang="pt-BR" class={lang==='pt-BR'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>PT-BR</a>
+          <a href={englishHref} lang="en" title={languageFallback?'English home page':'English counterpart'} aria-label={languageFallback?'English home page':'English version of this topic'} class={lang==='en'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>EN</a>
+          <a href={portugueseHref} lang="pt-BR" title={languageFallback?'Página inicial em português':'Versão em português deste assunto'} aria-label={languageFallback?'Portuguese home page':'Portuguese version of this topic'} class={lang==='pt-BR'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>PT-BR</a>
         </div>
       </div>
     </header>}

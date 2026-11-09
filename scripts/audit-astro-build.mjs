@@ -1,6 +1,7 @@
 import {existsSync,readFileSync} from 'node:fs';
 import {join} from 'node:path';
-const raw=process.env.PUBLIC_SITE_URL?.trim(),origin=raw?new URL(raw).origin:'';
+const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
+const raw=isCloudflarePreview?'':process.env.PUBLIC_SITE_URL?.trim(),origin=raw?new URL(raw).origin:'';
 const priority=['/','/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns'];
 const planned=['/laptop-screen-dead-pixel-test/','/dead-pixel-fixer/','/phone-screen-dead-pixel-test/','/what-is-a-dead-pixel/','/dead-pixel-line-test/','/image-retention-test/','/screen-resolution-test/','/screen-contrast-test/','/pt-br/','/pt-br/pixel-morto-notebook/','/pt-br/pixel-morto-iphone/','/pt-br/reparar-pixel-preso/','/pt-br/o-que-e-dead-pixel/','/pt-br/teste-de-cores/'];
 const errors=[],xml=readFileSync('dist/sitemap.xml','utf8'),robots=readFileSync('dist/robots.txt','utf8'),locs=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
@@ -82,5 +83,13 @@ if(origin){
  }
 }
 
+// Cloudflare's production pages.dev alias must not compete with the owned domain.
+const headersPath=join('dist','_headers');
+if(!existsSync(headersPath))errors.push('Missing Cloudflare Pages index isolation headers');
+else{
+ const headers=readFileSync(headersPath,'utf8');
+ if(!headers.includes('https://:project.pages.dev/*')||!headers.includes('https://:version.:project.pages.dev/*'))errors.push('Missing pages.dev host-specific noindex headers');
+ if((headers.match(/X-Robots-Tag: noindex/g)||[]).length<2)errors.push('Missing noindex directive for both Pages host shapes');
+}
 if(errors.length){console.error(errors.join('\n'));process.exit(1);}
 console.log('PASS: legacy indexable routes and 14 SERP-gated landing pages audited.');
