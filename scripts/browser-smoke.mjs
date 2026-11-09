@@ -189,11 +189,14 @@ await check('/tools/color-blindness',async page=>{
 },{media:true});
 await check('/tools/color-blindness',async page=>{
  await page.getByRole('button',{name:/Use Camera/i}).waitFor({timeout:10000});
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="#e34b4b"/></svg>';
- await page.locator('input[type="file"]').setInputFiles({name:'local-test.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
- const img=page.locator('img[alt="Test"]');
+ const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9WDCoQAAAABJRU5ErkJggg==','base64');
+ await page.locator('input[type="file"]').setInputFiles({name:'local-test.png',mimeType:'image/png',buffer:pixel});
+ const img=page.locator('img[alt="Uploaded source image with approximate color-vision filter"]');
  await img.waitFor({timeout:8000});
- await page.waitForFunction(()=>{const image=document.querySelector('img[alt="Test"]');return !!image&&image.complete&&image.naturalWidth===32;},null,{timeout:8000});
+ await page.waitForFunction(()=>{
+  const image=document.querySelector('img[alt="Uploaded source image with approximate color-vision filter"]');
+  return !!image&&image.complete&&image.naturalWidth===1;
+ },null,{timeout:8000});
  const src=await img.getAttribute('src');
  if(!src?.startsWith('blob:'))throw Error('Selected image was not loaded from a local object URL');
 });
