@@ -35,6 +35,11 @@ const schema={
         <div class="rounded-2xl border border-[#20283C] bg-[#0A0B0E] text-white px-5 py-6 shadow-lg md:px-8 md:py-8">
           <p class="font-semibold text-white mb-4">Start your screen check</p>
           <ScreenInspection client:only="react" mode="pixels" lang="en" />
+          <noscript>
+            <div role="note" class="mt-4 rounded-lg border border-amber-400/40 bg-neutral-900 p-4 text-sm text-white">
+              <strong>JavaScript is disabled.</strong> The full-screen color test, manual spot marking and report download need JavaScript. Enable it and reload this page to inspect your display. No account is required.
+            </div>
+          </noscript>
           <p class="text-sm text-neutral-300 mt-5">Black, white, red, green, blue and more. Keyboard arrows and touch-friendly controls. Record suspect spots for manual rechecks.</p>
         </div>
       </section>
