@@ -71,6 +71,19 @@ const CommandPalette:React.FC=()=>{
   return()=>window.removeEventListener('keydown',handleNav);
  },[isOpen]);
 
+ // A modal must also retain focus if a browser/assistive-technology action
+ // attempts to focus the background (not only when Tab bubbles from a child).
+ useEffect(()=>{
+  if(!isOpen)return;
+  const keepFocusInside=(event:FocusEvent)=>{
+   if(dialogRef.current&&event.target instanceof Node&&!dialogRef.current.contains(event.target)){
+    inputRef.current?.focus();
+   }
+  };
+  document.addEventListener('focusin',keepFocusInside);
+  return()=>document.removeEventListener('focusin',keepFocusInside);
+ },[isOpen]);
+
  const trapTab=(event:React.KeyboardEvent<HTMLDivElement>)=>{
   if(event.key!=='Tab')return;
   const nodes=[...(dialogRef.current?.querySelectorAll<HTMLElement>(
