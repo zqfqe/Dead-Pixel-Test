@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ScreenInspection from '../../components/tests/ScreenInspection';
 import { SEO_LANDING_PAGES } from '../../data/seoLandingPages';
 import { BLOG_POSTS } from '../../data/blog';
+import { MENU_ITEMS } from '../../data/menu';
 const page={description:'Free online dead pixel test for monitors, laptops and phones. Check dead and stuck pixels with solid colors; no download or automatic diagnosis.'};
 const topLinks=[
  {path:'/laptop-screen-dead-pixel-test/',name:'Laptop Dead Pixel Test',sub:'Check your built-in display'},
@@ -17,6 +18,22 @@ const topLinks=[
  {path:'/tests/color-gradient',name:'Color Banding Test',sub:'Inspect smooth gradient transitions'},
  {path:'/tests/audio-sync',name:'Audio / Video Sync',sub:'Check apparent sound synchronization'}
 ];
+const highlightedPaths=new Set(topLinks.map(item=>item.path.replace(/\\/+$/,'') || '/'));
+const moreToolGroups: Array<{title:string;items:Array<{title:string;path:string}>}> = [];
+let group: (typeof moreToolGroups)[number] | null = null;
+for (const item of MENU_ITEMS) {
+ if (item.isHeader) {
+  group=/^(DISPLAY TESTS|INPUT & GAMING|AUDIO & UTILS)$/.test(item.title)
+   ? {title:item.title,items:[]} : null;
+  if (group) moreToolGroups.push(group);
+  continue;
+ }
+ const path=(item.path||'').replace(/\\/+$/,'')||'/';
+ if (group && /^\\/(?:tests|tools)\\//.test(path) && !highlightedPaths.has(path)) {
+  group.items.push({title:item.title,path});
+ }
+}
+const additionalToolCount=moreToolGroups.reduce((total,g)=>total+g.items.length,0);
 const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
 const publicSiteUrl=!isCloudflarePreview && import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
 // Identify the actual site name separately from the free browser application.
@@ -100,6 +117,18 @@ const schema={
           <h3>{link.name}</h3><p>{link.sub}</p>
         </a>)}
       </div>
+      <details class="mt-8 rounded-xl border border-[#DCE3EA] bg-white p-5 md:p-7" id="additional-tools">
+        <summary class="cursor-pointer text-lg font-semibold text-[#101827] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#125CC9]">Browse {additionalToolCount} additional browser tests</summary>
+        <p class="mt-3 max-w-3xl text-sm leading-6 text-[#344256]">Find focused checks for text sharpness, motion, mouse and keyboard input, touch, audio and other device behavior. Each test has its own setup instructions and limits.</p>
+        <div class="mt-6 grid gap-6 md:grid-cols-3">
+          {moreToolGroups.filter(g=>g.items.length>0).map(g=><section aria-label={g.title}>
+            <h3 class="mb-3 text-sm font-bold uppercase tracking-wide text-[#31583F]">{g.title.replace(' & ',' and ')}</h3>
+            <ul class="space-y-2">{g.items.map(item=><li>
+              <a class="inline-block py-1 text-sm font-semibold text-[#125CC9] underline-offset-4 hover:underline" href={item.path}>{item.title}</a>
+            </li>)}</ul>
+          </section>)}
+        </div>
+      </details>
     </section>
 
     <section class="ui-editorial-grid ui-section">
