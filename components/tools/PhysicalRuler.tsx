@@ -18,14 +18,27 @@ const PhysicalRuler: React.FC = () => {
   const [sliderVal, setSliderVal] = useState(50); // abstract 0-100 slider
   const sliderRef = useRef<HTMLInputElement>(null);
 
-  // Map slider 0-100 to a reasonable range of pixels width for the card
-  // Min width: 200px (very high PPI phone)
-  // Max width: 600px (very low PPI TV)
-  const minCardPx = 200;
-  const maxCardPx = 800;
-
-  // Derived current card width in pixels based on slider
-  const currentCardPx = minCardPx + (sliderVal / 100) * (maxCardPx - minCardPx);
+  const calibrationRef=useRef<HTMLDivElement>(null);
+  const [calibrationWidth,setCalibrationWidth]=useState(310);
+  const [viewport,setViewport]=useState({width:1024,height:768});
+  useEffect(()=>{
+    const update=()=>setViewport({width:window.innerWidth,height:window.innerHeight});
+    update();window.addEventListener('resize',update);
+    return ()=>window.removeEventListener('resize',update);
+  },[]);
+  useEffect(()=>{
+    if(isCalibrated)return;
+    const el=calibrationRef.current;if(!el)return;
+    const measure=()=>setCalibrationWidth(Math.max(100,el.clientWidth));
+    measure();
+    const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;
+    observer?.observe(el);window.addEventListener('resize',measure);
+    return ()=>{observer?.disconnect();window.removeEventListener('resize',measure);};
+  },[isCalibrated]);
+  // Keep the reference card within the actual calibration area at phone sizes.
+  const maxCardPx=Math.max(95,Math.min(800,calibrationWidth-24));
+  const minCardPx=Math.min(180,Math.max(75,maxCardPx*0.36));
+  const currentCardPx=minCardPx+(sliderVal/100)*(maxCardPx-minCardPx);
 
   const handleCalibrate = () => {
      // Calculate px/mm based on user adjustment
@@ -42,7 +55,7 @@ const PhysicalRuler: React.FC = () => {
 
   // --- Render Ruler Ticks ---
   const renderTicks = () => {
-    const screenWidthMm = window.innerWidth / pxPerMm;
+    const screenWidthMm = Math.min(1600,Math.ceil(viewport.width / pxPerMm));
     const ticks = [];
     
     // Create ticks for every mm
@@ -64,6 +77,16 @@ const PhysicalRuler: React.FC = () => {
         );
     }
     return ticks;
+  };
+
+  const renderVerticalTicks=()=>{
+    const mm=Math.min(1600,Math.ceil(Math.max(0,viewport.height-96)/pxPerMm));
+    return Array.from({length:mm},(_,i)=>{
+      const isCm=i%10===0,isHalf=i%5===0&&!isCm;
+      return <div key={i} className="absolute left-0 h-px bg-black" style={{top:(i*pxPerMm)+'px',width:isCm?40:isHalf?25:15}}>
+        {isCm&&<span className="absolute left-11 -top-2 text-xs font-mono font-bold">{i/10}</span>}
+      </div>;
+    });
   };
 
   return (
@@ -118,11 +141,11 @@ const PhysicalRuler: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="w-full max-w-xl bg-neutral-900/50 border border-white/10 rounded-3xl p-8 md:p-12 flex flex-col items-center">
-                    <div className="relative mb-12 flex items-center justify-center">
+                <div className="w-full max-w-xl bg-neutral-900/50 border border-white/10 rounded-3xl p-4 sm:p-8 md:p-12 flex flex-col items-center">
+                    <div ref={calibrationRef} data-testid="ruler-calibration-area" className="relative mb-12 flex w-full items-center justify-center">
                         {/* Visual representation of Card on screen */}
                         <div 
-                            className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-2xl flex items-center justify-center relative z-10 transition-all duration-75 border-t border-white/20"
+                            data-testid="ruler-reference-card" className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-2xl flex items-center justify-center relative z-10 transition-all duration-75 border-t border-white/20"
                             style={{ 
                                 width: `${currentCardPx}px`, 
                                 height: `${currentCardPx / 1.586}px` // Aspect ratio of ID-1
@@ -152,6 +175,7 @@ const PhysicalRuler: React.FC = () => {
                         </div>
                         <input 
                             ref={sliderRef}
+                            aria-label="Reference card width calibration"
                             type="range" 
                             min="0" 
                             max="100" 
@@ -161,7 +185,7 @@ const PhysicalRuler: React.FC = () => {
                             className="w-full h-3 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
                         />
                         <p className="text-center text-sm text-neutral-400">
-                            Adjust the slider until the blue box creates a perfect background for your physical card.
+                            Match the card's physical 85.60 mm width to the rectangle. On a narrow phone, rotate to landscape if the card cannot fit, then calibrate again after any browser zoom change.
                         </p>
                     </div>
 
@@ -242,16 +266,13 @@ const PhysicalRuler: React.FC = () => {
               <div className="flex-1 relative flex items-center justify-center cursor-crosshair">
                   
                   {/* Horizontal Ruler (Top) */}
-                  <div className="absolute top-0 left-0 right-0 h-24 bg-yellow-50 border-b border-black">
+                  <div data-testid="ruler-horizontal-ticks" className="absolute top-0 left-0 right-0 h-24 bg-yellow-50 border-b border-black">
                       {renderTicks()}
                   </div>
 
                   {/* Vertical Ruler (Left) */}
-                  <div className="absolute top-0 left-0 bottom-0 w-24 bg-yellow-50 border-r border-black hidden md:block">
-                      {/* Render Ticks Vertical logic would be similar but rotated */}
-                      <div className="absolute inset-0 flex flex-col items-end pt-24">
-                          <span className="pr-2 text-[10px] text-neutral-400 rotate-90 origin-right whitespace-nowrap">Vertical Scale (Coming Soon)</span>
-                      </div>
+                  <div data-testid="ruler-vertical-ticks" className="absolute top-24 left-0 bottom-0 w-20 bg-yellow-50 border-r border-black hidden md:block">
+                      {renderVerticalTicks()}
                   </div>
 
                   {/* Center Helper */}
