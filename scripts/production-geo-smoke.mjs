@@ -37,7 +37,10 @@ const inspect=async(path)=>{
       failures.push(path+' missing visible author or reviewed date');
     const typed=graph(html);
     const entry=typed.find(x=>['WebPage','WebApplication'].includes(x['@type']) && x.inLanguage===(br?'pt-BR':'en'));
-    if(!entry || entry.author?.name!=='DeadPixelTest' || entry.dateModified!=='2026-11-09')
+    const brand=typed.find(x=>x['@type']==='Organization' && x.name==='DeadPixelTest');
+    const validAuthor=entry?.author?.name==='DeadPixelTest' ||
+      (Boolean(brand?.['@id']) && entry?.author?.['@id']===brand['@id']);
+    if(!entry || !validAuthor || entry.dateModified!=='2026-11-09')
       failures.push(path+' source data has missing author or dateModified');
     if(path==='/'){
       const app=typed.find(x=>x['@type']==='WebApplication');
