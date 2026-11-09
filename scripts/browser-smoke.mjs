@@ -561,6 +561,27 @@ await check('/tests/refresh-rate',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
  if(theme!=='#08090c')throw Error('Dark legacy tool theme color wrong: '+theme);
 });
+await check('/',async page=>{
+ await page.getByRole('button',{name:'Start full-screen inspection'}).click();
+ await page.getByRole('button',{name:'Hide controls'}).click();
+ await page.evaluate(()=>{
+   const outside=document.querySelector('#main-content a');
+   if(!(outside instanceof HTMLElement))throw Error('No background link available for focus test');
+   outside.focus();
+ });
+ const inside=await page.evaluate(()=>{
+   const dialog=document.querySelector('[role="dialog"]');
+   return !!dialog?.contains(document.activeElement);
+ });
+ if(!inside)throw Error('Focus escaped the active inspection dialog');
+ await page.keyboard.press('Tab');
+ const afterTab=await page.evaluate(()=>!!document.querySelector('[role="dialog"]')?.contains(document.activeElement));
+ if(!afterTab)throw Error('Tab from hidden controls escaped the dialog');
+ await page.keyboard.press('Escape');
+ await page.waitForFunction(()=>!document.querySelector('[role="dialog"]'));
+ const restored=await page.evaluate(()=>document.activeElement?.textContent?.includes('Start full-screen inspection'));
+ if(!restored)throw Error('Exit did not restore focus to inspection start');
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -578,4 +599,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+53+' Chromium browser scenarios, including language-specific navigation, color matrices and viewport evidence');
+console.log('PASS all '+54+' Chromium browser scenarios, including modal focus containment, locale navigation and per-mark evidence');
