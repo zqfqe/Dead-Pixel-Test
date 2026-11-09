@@ -57,17 +57,17 @@ const languageFallback=!matchedLocalePair;
   </head>
   <body data-surface={legacy?'dark':'light'} class={legacy?'min-h-screen bg-[#08090c] text-white antialiased':'min-h-screen bg-[#F6F8FB] text-[#101827] antialiased'}>
     {!legacy && <a href="#main-content" class="skip-link">{lang==="pt-BR"?"Pular para o conteúdo principal":"Skip to main content"}</a>}
-    {!legacy && <header class="sticky top-0 z-40 border-b border-[#DCE3EA] bg-white/95 backdrop-blur-lg shadow-sm">
-      <div class="mx-auto max-w-7xl flex min-h-16 items-center gap-4 px-4 md:px-8">
-        <a href={lang==='pt-BR'?'/pt-br':'/'} class="flex items-center gap-2 font-bold text-[#101827] shrink-0">
+    {!legacy && <header class="ui-topbar sticky top-0 z-40 border-b border-[#DCE3EA] bg-white/95 backdrop-blur-lg">
+      <div class="mx-auto max-w-7xl flex flex-wrap items-center gap-x-4 gap-y-0 px-4 md:min-h-16 md:flex-nowrap md:px-8">
+        <a href={lang==='pt-BR'?'/pt-br':'/'} class="ui-brand order-1 flex min-h-14 items-center gap-2 font-bold text-[#101827] shrink-0 md:min-h-16">
           <img src="/logo.svg" alt="" width="28" height="28" /><span>DeadPixelTest</span>
         </a>
-        <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="flex gap-3 overflow-x-auto whitespace-nowrap text-sm text-[#344256] ml-auto">
-          {navigation.map(n=><a href={normalizePath(n.href)} aria-current={isNavCurrent(n.href)?"page":undefined} class:list={["focus:text-[#125CC9] rounded-md px-1 py-3 hover:text-[#125CC9]",isNavCurrent(n.href)?"text-[#125CC9] font-bold underline underline-offset-8":""]}>{n.label}</a>)}
+        <nav aria-label={lang==='pt-BR'?'Ferramentas':'Tools'} class="ui-main-nav order-3 flex w-full gap-1 overflow-x-auto whitespace-nowrap border-t border-[#E5EBF3] text-sm text-[#344256] md:order-2 md:ml-auto md:w-auto md:border-t-0">
+          {navigation.map(n=><a href={normalizePath(n.href)} aria-current={isNavCurrent(n.href)?"page":undefined} class:list={["ui-nav-link flex min-h-11 shrink-0 items-center rounded-lg px-3 py-2 font-medium",isNavCurrent(n.href)?"text-[#125CC9] font-bold":""]}>{n.label}</a>)}
         </nav>
-        <div class="shrink-0 flex gap-2 text-xs border-l border-[#DCE3EA] pl-3">
-          <a href={englishHref} lang="en" title={languageFallback?'English home page':'English counterpart'} aria-label={languageFallback?'English home page':'English version of this topic'} class={lang==='en'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>EN</a>
-          <a href={portugueseHref} lang="pt-BR" title={languageFallback?'Página inicial em português':'Versão em português deste assunto'} aria-label={languageFallback?'Portuguese home page':'Portuguese version of this topic'} class={lang==='pt-BR'?'font-bold text-[#125CC9]':'hover:text-[#125CC9]'}>PT-BR</a>
+        <div class="ui-language-switch order-2 ml-auto flex min-h-14 shrink-0 items-center gap-2 text-xs md:order-3 md:ml-0 md:min-h-11 md:border-l md:border-[#DCE3EA] md:pl-3">
+          <a href={englishHref} lang="en" title={languageFallback?'English home page':'English counterpart'} aria-label={languageFallback?'English home page':'English version of this topic'} class:list={["ui-lang-link",lang==='en'?"ui-lang-current":""]}>EN</a>
+          <a href={portugueseHref} lang="pt-BR" title={languageFallback?'Página inicial em português':'Versão em português deste assunto'} aria-label={languageFallback?'Portuguese home page':'Portuguese version of this topic'} class:list={["ui-lang-link",lang==='pt-BR'?"ui-lang-current":""]}>PT-BR</a>
         </div>
       </div>
     </header>}

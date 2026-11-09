@@ -27,14 +27,15 @@ const schema={
 ---
 <BaseLayout title="Dead Pixel Test – Free Online Screen Check | DeadPixelTest"
   description={page.description} canonicalPath="/" lang="en" schema={schema}>
-  <main id="main-content" tabindex="-1" class="mx-auto max-w-7xl px-4 pt-12 md:px-8 md:pt-16">
-    <div class="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(260px,.8fr)] gap-10 items-start">
-      <section class="space-y-5">
-        <p class="text-[#125CC9] text-sm font-bold tracking-[.13em] uppercase">Free browser-based display inspection</p>
-        <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.08]">Dead Pixel Test</h1>
+  <main id="main-content" tabindex="-1" class="ui-site-main mx-auto max-w-7xl px-4 pt-9 md:px-8 md:pt-14">
+    <div class="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(260px,.8fr)] gap-6 lg:gap-8 items-start">
+      <section class="ui-hero-intro ui-enter space-y-5 rounded-[1.5rem] border border-[#DCE3EA] bg-white px-5 py-7 md:px-9 md:py-10">
+        <p class="ui-eyebrow text-[#125CC9] text-sm font-bold tracking-[.13em] uppercase"><span class="ui-status-dot" aria-hidden="true"></span>Free browser-based display inspection</p>
+        <div class="ui-swatch-track" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.08]">Dead Pixel <span class="ui-text-accent">Test</span></h1>
         <p class="text-lg text-[#344256] leading-8 max-w-3xl">Check your monitor, laptop, or phone with full-screen colors. Look for dead pixels, bright dots, and stuck subpixels. All observations are made by you — the browser cannot automatically detect physical panel damage.</p>
-        <div class="rounded-2xl border border-[#20283C] bg-[#0A0B0E] text-white px-5 py-6 shadow-lg md:px-8 md:py-8">
-          <p class="font-semibold text-white mb-4">Start your screen check</p>
+        <div class="ui-inspection-shell rounded-2xl border border-[#20283C] bg-[#0A0B0E] text-white px-5 py-6 md:px-8 md:py-8">
+          <p class="font-semibold text-white mb-4">Start your screen check <span class="text-xs font-normal text-neutral-400">/ Interactive workspace</span></p>
           <ScreenInspection client:only="react" mode="pixels" lang="en" />
           <noscript>
             <div role="note" class="mt-4 rounded-lg border border-amber-400/40 bg-neutral-900 p-4 text-sm text-white">
@@ -44,10 +45,10 @@ const schema={
           <p class="text-sm text-neutral-300 mt-5">Black, white, red, green, blue and more. Keyboard arrows and touch-friendly controls. Record suspect spots for manual rechecks.</p>
         </div>
       </section>
-      <aside class="rounded-2xl border border-[#DCE3EA] bg-white p-6">
-        <h2 class="font-semibold text-xl mb-3">What to look for</h2>
+      <aside class="ui-help-card ui-enter ui-enter-delayed rounded-2xl border border-[#DCE3EA] bg-white p-6 md:p-7">
+        <p class="ui-overline">INSPECTION GUIDE · 5 SIGNALS</p><h2 class="font-semibold text-xl mb-3">What to look for</h2>
         <p class="mb-5 text-sm leading-6 text-[#344256]">Each background helps reveal a different kind of visible symptom. Compare several colors before deciding whether a mark is on the screen surface or in the panel.</p>
-        <ol class="space-y-4 text-[#344256] leading-7">
+        <ol class="ui-checklist space-y-4 text-[#344256] leading-7">
           <li><strong class="text-[#101827]">White screen</strong> — unusually dark points that might otherwise blend in.</li>
           <li><strong class="text-[#101827]">Black screen</strong> — unusually bright or colored points.</li>
           <li><strong class="text-[#101827]">Red, green and blue</strong> — spots that do not behave like their surroundings.</li>
@@ -58,16 +59,17 @@ const schema={
         <p class="text-xs text-amber-800 border-t border-[#DCE3EA] pt-4 mt-5">This is a visual self-check, not a certified diagnosis.</p>
       </aside>
     </div>
-    <section class="mt-16">
-      <h2 class="text-2xl md:text-3xl font-bold mb-6">More display and device tests</h2>
+    <section class="ui-section mt-14 md:mt-20">
+      <div class="ui-section-heading"><div><p class="ui-overline">TOOL COLLECTION</p><h2 class="text-2xl md:text-3xl font-bold mb-2">More display and device tests</h2></div><p class="max-w-sm text-sm leading-6 text-[#475569]">Choose the test that matches what you see. Each opens its own guided workflow.</p></div>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {topLinks.map(link => <a href={link.path.replace(/\/$/,'') || '/'} class="rounded-xl border border-[#DCE3EA] bg-white shadow-sm p-5 transition-colors hover:border-blue-500/70 hover:bg-[#EEF4FB]">
-          <h3 class="text-lg font-semibold text-[#101827]">{link.name}</h3>
-          <p class="mt-2 text-sm text-[#475569]">{link.sub}</p>
+        {topLinks.map((link,i) => <a href={link.path.replace(/\/$/,'') || '/'} class="ui-feature-card group rounded-xl border border-[#DCE3EA] bg-white p-5">
+          <div class="flex items-center justify-between gap-3"><span class="ui-card-index">TOOL {String(i+1).padStart(2,'0')}</span><span class="ui-card-arrow" aria-hidden="true">↗</span></div>
+          <h3 class="mt-3 text-lg font-semibold text-[#101827]">{link.name}</h3>
+          <p class="mt-2 text-sm leading-6 text-[#475569]">{link.sub}</p>
         </a>)}
       </div>
     </section>
-    <section class="mt-16 grid md:grid-cols-2 gap-10">
+    <section class="ui-section mt-16 grid md:grid-cols-2 gap-7 lg:gap-10">
       <article>
         <h2 class="text-2xl font-bold mb-4">How to identify a dead pixel</h2>
         <p class="text-[#344256] leading-8">A dead pixel does not produce the expected light output. It may appear as a consistently dark spot, particularly against white. A stuck subpixel may remain red, green or blue, while dust and protective-film marks can look similar. Compare several backgrounds before drawing conclusions.</p>
@@ -79,7 +81,7 @@ const schema={
         <a href="/pt-br" class="inline-block mt-5 text-[#125CC9] hover:text-[#125CC9]">Teste de pixel morto em português →</a>
       </article>
     </section>
-    <section class="mt-16 pb-8">
+    <section class="ui-section mt-16 pb-8">
       <h2 class="text-2xl font-bold mb-5">Common questions</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <article class="border border-[#DCE3EA] rounded-xl p-5"><h3 class="font-semibold text-lg mb-2">Can a webpage detect dead pixels automatically?</h3><p class="text-[#344256] leading-7">No. The test displays patterns; you inspect the physical screen. A browser cannot read the panel's actual damaged pixels.</p></article>
