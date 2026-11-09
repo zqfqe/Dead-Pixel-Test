@@ -99,10 +99,20 @@ const modeHint=mode==='lines'
  const view=()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,orientation:screen.orientation?.type??(innerWidth>=innerHeight?'landscape':'portrait')});
  const exit=useCallback(()=>{setActive(false);setMarkMode(false);if(native.current&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});native.current=false;requestAnimationFrame(()=>startButton.current?.focus());},[]);
  useEffect(()=>{if(!active)return;const old=document.body.style.overflow;document.body.style.overflow='hidden';
- const key=(e:KeyboardEvent)=>{const el=e.target as HTMLElement;const form=['INPUT','SELECT','TEXTAREA'].includes(el?.tagName)||el?.isContentEditable;if(e.key==='Escape'){e.preventDefault();exit();}else if(e.key==='Tab'){const list=dialog.current?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])');if(list?.length){const first=list[0],last=list[list.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}}else if(!form&&e.key==='ArrowRight'){e.preventDefault();next();}else if(!form&&e.key==='ArrowLeft'){e.preventDefault();prev();}};
+ const key=(e:KeyboardEvent)=>{const el=e.target as HTMLElement;const form=['INPUT','SELECT','TEXTAREA'].includes(el?.tagName)||el?.isContentEditable;if(e.key==='Escape'){e.preventDefault();exit();}else if(e.key==='Tab'){const list=dialog.current?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])');if(list?.length){const first=list[0],last=list[list.length-1];if(!dialog.current?.contains(document.activeElement)){e.preventDefault();first.focus();}else if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}}else if(!form&&e.key==='ArrowRight'){e.preventDefault();next();}else if(!form&&e.key==='ArrowLeft'){e.preventDefault();prev();}};
  const visibility=()=>{if(document.visibilityState==='hidden')exit();},full=()=>{if(native.current&&!document.fullscreenElement)exit();};
- document.addEventListener('keydown',key);document.addEventListener('visibilitychange',visibility);document.addEventListener('fullscreenchange',full);dialog.current?.querySelector<HTMLElement>('button')?.focus();
- return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',key);document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',full);};
+ const focusGuard=(e:FocusEvent)=>{
+   const panel=dialog.current;
+   if(panel&&e.target instanceof Node&&!panel.contains(e.target)){
+     panel.querySelector<HTMLElement>('button')?.focus();
+   }
+ };
+ document.addEventListener('keydown',key);
+ document.addEventListener('focusin',focusGuard);
+ document.addEventListener('visibilitychange',visibility);
+ document.addEventListener('fullscreenchange',full);
+ dialog.current?.querySelector<HTMLElement>('button')?.focus();
+ return()=>{document.body.style.overflow=old;document.removeEventListener('keydown',key);document.removeEventListener('focusin',focusGuard);document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',full);};
  },[active,exit,next,prev]);
  const start=async()=>{touchStart.current=null;setHideControls(false);setIndex(0);setMarkMode(false);setShowMarks(false);setActive(true);setWarning(false);setRan(true);setStarted(x=>x||new Date().toISOString());if(root.current&&typeof root.current.requestFullscreen==='function'){try{await root.current.requestFullscreen();native.current=true;}catch{setWarning(true);}}else setWarning(true);};
  const mark=(e:React.MouseEvent<HTMLDivElement>)=>{if(!markMode&&!isFixer)return;const b=e.currentTarget.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),y=Math.max(0,Math.min(1,(e.clientY-b.top)/b.height));if(isFixer&&!markMode){setPatchPos({x:x*100,y:y*100});return;}if(marks.length>=50)return;const id=crypto.randomUUID?.()??String(Date.now());setMarks(v=>[...v,{id,x,y,colors:[current.name],notVisibleOn:[],category:'unclassified',notes:'',viewport:view()}]);setSelected(id);setShowMarks(true);};
