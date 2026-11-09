@@ -758,7 +758,16 @@ await check('/tests/local-dimming',async page=>{
  if(canonical!==canonicalOrigin+'/tests/color-gradient')
   throw Error('Legacy tool navigation retained stale canonical '+canonical);
 });
+for(const path of ['/pt-br/pixel-morto-notebook','/pt-br/reparar-pixel-preso']){
+ await check(path,async page=>{
+  const url=await page.locator('[data-symptom-decision] a[href*="dell.com/support/kbdoc"]').getAttribute('href');
+  if(!url?.includes('/pt-br/000126004/diretrizes-de-pixels-da-tela-dell'))
+   throw Error('Brazilian screen-check page links to non-localized manufacturer guidance: '+url);
+ });
+}
 await check('/tests/refresh-rate',async page=>{
+ // The command palette is a hydrated React island, not part of Astro's initial HTML.
+ await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor({timeout:12000});
  await page.keyboard.press('Control+k');
  const field=page.getByRole('textbox',{name:'Search tools'});
  await field.waitFor();
@@ -788,4 +797,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+74+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+76+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

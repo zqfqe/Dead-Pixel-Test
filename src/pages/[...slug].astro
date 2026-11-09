@@ -244,7 +244,7 @@ const symptomDecisions:Record<string,{heading:string;intro:string;options:Sympto
  '/pt-br/pixel-morto-notebook':{
   heading:'Pixel morto no notebook: como interpretar o sintoma',
   intro:'Escolha o caso que se parece com sua tela. Estas etapas orientam a observação, sem emitir laudo técnico.',
-  source:'Exemplo de fabricante: orientação da Dell (em inglês)',
+  source:'Exemplo do fabricante: orientação da Dell (em português)',
   options:[
    {title:'Ponto escuro no fundo branco',check:'Limpe o vidro com cuidado e compare o mesmo ponto nas cores branco, vermelho, verde e azul.',action:'Marque o local aproximado, exporte o registro e consulte a política de troca do fabricante.'},
    {title:'Ponto brilhante ou colorido no preto',check:'Observe o ponto no fundo preto e depois em cada cor primária.',action:'Anote em quais cores ele aparece. Não pressione nem aqueça a tela.'},
@@ -264,7 +264,7 @@ const symptomDecisions:Record<string,{heading:string;intro:string;options:Sympto
  '/pt-br/reparar-pixel-preso':{
   heading:'Pixel preso: qual próximo passo é seguro?',
   intro:'Um teste com cores estáticas serve para observar, não para consertar o painel.',
-  source:'Referência de segurança: Dell (em inglês)',
+  source:'Referência de segurança: Dell (em português)',
   options:[
    {title:'Ponto sempre escuro em várias cores',check:'Limpe o vidro e observe a mesma região nos fundos branco e RGB.',action:'Uma página não recupera um pixel fisicamente danificado. Guarde o registro para a assistência.'},
    {title:'Ponto sempre vermelho, verde ou azul',check:'Compare cores estáticas e use a área móvel como referência, sem piscar rapidamente.',action:'Registre quais cores mostram a anomalia. Evite pressão e calor; nenhuma correção é garantida.'},
@@ -367,7 +367,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
           </div>
         </details>)}
       </div>
-      <p class="mt-4 text-sm leading-7 text-[#344256]">{isBR?'Regras de troca variam por fabricante e modelo.':'Return policies vary by manufacturer and model.'} <a href="https://www.dell.com/support/kbdoc/en-us/000126004/dell-display-pixel-guidelines" target="_blank" rel="noopener noreferrer" class="font-semibold text-[#125CC9] underline underline-offset-4">{symptomDecision.source}</a>.</p>
+      <p class="mt-4 text-sm leading-7 text-[#344256]">{isBR?'Regras de troca variam por fabricante e modelo.':'Return policies vary by manufacturer and model.'} <a href={isBR?'https://www.dell.com/support/kbdoc/pt-br/000126004/diretrizes-de-pixels-da-tela-dell':'https://www.dell.com/support/kbdoc/en-us/000126004/dell-display-pixel-guidelines'} target="_blank" rel="noopener noreferrer" class="font-semibold text-[#125CC9] underline underline-offset-4">{symptomDecision.source}</a>.</p>
     </section>}
     <section class="mt-12"><h2 class="text-2xl font-bold mb-5">{isBR?'Limitações e segurança':'Limitations and safety'}</h2>
       <div class="grid md:grid-cols-2 gap-4">{newPage.notes.map(note=><p class="border border-[#DCE3EA] bg-white p-5 rounded-xl text-[#344256] leading-7">{note}</p>)}</div>
