@@ -97,6 +97,60 @@ if(origin){
  }
 }
 
+// The three legacy editorial guides are indexable and must not undermine
+// the safe static-pixel workflow with unverified fixes or fake expert teams.
+const editorialPages=[
+ ['dead-pixel-vs-stuck-pixel-ultimate-guide','Dead vs. Stuck Pixels: How to Check and What to Do','/dead-pixel-fixer'],
+ ['ips-glow-vs-backlight-bleed-guide','IPS Glow vs. Backlight Bleed: How to Compare Them','/tests/uniformity'],
+ ['monitor-calibration-guide-no-hardware','Monitor Color Check Without a Colorimeter: Practical Limits','/screen-contrast-test']
+];
+const unsafeBlogClaims=[
+ 'How to Identify Defects with 100% Accuracy',
+ 'The "Epileptic" Software Fix',
+ 'The Pressure Method',
+ 'The Heat Method',
+ '90% of the way there',
+ 'Display Engineering Team',
+ 'Color Science Team',
+ 'Tech Lab'
+];
+for(const [slug,headline,internalLink] of editorialPages){
+ const path='/blog/'+slug;
+ const file=join('dist','blog',slug+'.html');
+ if(!existsSync(file)){errors.push('Missing indexed guide '+path);continue;}
+ const html=readFileSync(file,'utf8');
+ if(!html.includes('<h1')||!html.includes(headline))errors.push('Guide missing its specific crawlable H1 '+path);
+ if(!html.includes('href="'+internalLink+'"'))errors.push('Guide lacks relevant internal tool link '+path);
+ if(!html.includes('By <a href="/about">DeadPixelTest</a>'))errors.push('Guide lacks honest visible author label '+path);
+ if(unsafeBlogClaims.some(term=>html.includes(term)))errors.push('Guide retains unsafe or unsupported claim '+path);
+ const schemaScripts=[...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+ const nodes=[];
+ for(const item of schemaScripts){
+  try{
+   const json=JSON.parse(item[1]);
+   nodes.push(...(Array.isArray(json['@graph'])?json['@graph']:[json]));
+  }catch(e){errors.push('Invalid JSON-LD in guide '+path+': '+String(e));}
+ }
+ const article=nodes.find(node=>node['@type']==='BlogPosting');
+ if(!article||article.headline!==headline||article.author?.name!=='DeadPixelTest')
+  errors.push('Missing/mismatched honest BlogPosting metadata '+path);
+ if(!nodes.some(node=>node['@type']==='BreadcrumbList'&&node.itemListElement?.length===3))
+  errors.push('Missing guide breadcrumb schema '+path);
+ if(origin){
+  const canonical=origin+path;
+  if(!locs.includes(canonical))errors.push('Published guide missing from sitemap '+path);
+  if(article?.mainEntityOfPage!==canonical)errors.push('BlogPosting URL not canonical '+path);
+ }else if(!html.includes('name="robots" content="noindex,nofollow"'))
+  errors.push('Domainless guide should remain noindex '+path);
+}
+if(origin){
+ const html=readFileSync(join('dist','index.html'),'utf8');
+ const script=[...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+ const nodes=script.flatMap(m=>{try{const j=JSON.parse(m[1]);return j['@graph']||[j];}catch{return [];}});
+ if(!nodes.some(x=>x['@type']==='WebSite'&&x.name==='DeadPixelTest'&&x.url===origin+'/'))
+  errors.push('Homepage missing valid WebSite site-name structured data');
+}
+
 // Cloudflare's production pages.dev alias must not compete with the owned domain.
 const headersPath=join('dist','_headers');
 if(!existsSync(headersPath))errors.push('Missing Cloudflare Pages index isolation headers');
