@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ScreenInspection from '../../components/tests/ScreenInspection';
 import { SEO_LANDING_PAGES } from '../../data/seoLandingPages';
+import { BLOG_POSTS } from '../../data/blog';
 const page={description:'Free online dead pixel test for monitors, laptops and phones. Check dead and stuck pixels with solid colors; no download or automatic diagnosis.'};
 const topLinks=[
  {path:'/laptop-screen-dead-pixel-test/',name:'Laptop Dead Pixel Test',sub:'Check your built-in display'},
@@ -114,6 +115,20 @@ const schema={
         <p>The same defect can look different on a black, white or primary-color field. Static color screens help you locate an abnormal spot, but cannot measure monitor luminance, native refresh rate or physical panel health. Never press or heat the display in an attempt to fix a pixel.</p>
         <a href="/pt-br">Teste de pixel morto em português <span aria-hidden="true">↗</span></a>
       </article>
+    </section>
+    <section class="ui-section" aria-labelledby="screen-guides-heading">
+      <div class="ui-section-heading">
+        <div><p class="ui-overline">LEARN / SCREEN PROBLEMS</p><h2 id="screen-guides-heading">Practical screen testing guides</h2></div>
+        <p>Understand the symptom before changing monitor settings or contacting the manufacturer.</p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-3">
+        {BLOG_POSTS.map(post=><article class="rounded-xl border border-[#DCE3EA] bg-white p-5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-[#31583F]">{post.category}</p>
+          <h3 class="mt-3 text-lg font-bold text-[#101827]"><a class="text-[#125CC9] hover:underline" href={'/blog/'+post.slug}>{post.title}</a></h3>
+          <p class="mt-3 text-sm leading-6 text-[#344256]">{post.excerpt}</p>
+        </article>)}
+      </div>
+      <p class="mt-5 text-sm"><a href="/blog" class="font-semibold text-[#125CC9] hover:underline">Browse all screen testing guides</a></p>
     </section>
     <section class="ui-faq-section ui-section" aria-labelledby="faq-title">
       <div class="ui-section-heading"><div><p class="ui-overline">HELP / FAQ</p><h2 id="faq-title">Common questions</h2></div></div>
