@@ -394,6 +394,21 @@ await check('/pt-br/pixel-morto-notebook',async page=>{
  const sizes=await page.evaluate(()=>({screen:innerWidth,root:document.documentElement.scrollWidth}));
  if(sizes.root>sizes.screen+2)throw Error('Notebook landing page overflows 768px width '+JSON.stringify(sizes));
 },{width:768});
+{
+ const ctx=await browser.newContext();
+ const page=await ctx.newPage();
+ try{
+  const response=await page.goto(base+'/this-path-is-not-a-real-test-987654321',{waitUntil:'domcontentloaded'});
+  if(response?.status()!==404)throw Error('Unknown URLs must return real HTTP 404, got '+response?.status());
+  await page.getByRole('heading',{name:'Page not found'}).waitFor();
+  const robots=await page.locator('meta[name="robots"]').getAttribute('content');
+  if(!robots?.includes('noindex'))throw Error('404 page unexpectedly indexable');
+  if(!await page.locator('main#main-content').count())throw Error('404 page has no keyboard skip target');
+  console.log('PASS browser: real HTTP 404 with noindex');
+ }catch(error){
+  failures.push('404: '+error.message);console.error('FAIL browser 404: '+error.message);
+ }finally{await ctx.close();}
+}
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+42+' Chromium browser scenarios, including light/dark design, responsive 360/390/768 layouts and test workflows');
+console.log('PASS all '+43+' Chromium browser scenarios, including real 404 responses, light/dark design and 360/390/768 layouts');
