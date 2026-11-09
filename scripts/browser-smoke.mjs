@@ -912,8 +912,16 @@ await check('/',async page=>{
  await page.setViewportSize({width:360,height:780});
  if(await page.locator('.ui-preview-instrument').isVisible())
   throw Error('Decorative screen sample displaces mobile Start action below the fold');
- const a=await page.locator('.ui-workbench-panel').boundingBox();
- if(!a||a.y>710)throw Error('Mobile screen check begins too far down: '+JSON.stringify(a));
+ const button=await page.getByRole('button',{name:'Start full-screen inspection'}).boundingBox();
+ if(!button||button.y+button.height>780)throw Error('Start inspection must be available within initial mobile viewport: '+JSON.stringify(button));
+});
+
+await check('/',async page=>{
+ const details=page.locator('.ui-inspection-shell details').filter({has:page.getByText('Before you start',{exact:true})});
+ await details.waitFor();
+ if(await details.evaluate(el=>el.open))throw Error('Long preflight checklist should be collapsible');
+ await details.locator('summary').click();
+ if(!await details.evaluate(el=>el.open))throw Error('Preflight checklist failed to expand');
 });
 
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
@@ -933,4 +941,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+84+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');
+console.log('PASS all '+85+' Chromium browser scenarios, including orientation/resize rechecks and compact controls');

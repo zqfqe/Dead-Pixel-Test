@@ -271,13 +271,14 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
   save(html,'text/html;charset=utf-8','screen-self-check-report.html');
  };
  return <div ref={root}>
- <div className="mb-4 rounded-xl border border-white/10 bg-neutral-900/60 p-4">
-  <h3 className="mb-2 text-sm font-semibold text-white">{t.preflight}</h3>
-  <ul className="list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-300">{(lang==='pt-BR'?PRECHECK.pt:PRECHECK.en).map(item=><li key={item}>{item}</li>)}</ul>
-  <p className="mt-3 text-xs text-neutral-400">{t.preflightNote}</p>
- </div>
- <div className="flex flex-wrap items-center gap-3"><button ref={startButton} type="button" onClick={start} className="rounded-lg bg-[#C5F277] px-6 py-3 min-h-[48px] font-bold text-[#152015] transition-colors hover:bg-[#D8FFA0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C5F277]">{t.start}</button><label className="flex items-center gap-2 text-sm">{t.device}<select value={device} onChange={e=>setDevice(e.target.value as Device)} className="rounded border border-white/20 bg-neutral-900 p-2 text-white"><option value="monitor">{t.monitor}</option><option value="laptop">{t.laptop}</option><option value="phone">{t.phone}</option><option value="tablet">{t.tablet}</option><option value="other">{t.other}</option></select></label><span className="text-sm text-neutral-400">{t.disclaimer}</span></div>
+ <div className="flex flex-wrap items-center gap-3"><button ref={startButton} type="button" onClick={start} className="w-full sm:w-auto rounded-lg bg-[#C5F277] px-6 py-3 min-h-[48px] font-bold text-[#152015] transition-colors hover:bg-[#D8FFA0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C5F277]">{t.start}</button><label className="flex items-center gap-2 text-sm">{t.device}<select value={device} onChange={e=>setDevice(e.target.value as Device)} className="rounded border border-white/20 bg-neutral-900 p-2 text-white"><option value="monitor">{t.monitor}</option><option value="laptop">{t.laptop}</option><option value="phone">{t.phone}</option><option value="tablet">{t.tablet}</option><option value="other">{t.other}</option></select></label><span className="text-sm text-neutral-400">{t.disclaimer}</span></div>
  <p className="mt-3 text-xs text-neutral-400">{t.session}{ran?' · '+t.progress+': '+viewed.length+'/'+patterns.length:''}</p>
+ <p className="mt-3 text-xs leading-5 text-neutral-300">{lang==='pt-BR'?'Limpe a tela; nunca pressione ou aqueça o painel.':'Clean the display; never press or heat the panel.'}</p>
+ <details className="mt-4 rounded-xl border border-white/15 bg-neutral-900/60 p-3.5">
+  <summary className="cursor-pointer text-sm font-semibold text-white">{t.preflight}</summary>
+  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-6 text-neutral-300">{(lang==='pt-BR'?PRECHECK.pt:PRECHECK.en).map(item=><li key={item}>{item}</li>)}</ul>
+  <p className="mt-3 text-xs text-neutral-400">{t.preflightNote}</p>
+ </details>
  <details className="mt-3 rounded-lg border border-white/15 bg-neutral-900/40 p-3 text-sm">
    <summary className="cursor-pointer font-medium text-neutral-300 focus-visible:outline-offset-4">{t.importHeading}</summary>
    <label className="mt-3 block text-xs leading-6 text-neutral-300">{t.import}
