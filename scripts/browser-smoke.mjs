@@ -168,6 +168,32 @@ await check('/contact',async page=>{
  await page.getByRole('heading',{name:/Contact & Feedback/i}).waitFor({timeout:10000});
  await page.getByRole('link',{name:/Open GitHub Issues/i}).waitFor();
 });
+// Trust pages must be useful to visitors and crawlers without JavaScript.
+// This also prevents a site-wide empty React shell from being mistaken for
+// substantive static privacy, contact or organizational content.
+for(const [path,heading,required] of [
+ ['/about','About DeadPixelTest','How we approach testing'],
+ ['/contact','Contact & Feedback','Open GitHub Issues'],
+ ['/privacy-policy','Privacy Policy','Hosting requests'],
+ ['/terms-of-service','Terms of Use','No repair or measurement guarantee']
+]){
+ const ctx=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+ const page=await ctx.newPage();
+ try{
+  const response=await page.goto(base+path,{waitUntil:'domcontentloaded',timeout:15000});
+  if(response?.status()!==200)throw Error('HTTP '+response?.status());
+  await page.getByRole('heading',{name:heading,level:1}).waitFor();
+  await page.getByText(required,{exact:false}).first().waitFor();
+  const main=page.locator('main#main-content');
+  if((await main.innerText()).length<400)throw Error('Trust page has too little accessible static text '+path);
+  if(await page.locator('astro-island').count())throw Error('Trust page still requires a client island '+path);
+  checksPassed++;
+  console.log('PASS browser no-JS trust page '+path);
+ }catch(error){
+  failures.push('no-JS trust '+path+': '+error.message);
+  console.error('FAIL browser no-JS trust '+path+': '+error.message);
+ }finally{await ctx.close();}
+}
 await check('/screen-resolution-test',async page=>{
  await expectedTitle('Screen Resolution')(page);
  for(const label of ['Screen width (CSS px)','Available screen height (CSS px)','Browser viewport width (CSS px)','Visual viewport width (CSS px)','Device pixel ratio (DPR)','Screen color depth (bits)','Orientation']){
