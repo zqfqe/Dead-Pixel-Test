@@ -104,7 +104,12 @@ body {
 }
 
 /* V1.2 information layout: bright and readable, immersive tests remain dark. */
+html[data-surface="light"] {
+  background: #F6F8FB;
+}
 body[data-surface="light"] {
+  height: auto;
+  min-height: 100vh;
   background: #F6F8FB;
   color: #101827;
 }
