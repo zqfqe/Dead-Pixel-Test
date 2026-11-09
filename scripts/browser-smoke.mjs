@@ -298,6 +298,7 @@ await check('/',async page=>{
  if(!html.includes('window.print()'))throw Error('Printable report has no explicit print control');
 });
 await check('/',async page=>{
+ await page.locator('.ui-inspection-shell details').filter({has:page.getByText('Before you start',{exact:true})}).locator('summary').click();
  await page.getByText(/Clean the glass gently and check whether dust/i).waitFor();
  await page.getByRole('button',{name:/Start full-screen inspection/i}).click();
  await page.getByRole('button',{name:'Hide controls'}).click();
