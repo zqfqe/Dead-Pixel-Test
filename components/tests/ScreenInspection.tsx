@@ -232,7 +232,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
   const summary=report.marks.map((m,i)=>
    '<tr><th scope="row">'+(i+1)+'</th><td>'+(m.xRatio*100).toFixed(1)+'%, '+(m.yRatio*100).toFixed(1)+
    '%</td><td>'+esc(categoryLabels[m.category]||m.category)+'</td><td>'+esc(m.notes||'—')+
-   '</td><td>'+geometry(m.viewportAtMark)+'</td></tr>').join('');
+   '</td><td>'+esc(m.observedOn.join(', ')||'—')+'</td><td>'+esc(m.notObservedOn.join(', ')||'—')+'</td><td>'+geometry(m.viewportAtMark)+'</td></tr>').join('');
   const matrices=report.marks.map((m,i)=>{
    const rows=patterns.map(p=>{
     const status=m.observedOn.includes(p.name)?labels.visible:m.notObservedOn.includes(p.name)?labels.absent:labels.unknown;
@@ -261,7 +261,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
     String(report.observedCount)+'/'+String(report.totalPatterns)+')</p>'+
    '<h2>'+esc(labels.summary)+': '+String(report.marks.length)+'</h2>'+
    (summary?'<div class="scroll"><table><thead><tr><th>#</th><th>'+esc(t.position)+'</th><th>'+esc(labels.category)+
-    '</th><th>'+esc(t.notes)+'</th><th>'+esc(labels.marked)+'</th></tr></thead><tbody>'+summary+'</tbody></table></div>'
+    '</th><th>'+esc(t.notes)+'</th><th>'+esc(t.colors)+'</th><th>'+esc(t.absentColors)+'</th><th>'+esc(labels.marked)+'</th></tr></thead><tbody>'+summary+'</tbody></table></div>'
     :'<p>'+esc(t.none)+'</p>')+
    (report.marks.length?'<h2>'+esc(labels.matrix)+'</h2>'+matrices:'')+
    '<p class="notice">'+esc(t.hint)+'</p>'+
