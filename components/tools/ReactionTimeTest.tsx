@@ -57,8 +57,12 @@ const ReactionTimeTest: React.FC = () => {
   // Keyboard support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Native activation for buttons and links must take priority over the test hotkey.
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+      const target=e.target instanceof Element?e.target:null;
+      if (target?.closest('button,a[href],input,select,textarea,[contenteditable="true"],[role="button"]')) return;
       if (e.code === 'Space' || e.code === 'Enter') {
-        e.preventDefault(); // Prevent page scroll
+        e.preventDefault(); // Prevent page scroll only for the dedicated test shortcut.
         handleAction();
       }
     };
@@ -67,12 +71,13 @@ const ReactionTimeTest: React.FC = () => {
   }, [gameState, mode]);
 
   const startGame = () => {
-    initAudio();
+    if (mode === 'audio') initAudio();
     setGameState('waiting');
     const randomDelay = Math.floor(Math.random() * 2500) + 1500; // 1.5s to 4.0s
     
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
+      timerRef.current = null;
       setGameState('ready');
       startTimeRef.current = performance.now();
       if (mode === 'audio') {
@@ -113,6 +118,18 @@ const ReactionTimeTest: React.FC = () => {
       setMode(newMode);
       resetHistory();
   };
+
+  useEffect(() => () => {
+    // Do not leave a pending stimulus timer or audio device open after navigation.
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    if (audioContextRef.current) {
+      void audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+  }, []);
 
   // Stats Calculations
   const average = history.length > 0 ? Math.round(history.reduce((a, b) => a + b, 0) / history.length) : 0;

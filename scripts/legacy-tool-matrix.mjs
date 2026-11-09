@@ -100,6 +100,19 @@ try{
    await fields.nth(2).fill('24');
    await page.getByText('91.79',{exact:false}).first().waitFor();
   }],
+  ['/tools/reaction-time',async page=>{
+   const audio=page.getByRole('button',{name:'Audio',exact:true});
+   const visual=page.getByRole('button',{name:'Visual',exact:true});
+   await audio.focus();
+   await page.keyboard.press('Enter');
+   if(!(await audio.getAttribute('class'))?.includes('bg-blue-600'))
+    throw Error('Global reaction keyboard hotkey intercepted native Audio button activation');
+   await visual.focus();
+   await page.keyboard.press('Space');
+   if(!(await visual.getAttribute('class'))?.includes('bg-blue-600'))
+    throw Error('Global reaction keyboard hotkey intercepted native Visual button activation');
+   await page.getByRole('heading',{level:1}).waitFor();
+  }],
   ['/tools/input-lag',async page=>{
    const start=page.getByRole('button',{name:'Start Counter'});
    await start.click();
@@ -136,4 +149,4 @@ try{
  for(const [route,fn] of scenarioChecks)await inspectRoute(route,{interact:fn});
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 5 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 6 interactive functional checks (hardware behaviors not certified).');
