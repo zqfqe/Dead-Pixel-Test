@@ -228,7 +228,7 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
  <div role="presentation" onClick={mark} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} className="absolute inset-0 select-none" style={{backgroundColor:current.color||'#000',backgroundImage:current.background,backgroundSize:current.backgroundSize,cursor:markMode||isFixer?'crosshair':'default',touchAction:markMode||isFixer?'none':'pan-y'}}>
  {isFixer&&<div aria-hidden="true" className="pointer-events-none absolute border-2 border-white" style={{left:patchPos.x+'%',top:patchPos.y+'%',width:patchSize,height:patchSize,transform:'translate(-50%,-50%)',background:patchColor}}/>}
  {showMarks&&marks.map((m,i)=><div aria-hidden="true" key={m.id} className="pointer-events-none absolute h-6 w-6 rounded-full border-[3px] border-orange-500" style={{left:m.x*100+'%',top:m.y*100+'%',transform:'translate(-50%,-50%)'}}><span className="absolute bottom-full bg-black px-1 text-xs">{i+1}</span></div>)}</div>
- <span aria-live="polite" className="sr-only">{patternLabel(current.name)} ({index+1}/{patterns.length})</span>
+ <span aria-live="polite" className="sr-only">{hideControls?`${patternLabel(current.name)} (${index+1}/${patterns.length})`:""}</span>
  {hideControls ? (
   <div data-compact-controls="true" data-corner={compactCorner} style={CORNER_STYLES[compactCorner]} className="absolute z-[112] flex items-center gap-1 rounded-lg border border-white/30 bg-neutral-950/90 p-1 text-xs shadow-lg">
    <button type="button" onClick={()=>setHideControls(false)} aria-expanded={false} className="min-h-[44px] rounded-md border border-white/30 bg-neutral-800 px-2 py-2">{t.controls}</button>
