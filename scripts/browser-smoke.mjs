@@ -453,6 +453,48 @@ await check('/pt-br',async page=>{
  if(!item?.observedOn?.includes('White')||item?.notObservedOn?.includes('White'))
    throw Error('Portuguese repeated rechecks did not keep a single consistent status');
 });
+await check('/',async page=>{
+ const prior={
+  kind:'user_observed_screen_inspection',certified:false,
+  createdAt:'2026-11-01T08:00:00.000Z',deviceType:'laptop',
+  observedPatterns:['Black','White'],marks:[{
+   xRatio:0.3,yRatio:0.4,observedOn:['Black'],notObservedOn:['White'],
+   category:'dust-or-surface',notes:'dust versus subpixel',
+   viewportAtMark:{width:1366,height:900,dpr:1,orientation:'landscape'}
+  }]
+ };
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+  name:'previous-check.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(prior))
+ });
+ await page.getByText('Previous self-check loaded locally. Review each marked spot before continuing.').waitFor();
+ await page.getByText('Suspect spots: 1').waitFor();
+ const category=await page.getByRole('combobox',{name:'Observation'}).first().inputValue();
+ if(category!=='dust-or-surface')throw Error('Imported classification was lost');
+ await page.getByRole('button',{name:'Start full-screen inspection'}).click();
+ await page.getByRole('button',{name:'Next color'}).click();
+ await page.getByRole('button',{name:'Still visible on this color'}).click();
+ await page.getByRole('button',{name:'Exit test'}).click();
+ const download=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Export self-check JSON'}).click();
+ const data=JSON.parse(readFileSync(await (await download).path(),'utf8'));
+ const mark=data.marks[0];
+ if(data.createdAt!==prior.createdAt||data.deviceType!=='laptop'||
+    !mark.observedOn.includes('White')||mark.notObservedOn.includes('White')){
+   throw Error('Imported self-check data or recheck update invalid: '+JSON.stringify(data));
+ }
+});
+await check('/',async page=>{
+ const invalid={
+  kind:'user_observed_screen_inspection',certified:false,
+  marks:[{xRatio:1.5,yRatio:0.3,observedOn:['Black'],notObservedOn:[],
+   category:'dark',notes:'Invalid',viewportAtMark:{width:100,height:100,dpr:1,orientation:'portrait'}}]
+ };
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+  name:'invalid-check.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(invalid))
+ });
+ await page.getByText(/not a valid self-check report/i).waitFor();
+ if(await page.getByRole('button',{name:'Export self-check JSON'}).count())throw Error('Invalid report entered a saved test session');
+});
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+45+' Chromium browser scenarios, including cross-color recheck evidence and localized reports');
+console.log('PASS all '+47+' Chromium browser scenarios, including safe local JSON restore and recheck evidence');
