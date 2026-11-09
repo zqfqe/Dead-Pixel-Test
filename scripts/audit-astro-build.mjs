@@ -198,6 +198,71 @@ for(const slug of [
  if(!homeHtml.includes('href="/blog/'+slug+'"'))errors.push('Homepage lacks contextual guide link '+slug);
 }
 if(!homeHtml.includes('Browse all screen testing guides'))errors.push('Homepage blog hub CTA missing');
+// GEO/SEO provenance checks for truthful, user-visible attribution.
+// The logo is an informative link image, with the adjacent brand word hidden
+// from screen readers to avoid duplicate spoken link names.
+const logoTag=homeHtml.match(/<img\b[^>]*src="\/logo\.svg"[^>]*>/i)?.[0];
+if(!logoTag || !/\balt="DeadPixelTest home"/.test(logoTag))
+ errors.push('Homepage brand image missing functional alt');
+if(!homeHtml.includes('<span aria-hidden="true">DeadPixelTest</span>'))
+ errors.push('Homepage brand accessible link name may be duplicated');
+const homepageReview=homeHtml.match(/<time\b[^>]*datetime="2026-11-09"[^>]*>November 9, 2026<\/time>/);
+if(!homepageReview || !homeHtml.includes('data-editorial-review') ||
+   !homeHtml.includes('href="/about" rel="author"') ||
+   !homeHtml.includes('<cite>') ||
+   !homeHtml.includes('dell.com/support/kbdoc/'))
+ errors.push('Homepage missing sourced, visible author and verified review date');
+const parseSchemas=html=>[...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
+ .map(match=>{try{return JSON.parse(match[1])}catch{return null}}).filter(Boolean);
+const homeSchema=parseSchemas(homeHtml).flatMap(schema=>schema['@graph']||[schema]);
+const orgNode=homeSchema.find(x=>x['@type']==='Organization');
+const siteNode=homeSchema.find(x=>x['@type']==='WebSite');
+const appNode=homeSchema.find(x=>x['@type']==='WebApplication');
+const webNode=homeSchema.find(x=>x['@type']==='WebPage');
+if(origin){
+ if(!orgNode || orgNode['@id']!==origin+'/#organization' || orgNode.name!=='DeadPixelTest')
+  errors.push('Homepage lacks stable organization project identity');
+ if(!siteNode || siteNode.publisher?.['@id']!==orgNode?.['@id'])
+  errors.push('Website publisher disconnected from public project identity');
+ if(!appNode || appNode.sameAs!=='https://github.com/zqfqe/Dead-Pixel-Test' ||
+     appNode.creator?.['@id']!==orgNode?.['@id'])
+  errors.push('Application missing its actual source repository and creator identity');
+ if(!webNode || webNode.author?.['@id']!==orgNode?.['@id'] ||
+     webNode.dateModified!=='2026-11-09' ||
+     webNode.citation!=='https://www.dell.com/support/kbdoc/en-us/000126004/dell-display-pixel-guidelines')
+  errors.push('Homepage WebPage metadata not grounded in visible review / citation');
+}
+for(const path of geoPaths.filter(path=>path!=='/')){
+ const html=readFileSync(join('dist',path.slice(1)+'.html'),'utf8');
+ const locale=path.startsWith('/pt-br')?'pt-BR':'en';
+ if(!html.includes('data-editorial-review')||!html.includes('rel="author"')||
+    !html.includes('datetime="2026-11-09"'))
+  errors.push('Missing visible author / reviewed date '+path);
+ const main=parseSchemas(html).flatMap(x=>x['@graph']||[x])
+  .find(x=>['WebPage','WebApplication'].includes(x['@type']));
+ if(!main || main.inLanguage!==locale || main.author?.name!=='DeadPixelTest' ||
+    main.dateModified!=='2026-11-09')
+  errors.push('Mismatch between structured author/date and page content '+path);
+}
+for(const slug of [
+ 'dead-pixel-vs-stuck-pixel-ultimate-guide',
+ 'ips-glow-vs-backlight-bleed-guide',
+ 'monitor-calibration-guide-no-hardware'
+]){
+ const html=readFileSync(join('dist','blog',slug+'.html'),'utf8');
+ if(!html.includes('Reviewed <time datetime="2026-11-09">November 9, 2026</time>'))
+  errors.push('Updated article missing visible review date '+slug);
+ const blog=parseSchemas(html).flatMap(x=>x['@graph']||[x]).find(x=>x['@type']==='BlogPosting');
+ if(!blog || blog.author?.name!=='DeadPixelTest' || blog.dateModified!=='2026-11-09' ||
+    !blog.datePublished)
+  errors.push('Article schema missing grounded author/published/modified date '+slug);
+}
+const aboutHtml=readFileSync(join('dist','about.html'),'utf8');
+if(!aboutHtml.includes('Editorial identity and verifiable changes') ||
+   !aboutHtml.includes('href="https://github.com/zqfqe/Dead-Pixel-Test"') ||
+   !aboutHtml.includes('datetime="2026-11-09"'))
+ errors.push('About lacks editorial accountability and project commit source');
+
 const laptopHtml=readFileSync(join('dist','laptop-screen-dead-pixel-test.html'),'utf8');
 if(!laptopHtml.includes('href="/blog"'))errors.push('Site footer lacks crawlable blog link');
 
