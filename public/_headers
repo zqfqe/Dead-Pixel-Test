@@ -5,3 +5,9 @@ https://:project.pages.dev/*
 
 https://:version.:project.pages.dev/*
   X-Robots-Tag: noindex
+
+# A public deployment-provenance endpoint for release verification, not an
+# indexable SEO page. Avoid serving a cached version across Cloudflare releases.
+/site-release.json
+  Cache-Control: no-store, max-age=0
+  X-Robots-Tag: noindex
