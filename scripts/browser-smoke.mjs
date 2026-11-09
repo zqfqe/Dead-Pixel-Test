@@ -502,6 +502,53 @@ await check('/',async page=>{
  });
  if(await page.getByRole('button',{name:'Export self-check JSON'}).count())throw Error('Wrong test mode was imported into pixel report');
 });
+await check('/',async page=>{
+ const report={
+  kind:'user_observed_screen_inspection',certified:false,testMode:'pixels',
+  createdAt:'2026-11-01T08:00:00.000Z',deviceType:'monitor',
+  observedPatterns:['Black','White','Red'],marks:[{
+   xRatio:0.25,yRatio:0.45,observedOn:['Black','Red'],notObservedOn:['White'],
+   category:'stuck-color',notes:'Visible on selected patterns',
+   viewportAtMark:{width:800,height:600,dpr:1,orientation:'landscape'}
+  }]
+ };
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+  name:'observations.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(report))
+ });
+ await page.getByText('Previous self-check loaded locally. Review each marked spot before continuing.').waitFor();
+ await page.getByText(/viewport, scaling or orientation has changed/i).waitFor();
+ await page.getByText('Color-by-color observation matrix').click();
+ const table=page.getByRole('table').last();
+ const black=table.getByRole('row',{name:/Black Visible/});
+ const white=table.getByRole('row',{name:/White Not visible/});
+ const blue=table.getByRole('row',{name:/Blue Not checked/});
+ if(await black.count()!==1||await white.count()!==1||await blue.count()!==1)
+  throw Error('Color-by-color matrix did not reflect all three observation states');
+ const d=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Export self-check JSON'}).click();
+ const saved=JSON.parse(readFileSync(await (await d).path(),'utf8'));
+ if(saved.viewportChangedSinceMark!==true||!saved.exportedAt)
+  throw Error('Export does not document viewport change and export timestamp');
+ const reportDownload=page.waitForEvent('download');
+ await page.getByRole('button',{name:'Download printable HTML report'}).click();
+ const html=readFileSync(await (await reportDownload).path(),'utf8');
+ if(!html.includes('The display viewport, scaling or orientation has changed'))
+  throw Error('Printable report has no geometry warning');
+});
+await check('/',async page=>{
+ const modeLess={
+  kind:'user_observed_screen_inspection',certified:false,
+  marks:[{xRatio:0.5,yRatio:0.5,observedOn:['Grid'],notObservedOn:[],
+   category:'line-or-other',notes:'Grid from wrong mode',
+   viewportAtMark:{width:1366,height:900,dpr:1,orientation:'landscape'}}]
+ };
+ await page.getByLabel('Import previous JSON report (local only)').setInputFiles({
+  name:'legacy-cross-mode.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(modeLess))
+ });
+ await page.getByText(/not a valid self-check report/i).waitFor();
+ if(await page.getByRole('button',{name:'Export self-check JSON'}).count())
+  throw Error('Legacy report imported a pattern not supported in the current test mode');
+});
 for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScript está desativado.']]){
  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
  const page=await context.newPage();
@@ -519,4 +566,4 @@ for(const [route,message] of [['/','JavaScript is disabled.'],['/pt-br','JavaScr
 }
 await browser.close();
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS all '+49+' Chromium browser scenarios, including no-JavaScript EN/PT fallbacks and local report restoration');
+console.log('PASS all '+51+' Chromium browser scenarios, including color matrices, viewport evidence and strict mode import checks');
