@@ -143,6 +143,66 @@ if(!homeHtml.includes('Browse all screen testing guides'))errors.push('Homepage 
 const laptopHtml=readFileSync(join('dist','laptop-screen-dead-pixel-test.html'),'utf8');
 if(!laptopHtml.includes('href="/blog"'))errors.push('Site footer lacks crawlable blog link');
 
+
+// Ensure all 22 individually indexed legacy tools have a real HTML anchor
+// on a public server-rendered page, not only inside the React nav or sitemap.
+for (const path of enhancedLegacyPaths) {
+ if (!homeHtml.includes('href="'+path+'"'))
+  errors.push('Tool has no homepage HTML discovery link '+path);
+}
+if (!homeHtml.includes('href="/tests/test-patterns"'))
+ errors.push('Original test-pattern guide lacks a discoverable homepage link');
+
+const trustRoutes=[
+ ['/about','About DeadPixelTest','How we approach testing'],
+ ['/contact','Contact &amp; Feedback','Open GitHub Issues'],
+ ['/privacy-policy','Privacy Policy','Hosting requests'],
+ ['/terms-of-service','Terms of Use','No repair or measurement guarantee']
+];
+for (const [path,heading,bodyText] of trustRoutes) {
+ const html=readFileSync(join('dist',path.slice(1)+'.html'),'utf8');
+ if (!html.includes('id="main-content"') || !html.includes('<h1') ||
+     !html.includes(heading) || !html.includes(bodyText) ||
+     !html.includes('href="/privacy-policy"') && path==='/about')
+  errors.push('Trust/policy page lacks complete static HTML '+path);
+ if (html.includes('<astro-island'))
+  errors.push('Trust/policy page unexpectedly still depends on client-only React '+path);
+ if (html.length < 3500)
+  errors.push('Trust/policy page unexpectedly thin in the initial HTML '+path);
+}
+
+// Validate the published sitemap as an actual discovery graph. A self-link
+// does not count; every indexable destination needs an HTML inbound link.
+if (origin) {
+ const targetPaths=new Set(locs.map(url=>new URL(url).pathname));
+ const inbound=new Map([...targetPaths].map(path=>[path,0]));
+ const seenTitles=new Map(),seenDescriptions=new Map();
+ for(const source of targetPaths) {
+  const html=readFileSync(join('dist',source==='/'?'index.html':source.slice(1)+'.html'),'utf8');
+  const title=html.match(/<title>([^<]+)<\/title>/i)?.[1];
+  const description=html.match(/<meta\b[^>]*name="description"[^>]*content="([^"]+)"/i)?.[1];
+  if(!title || !description || description.length<40)
+   errors.push('Sitemap route has missing/weak title or description '+source);
+  for(const [value,registry,label] of [[title,seenTitles,'title'],[description,seenDescriptions,'description']]) {
+   if(!value)continue;
+   if(registry.has(value))errors.push('Duplicate indexable '+label+': '+source+' and '+registry.get(value));
+   else registry.set(value,source);
+  }
+  for(const match of html.matchAll(/<a\b[^>]*href="([^"]+)"/gi)) {
+   try{
+    const target=new URL(match[1],origin+source);
+    if(target.origin!==origin || target.search)continue;
+    const path=target.pathname.replace(/\/+$/,'')||'/';
+    if(targetPaths.has(path) && path!==source)
+     inbound.set(path,inbound.get(path)+1);
+   }catch{}
+  }
+ }
+ for(const [path,count] of inbound) {
+  if(path!=='/' && count===0)errors.push('Indexable sitemap URL orphaned from HTML links: '+path);
+ }
+}
+
 // The three legacy editorial guides are indexable and must not undermine
 // the safe static-pixel workflow with unverified fixes or fake expert teams.
 const editorialPages=[
