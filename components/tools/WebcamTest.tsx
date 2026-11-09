@@ -19,16 +19,18 @@ const WebcamTest: React.FC = () => {
   
   // Audio
   const [audioLevel, setAudioLevel] = useState(0);
+  const [microphoneNotice,setMicrophoneNotice] = useState<string|null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const animationRef = useRef<number | null>(null);
   const activeStreamRef = useRef<MediaStream | null>(null);
+  const micStreamRef=useRef<MediaStream|null>(null);
+  const videoFrameCountRef=useRef(0);
   const requestTokenRef = useRef(0);
 
   // FPS Calculation
   const lastFrameTime = useRef<number>(0);
-  const frameCount = useRef<number>(0);
 
   // Initialize Devices
   useEffect(() => {
@@ -57,6 +59,8 @@ const WebcamTest: React.FC = () => {
       activeStreamRef.current.getTracks().forEach(track => track.stop());
       activeStreamRef.current = null;
     }
+    micStreamRef.current?.getTracks().forEach(track=>track.stop());
+    micStreamRef.current=null;
     if (videoRef.current) videoRef.current.srcObject = null;
     sourceRef.current?.disconnect();
     sourceRef.current = null;
@@ -74,47 +78,57 @@ const WebcamTest: React.FC = () => {
     setAudioLevel(0);
     setResolution(null);
     setFrameRate(0);
-    frameCount.current = 0;
     lastFrameTime.current = 0;
+    videoFrameCountRef.current = 0;
+    setMicrophoneNotice(null);
   };
 
-  const startCamera = async (requestedDeviceId?: string) => {
+  const startCamera=async(requestedDeviceId?:string)=>{
     stopCamera();
-    const requestToken = requestTokenRef.current;
+    const token=requestTokenRef.current;
     setError(null);
-    try {
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: (requestedDeviceId ?? selectedDeviceId)
-            ? { exact: requestedDeviceId ?? selectedDeviceId }
-            : undefined,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        },
-        audio: true
+    if(!navigator.mediaDevices?.getUserMedia){
+      setError('Camera capture requires HTTPS or localhost in a supported browser.');
+      return;
+    }
+    try{
+      const camera=await navigator.mediaDevices.getUserMedia({
+        video:{deviceId:(requestedDeviceId??selectedDeviceId)?{exact:requestedDeviceId??selectedDeviceId}:undefined,
+          width:{ideal:1920},height:{ideal:1080}},
+        audio:false
       });
-      if (requestToken !== requestTokenRef.current) {
-        newStream.getTracks().forEach(track => track.stop());
-        return;
-      }
-      activeStreamRef.current = newStream;
-      // The video element is conditionally rendered only AFTER stream becomes non-null.
-      // Attach srcObject in the stream effect, after React commits the element.
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const analyser = audioCtx.createAnalyser();
-      const source = audioCtx.createMediaStreamSource(newStream);
-      source.connect(analyser);
-      analyser.fftSize = 256;
-      audioContextRef.current = audioCtx;
-      analyserRef.current = analyser;
-      sourceRef.current = source;
-      setStream(newStream);
+      if(token!==requestTokenRef.current){camera.getTracks().forEach(track=>track.stop());return;}
+      activeStreamRef.current=camera;
+      camera.getVideoTracks().forEach(track=>track.addEventListener('ended',()=>{
+        if(token===requestTokenRef.current)stopCamera();
+      },{once:true}));
+      setStream(camera);
       updateLoop();
-    } catch (err: any) {
-      if (requestToken !== requestTokenRef.current) return;
-      releaseMedia();
-      setStream(null);
-      setError(err?.message || 'Could not access camera/microphone. Please allow permissions.');
+      try{
+        const microphone=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+        if(token!==requestTokenRef.current){microphone.getTracks().forEach(track=>track.stop());return;}
+        micStreamRef.current=microphone;
+        const AudioCtor=window.AudioContext||(window as any).webkitAudioContext;
+        if(!AudioCtor){setMicrophoneNotice('Audio monitoring is unsupported in this browser.');return;}
+        const audio:AudioContext=new AudioCtor();
+        audioContextRef.current=audio;
+        const analyser=audio.createAnalyser();
+        analyser.fftSize=256;
+        const source=audio.createMediaStreamSource(microphone);
+        source.connect(analyser);
+        analyserRef.current=analyser;sourceRef.current=source;
+        if(audio.state==='suspended')void audio.resume().catch(()=>{
+          if(token===requestTokenRef.current)setMicrophoneNotice('Audio monitoring is blocked by your browser.');
+        });
+      }catch{
+        if(token===requestTokenRef.current)
+          setMicrophoneNotice('Microphone unavailable or permission denied. Video remains available.');
+      }
+    }catch(err:any){
+      if(token!==requestTokenRef.current)return;
+      releaseMedia();setStream(null);
+      setError(err?.name==='NotAllowedError'?'Camera permission denied. Check your browser permissions.':
+        'Camera unavailable. Check device connection and browser support.');
     }
   };
 
@@ -142,15 +156,15 @@ const WebcamTest: React.FC = () => {
         setAudioLevel(sum / dataArray.length);
       }
 
-      // 2. FPS Counter (Approx)
-      const now = performance.now();
-      frameCount.current++;
-      if (now - lastFrameTime.current >= 1000) {
-          if (videoRef.current && !videoRef.current.paused) {
-             setFrameRate(frameCount.current);
-          }
-          frameCount.current = 0;
-          lastFrameTime.current = now;
+      // Decoded video frames, not requestAnimationFrame callback counts.
+      const now=performance.now(),video=videoRef.current;
+      if(now-lastFrameTime.current>=1000){
+        if(video&&!video.paused&&typeof video.getVideoPlaybackQuality==='function'){
+          const total=video.getVideoPlaybackQuality().totalVideoFrames;
+          setFrameRate(Math.round(Math.max(0,total-videoFrameCountRef.current)*1000/Math.max(1,now-lastFrameTime.current)));
+          videoFrameCountRef.current=total;
+        }else setFrameRate(0);
+        lastFrameTime.current=now;
       }
 
       animationRef.current = requestAnimationFrame(updateLoop);
@@ -166,24 +180,21 @@ const WebcamTest: React.FC = () => {
       }
   };
 
-  const takeSnapshot = () => {
-      if (!videoRef.current || !resolution) return;
-      const canvas = document.createElement('canvas');
-      canvas.width = resolution.w;
-      canvas.height = resolution.h;
-      const ctx = canvas.getContext('2d');
-      
-      if (isMirrored) {
-          ctx?.translate(canvas.width, 0);
-          ctx?.scale(-1, 1);
-      }
-      
-      ctx?.drawImage(videoRef.current, 0, 0);
-      
-      const link = document.createElement('a');
-      link.download = `webcam-test-${Date.now()}.png`;
-      link.href = canvas.toDataURL();
+  const takeSnapshot=()=>{
+    const video=videoRef.current;
+    if(!video||!resolution||!resolution.w||!resolution.h)return;
+    const canvas=document.createElement('canvas');
+    canvas.width=resolution.w;canvas.height=resolution.h;
+    const ctx=canvas.getContext('2d');
+    if(!ctx){setError('Snapshot unavailable: 2D canvas is not supported.');return;}
+    try{
+      if(isMirrored){ctx.translate(canvas.width,0);ctx.scale(-1,1);}
+      ctx.drawImage(video,0,0);
+      const link=document.createElement('a');
+      link.download='webcam-test-'+Date.now()+'.png';
+      link.href=canvas.toDataURL('image/png');
       link.click();
+    }catch {setError('Snapshot failed. Check camera playback and browser permissions.');}
   };
 
   useEffect(() => {
@@ -303,7 +314,7 @@ const WebcamTest: React.FC = () => {
                              <div className="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded text-xs font-mono text-white border border-white/10 flex items-center gap-3">
                                  <span>{resolution.w} × {resolution.h}</span>
                                  <span className="text-neutral-500">|</span>
-                                 <span className={frameRate < 20 ? 'text-yellow-500' : 'text-green-500'}>{frameRate} Preview FPS</span>
+                                 <span className={frameRate < 20 ? 'text-yellow-500' : 'text-green-500'}>{frameRate>0?frameRate:'—'} Decoded FPS</span>
                              </div>
                          )}
                       </>
@@ -319,6 +330,7 @@ const WebcamTest: React.FC = () => {
                   )}
               </div>
 
+              {microphoneNotice && <p role="status" className="text-sm text-amber-300">{microphoneNotice}</p>}
               {/* Audio Meter */}
               <div className="bg-neutral-900/50 border border-white/10 p-4 rounded-xl flex items-center gap-4">
                   <div className={`p-2 rounded-full ${stream ? 'bg-white/10' : 'bg-red-500/10'}`}>
@@ -326,7 +338,7 @@ const WebcamTest: React.FC = () => {
                   </div>
                   <div className="flex-1 space-y-1">
                       <div className="flex justify-between text-xs text-neutral-400">
-                          <span>Microphone Input</span>
+                          <span>Microphone Input {microphoneNotice?'(unavailable)':''}</span>
                           <span>{Math.round(audioLevel / 2.55)}%</span>
                       </div>
                       <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
@@ -345,9 +357,9 @@ const WebcamTest: React.FC = () => {
                   <h3 className="text-sm font-bold text-neutral-400 uppercase tracking-wider">Device Settings</h3>
                   
                   <div className="space-y-2">
-                      <label className="text-xs text-neutral-500">Video Source</label>
+                      <label htmlFor="webcam-video-source" className="text-xs text-neutral-500">Video Source</label>
                       <div className="relative">
-                          <select 
+                          <select id="webcam-video-source"
                               value={selectedDeviceId}
                               onChange={(e) => { const id=e.target.value; setSelectedDeviceId(id); if(activeStreamRef.current) void startCamera(id); }}
                               className="w-full bg-neutral-950 border border-white/10 rounded-lg p-3 text-sm text-white appearance-none outline-none focus:border-blue-500"
