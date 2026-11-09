@@ -46,6 +46,16 @@ jobs:
           sleep 4
           npm run smoke:browser
           npm run smoke:crossbrowser
+      - name: Upload desktop and mobile design screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-screenshots
+          path: |
+            smoke-screenshots/site-*.png
+            smoke-screenshots/home-desktop.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Print Astro preview logs on failure
         if: failure()
         run: cat /tmp/astro-preview.log || true
