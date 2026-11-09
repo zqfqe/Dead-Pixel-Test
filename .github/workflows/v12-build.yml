@@ -66,6 +66,7 @@ jobs:
           sleep 4
           npm run smoke:browser
           npm run smoke:crossbrowser
+          npm run smoke:legacy
       - name: Upload desktop and mobile design screenshots
         if: always()
         uses: actions/upload-artifact@v4

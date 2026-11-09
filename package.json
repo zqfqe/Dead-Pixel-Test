@@ -11,7 +11,8 @@
     "audit:routes": "node scripts/audit-astro-build.mjs",
     "check:types": "tsc --noEmit",
     "smoke:browser": "node scripts/browser-smoke.mjs",
-    "smoke:crossbrowser": "node scripts/cross-browser-smoke.mjs"
+    "smoke:crossbrowser": "node scripts/cross-browser-smoke.mjs",
+    "smoke:legacy": "node scripts/legacy-tool-matrix.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
