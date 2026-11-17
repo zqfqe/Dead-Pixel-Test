@@ -241,7 +241,7 @@ const SpeakerTest: React.FC = () => {
           ]
         }}
       />
-      <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
+      <div className="max-w-5xl mx-auto py-4 sm:py-12 sm:px-6 animate-fade-in">
         {/* ... (Rest of component remains unchanged) ... */}
         {/* Header */}
         <div className="text-center mb-12">
@@ -258,7 +258,7 @@ const SpeakerTest: React.FC = () => {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-           <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex">
+           <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex flex-wrap justify-center">
               {[
                   { id: 'stereo', label: 'Stereo Check', icon: Headphones },
                   { id: 'phase', label: 'Polarity / Phase', icon: Radio },
@@ -280,7 +280,7 @@ const SpeakerTest: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="bg-[#050505] border border-white/10 rounded-3xl p-8 md:p-12 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="bg-[#050505] border border-white/10 rounded-3xl p-4 sm:p-8 md:p-12 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
            
            {/* Background Visuals */}
            <div className="absolute inset-0 opacity-20 pointer-events-none" 
@@ -295,7 +295,7 @@ const SpeakerTest: React.FC = () => {
                           onClick={() => playStereoCheck('left')}
                           className="group flex flex-col items-center gap-4 transition-transform active:scale-95"
                        >
-                          <div className="w-32 h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
+                          <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
                               <Speaker size={48} className="text-neutral-600 group-hover:text-purple-400" />
                           </div>
                           <span className="text-xl font-bold text-neutral-500 group-hover:text-white">LEFT</span>
@@ -305,7 +305,7 @@ const SpeakerTest: React.FC = () => {
                           onClick={() => playStereoCheck('right')}
                           className="group flex flex-col items-center gap-4 transition-transform active:scale-95"
                        >
-                          <div className="w-32 h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
+                          <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
                               <Speaker size={48} className="text-neutral-600 group-hover:text-purple-400" />
                           </div>
                           <span className="text-xl font-bold text-neutral-500 group-hover:text-white">RIGHT</span>
@@ -321,7 +321,7 @@ const SpeakerTest: React.FC = () => {
            {/* --- PHASE TEST --- */}
            {activeTest === 'phase' && (
                <div className="flex flex-col items-center w-full max-w-2xl relative z-10 animate-fade-in text-center">
-                   <div className="flex gap-4 mb-8">
+                   <div className="flex flex-wrap justify-center gap-4 mb-8">
                       <button 
                           onClick={() => playPhaseTest(true)}
                           className={`px-8 py-4 rounded-xl font-bold border-2 transition-all ${isPlaying && phaseDirection==='in' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-neutral-800 border-neutral-700 hover:border-neutral-500'}`}

@@ -141,7 +141,7 @@ const PPICalculator: React.FC = () => {
           ]
         }}
       />
-      <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in font-sans">
+      <div className="max-w-6xl mx-auto py-4 sm:py-12 sm:px-6 animate-fade-in font-sans">
         <div className="text-center mb-12">
           <div className="inline-flex justify-center items-center w-16 h-16 bg-blue-900/20 text-blue-400 rounded-2xl mb-6 shadow-lg shadow-blue-900/10">
              <Calculator size={32} />
@@ -155,10 +155,10 @@ const PPICalculator: React.FC = () => {
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           
           {/* --- LEFT COL: INPUTS & PRESETS (5 cols) --- */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="min-w-0 lg:col-span-5 space-y-6">
              
              {/* Manual Inputs */}
-             <div className="bg-neutral-900/80 border border-white/10 p-6 rounded-2xl backdrop-blur-md">
+             <div className="bg-neutral-900/80 border border-white/10 p-3 sm:p-6 rounded-2xl backdrop-blur-md">
                 <h3 className="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-6 flex items-center gap-2">
                    <Grid size={16} /> Screen Specs
                 </h3>
@@ -203,11 +203,11 @@ const PPICalculator: React.FC = () => {
              </div>
 
              {/* Quick Load Presets */}
-             <div className="bg-neutral-900/80 border border-white/10 p-6 rounded-2xl backdrop-blur-md">
+             <div className="bg-neutral-900/80 border border-white/10 p-3 sm:p-6 rounded-2xl backdrop-blur-md">
                 <h3 className="text-sm font-bold text-neutral-400 uppercase tracking-wider mb-4">Quick Load</h3>
                 
                 {/* Tabs */}
-                <div className="flex bg-black p-1 rounded-lg mb-4 border border-neutral-800">
+                <div className="flex flex-wrap bg-black p-1 rounded-lg mb-4 border border-neutral-800">
                    <button onClick={() => setActiveTab('monitors')} className={`flex-1 py-1.5 text-xs font-bold rounded flex items-center justify-center gap-1.5 transition-all ${activeTab === 'monitors' ? 'bg-neutral-800 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-300'}`}>
                       <Monitor size={14} /> Monitors
                    </button>
@@ -224,7 +224,7 @@ const PPICalculator: React.FC = () => {
                       <button 
                         key={idx}
                         onClick={() => loadPreset(p)}
-                        className="text-left px-3 py-2 bg-neutral-800/30 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-600 rounded-lg transition-all group"
+                        className="min-w-0 text-left px-2 sm:px-3 py-2 bg-neutral-800/30 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-600 rounded-lg transition-all group"
                       >
                          <div className="text-xs font-bold text-neutral-300 group-hover:text-white truncate">{p.name}</div>
                          <div className="text-[10px] text-neutral-500 font-mono mt-0.5 group-hover:text-blue-400">{p.w}x{p.h} · {p.d}"</div>
@@ -239,15 +239,15 @@ const PPICalculator: React.FC = () => {
           </div>}
           {/* --- RIGHT COL: RESULTS (7 cols) --- */}
           {stats && (
-              <div className="lg:col-span-7 space-y-6">
+              <div className="min-w-0 lg:col-span-7 space-y-6">
                   
                   {/* Hero PPI Card */}
-                  <div className="bg-gradient-to-br from-blue-900/40 via-neutral-900 to-black border border-blue-500/30 p-8 rounded-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="bg-gradient-to-br from-blue-900/40 via-neutral-900 to-black border border-blue-500/30 p-4 sm:p-8 rounded-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
                       <div className="absolute top-0 right-0 p-32 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                       
                       <div className="text-center md:text-left z-10">
                           <div className="text-sm font-bold text-blue-400 uppercase tracking-widest mb-1">Pixel Density</div>
-                          <div className="text-6xl font-bold text-white tracking-tighter leading-none mb-2">{stats.ppi} <span className="text-2xl text-neutral-500 font-medium">PPI</span></div>
+                          <div className="text-4xl sm:text-6xl font-bold text-white tracking-tighter leading-none mb-2">{stats.ppi} <span className="text-2xl text-neutral-500 font-medium">PPI</span></div>
                           <p className="text-neutral-400 text-sm max-w-xs">
                               {Number(stats.ppi) > 300 ? "Retina Quality. Pixels invisible at 10 inches." : 
                                Number(stats.ppi) > 150 ? "Sharp. Excellent for laptops and 4K monitors." :
@@ -275,7 +275,7 @@ const PPICalculator: React.FC = () => {
                   </div>
 
                   {/* Retina Distance */}
-                  <div className="bg-neutral-900/50 border border-white/10 p-6 rounded-2xl flex items-center gap-6">
+                  <div className="bg-neutral-900/50 border border-white/10 p-3 sm:p-6 rounded-2xl flex items-center gap-6">
                       <div className="bg-purple-500/10 p-4 rounded-xl text-purple-400 shrink-0">
                           <Info size={24} />
                       </div>

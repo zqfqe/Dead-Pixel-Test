@@ -112,7 +112,7 @@ const DoubleClickTest: React.FC = () => {
         ]}
       />
       
-      <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in">
+      <div className="max-w-6xl mx-auto py-4 sm:py-12 sm:px-6 animate-fade-in">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-12">
@@ -129,7 +129,7 @@ const DoubleClickTest: React.FC = () => {
             </div>
 
             {/* Stats Panel */}
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
                 <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl text-center min-w-[100px]">
                     <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Clicks</div>
                     <div data-testid="click-count" className="text-3xl font-mono font-bold text-white">{clickCount}</div>
@@ -146,7 +146,7 @@ const DoubleClickTest: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* --- Left: Click Area --- */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="min-w-0 lg:col-span-2 space-y-6">
                 
                 {/* The Click Pad */}
                 <div 
@@ -194,12 +194,12 @@ const DoubleClickTest: React.FC = () => {
 
                 {/* Settings Bar */}
                 <div className="bg-neutral-900/50 border border-neutral-800 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 flex-1">
+                    <div className="flex min-w-0 flex-wrap items-center gap-4 flex-1">
                         <div className="flex items-center gap-2 text-neutral-400">
                             <Settings size={18} />
                             <span className="text-sm font-bold">Rapid Interval Threshold</span>
                         </div>
-                        <div className="flex items-center gap-3 flex-1 max-w-xs">
+                        <div className="flex min-w-0 items-center gap-3 flex-1 max-w-xs">
                             <input 
                                 type="range" 
                                 min="10" 
@@ -207,7 +207,7 @@ const DoubleClickTest: React.FC = () => {
                                 step="10"
                                 value={threshold}
                                 onChange={(e) => setThreshold(Number(e.target.value))}
-                                className="flex-1 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                className="min-w-0 flex-1 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
                             />
                             <span className="font-mono text-white text-sm w-12">{threshold}ms</span>
                         </div>
