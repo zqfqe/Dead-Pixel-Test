@@ -151,7 +151,7 @@ export const ToolWorkspace: React.FC<{path: string}> = ({path}) => {
     <TestReportProvider>
       <Router>
         <AstroDocumentNavigation />
-        <CommandPalette />
+        <CommandPalette showTrigger />
         <EmbeddedToolContext.Provider value={true}>
           <div data-tool-workspace={path}>
             <Suspense fallback={<p role="status" className="text-sm text-neutral-200">Loading test controls…</p>}>

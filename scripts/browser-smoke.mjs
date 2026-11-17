@@ -123,6 +123,7 @@ await check('/tools/mouse-polling',async page=>{
   // sampler and produce a nonzero browser-observed estimate.
   const area=page.getByTestId('mouse-polling-surface');
   await area.waitFor({timeout:12000});
+  await area.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest'}));
   const box=await area.boundingBox();
   if(!box)throw Error('Mouse sampling area has no visible bounds');
   await page.mouse.move(box.x+35,box.y+55);
@@ -899,8 +900,7 @@ await check('/tests/audio-sync',async page=>{
 });
 
 await check('/tests/audio-sync',async page=>{
- await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor();
- await page.keyboard.press('Control+k');
+ await page.getByRole('button',{name:'Search tools',exact:true}).click();
  const input=page.getByRole('textbox',{name:'Search tools'});
  await input.waitFor();
  await input.fill('Color Gradient');

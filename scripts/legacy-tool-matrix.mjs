@@ -32,7 +32,8 @@ async function inspectRoute(path,options={}){
    // The gamepad tool intentionally displays a useful empty state without
    // a controller; unlike other tools it may not render any test controls.
    if(path==='/tools/controller'&&main.textContent.includes('No Controller Detected'))return true;
-   return !!main.querySelector('button,input,select,canvas,video,[role="button"]');
+   const workspace=main.querySelector('[data-tool-workspace]') ?? main;
+   return !!workspace.querySelector('button,input,select,canvas,video,[role="button"]:not(summary)');
   },path,{timeout:15000});
   if(canonicalOrigin){
    const href=await page.locator('link[rel="canonical"]').getAttribute('href');
