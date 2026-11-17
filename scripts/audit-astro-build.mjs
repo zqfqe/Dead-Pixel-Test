@@ -40,7 +40,7 @@ for(const path of [...priority,...planned]){
   errors.push('Missing independent static laptop/fixer triage content on '+path);
  }
 
- if(guideTitle&&(!html.includes(guideTitle)||!html.includes('Practical inspection steps')||!html.includes('What the result cannot prove'))){
+ if(guideTitle&&(!html.includes('data-tool-page="'+path+'"')||!html.includes(guideTitle)||!html.includes('Practical inspection steps')||!html.includes('What the result cannot prove'))){
   errors.push('Legacy GSC route missing indexable static guide content: '+path);
  }
  if(path==='/'&&!html.includes('id="main-content"'))errors.push('Homepage missing accessible main target');
@@ -181,7 +181,7 @@ for(const path of enhancedLegacyPaths){
  }
  if(!/<title>[^<]+\| DeadPixelTest<\/title>/i.test(html))
   errors.push('Legacy tool has no descriptive branded title '+path);
- if(!html.includes('id="legacy-static-guide"')||!html.includes('Practical inspection steps')||
+ if(!html.includes('data-tool-page="'+path+'"')||!html.includes('data-surface="light"')||!html.includes('id="tool-guide"')||!html.includes('Practical inspection steps')||
     !html.includes('What the result cannot prove')||!html.includes('<ol')||!html.includes('<ul'))
   errors.push('Legacy tool lacks unique server-rendered guidance '+path);
 }

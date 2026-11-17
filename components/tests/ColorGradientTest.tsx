@@ -3,7 +3,6 @@ import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, MoveHorizontal, MoveVertical, Circle, Palette, Play, Pause, Layers, Monitor, Binary, Zap } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 type GradientType = 'linear' | 'radial';
 type ColorPreset = 'gray' | 'red' | 'green' | 'blue' | 'cyan' | 'magenta' | 'yellow' | 'sky' | 'sunset';
@@ -350,7 +349,7 @@ const ColorGradientTest: React.FC = () => {
           ]
         }}
       />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col">
         <TestIntro
           title="Color Gradient Test"
           description="Test your display's bit depth and banding. 8-bit panels should display 256 steps smoothly. Use the 'Sky' and 'Sunset' presets to check for real-world banding artifacts."
@@ -368,50 +367,7 @@ const ColorGradientTest: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        {/* Deep SEO Content */}
-        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Binary className="text-blue-500" /> 8-Bit vs 10-Bit Color
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Most standard monitors are <strong>8-bit</strong> (16.7 million colors). Professional monitors are <strong>10-bit</strong> (1.07 billion colors).
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    If you see banding in the "Sky" or "Gray" gradients, your monitor is likely running in 8-bit mode (or even 6-bit with FRC).
-                 </p>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Zap className="text-yellow-500" /> What is FRC?
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    FRC (Frame Rate Control) is a "cheat" used by manufacturers to make an 8-bit panel look like 10-bit.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    The pixels flicker rapidly between two colors to simulate a shade in between. This can sometimes cause eye strain or visible noise in dark gradients.
-                 </p>
-              </div>
-           </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Monitor className="text-green-500" /> How to Fix Banding
-              </h3>
-              <ul className="text-sm text-neutral-400 space-y-2 list-disc pl-4">
-                 <li>Check your GPU settings (Nvidia Control Panel / AMD Adrenalin). Ensure "Output Color Depth" is set to the highest available (10bpc or 8bpc).</li>
-                 <li>Ensure you are using a high-quality DisplayPort cable. Old HDMI cables may not support high bit-depth at high refresh rates.</li>
-                 <li>If viewing images/video: Ensure the source content isn't low bitrate. Banding is often in the file, not the monitor.</li>
-              </ul>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tests/color-gradient" />
-        </div>
       </div>
     </>
   );

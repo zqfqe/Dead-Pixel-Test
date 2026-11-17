@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Gamepad2, Zap, Target, Activity, RefreshCw, AlertCircle, Settings2, Trash2, MousePointer2, Info, Crosshair, Move, HelpCircle } from 'lucide-react';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 // --- TYPES ---
 type ControllerLayout = 'xbox' | 'playstation' | 'nintendo';
@@ -399,9 +398,9 @@ const ControllerTest: React.FC = () => {
                   <Gamepad2 size={24} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white truncate max-w-md" title={activeGamepad.id}>
+                <h2 className="text-xl font-bold text-white truncate max-w-md" title={activeGamepad.id}>
                   {activeGamepad.id.split('(')[0] || "Generic Gamepad"}
-                </h1>
+                </h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-[10px] bg-neutral-800 text-neutral-400 px-2 py-0.5 rounded border border-neutral-700 font-mono">
                     INDEX: {activeGamepad.index}
@@ -571,72 +570,7 @@ const ControllerTest: React.FC = () => {
 
         </div>
 
-        {/* SEO Content Section */}
-        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Crosshair className="text-red-500" /> Stick Drift & Dead Zones
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    <strong>Stick Drift:</strong> If the crosshair in the "Stick Analysis" tool moves or jitters when you aren't touching the controller, you have drift.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>Dead Zone:</strong> The area in the center where no input is registered. If you have drift, increasing the Dead Zone in your game settings (e.g., from 0.05 to 0.10) can often fix the symptom.
-                 </p>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Move className="text-blue-500" /> Circularity Error
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Rotate your stick along the outer edge. A perfect controller should trace a perfect circle.
-                 </p>
-                 <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
-                    <li><strong>&lt; 10% Error:</strong> Excellent. Pro-grade controller.</li>
-                    <li><strong>10% - 15% Error:</strong> Average. Standard for Xbox/PS5 controllers.</li>
-                    <li><strong>&gt; 20% Error:</strong> Poor. You may lose speed or precision in diagonal movements.</li>
-                 </ul>
-              </div>
-           </div>
 
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <HelpCircle className="text-yellow-500" /> Frequently Asked Questions
-              </h3>
-              <div className="space-y-4">
-                 <div>
-                    <h4 className="text-white font-bold text-sm mb-1">How to check for Stick Drift?</h4>
-                    <p className="text-neutral-400 text-xs">Connect your controller and look at the 'Stick Analysis' circle. If the crosshair moves or jitters even when you aren't touching the stick, you have stick drift.</p>
-                 </div>
-                 <div>
-                    <h4 className="text-white font-bold text-sm mb-1">What is Circularity Error?</h4>
-                    <p className="text-neutral-400 text-xs">Circularity Error measures how close your analog stick's rotation is to a perfect circle. An error rate below 10% is good. High error rates mean you might lose speed in diagonal movement.</p>
-                 </div>
-              </div>
-           </div>
-
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-4">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Info className="text-blue-500" /> Troubleshooting Connection Issues
-              </h3>
-              <p className="text-sm text-neutral-400 mb-4">
-                 If your controller isn't detected:
-              </p>
-              <ol className="text-sm text-neutral-400 list-decimal pl-4 space-y-2">
-                 <li><strong>Press a button:</strong> Browsers do not detect gamepads until a button is pressed for security reasons.</li>
-                 <li><strong>Use Chrome/Edge:</strong> These browsers have the best Gamepad API support. Firefox may require config tweaks.</li>
-                 <li><strong>Check Drivers:</strong> For Xbox controllers on PC, ensure the "Xbox Accessories" app is updated. For PS5 (DualSense), you may need third-party tools like DS4Windows for full compatibility in some apps.</li>
-              </ol>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/controller" />
-        </div>
 
       </div>
     </>

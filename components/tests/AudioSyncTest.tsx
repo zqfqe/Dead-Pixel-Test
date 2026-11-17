@@ -4,7 +4,6 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Radar, Zap, MoveVertical, Sliders, Mic, Bluetooth, Monitor, HelpCircle, Film } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 import { TestResultControls } from '../common/TestResultControls';
 
 type Pattern = 'bar' | 'radar' | 'flash';
@@ -470,7 +469,7 @@ const AudioSyncTest: React.FC = () => {
           ]
         }}
       />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col">
         {audioError && <p role="alert" className="mx-auto max-w-xl p-4 text-red-300">{audioError}</p>}
         <TestIntro
           title="Audio/Video Sync Test"
@@ -497,81 +496,7 @@ const AudioSyncTest: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        {/* Deep SEO Content */}
-        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <article className="prose prose-invert max-w-none">
-              <div className="grid md:grid-cols-2 gap-12">
-                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                       <Film className="text-blue-500" /> What causes Lip Sync issues?
-                    </h2>
-                    <p className="text-neutral-400 leading-relaxed mb-4">
-                       Modern TVs do heavy image processing (motion smoothing, upscaling) which adds video delay. Audio receivers process sound almost instantly.
-                    </p>
-                    <p className="text-neutral-400 leading-relaxed">
-                       This results in the sound arriving <strong>before</strong> the picture (negative lag), making characters look like poorly dubbed movies.
-                    </p>
-                 </div>
-                 
-                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                       <Bluetooth className="text-purple-500" /> Bluetooth Lag Explained
-                    </h3>
-                    <div className="space-y-4">
-                       <div className="flex justify-between items-center text-sm">
-                          <span className="text-neutral-300">Wired Audio</span>
-                          <span className="text-green-400 font-mono">0-5 ms</span>
-                       </div>
-                       <div className="w-full h-1 bg-neutral-800 rounded"><div className="w-1 h-full bg-green-500 rounded"></div></div>
-                       
-                       <div className="flex justify-between items-center text-sm">
-                          <span className="text-neutral-300">AptX Low Latency</span>
-                          <span className="text-blue-400 font-mono">~40 ms</span>
-                       </div>
-                       <div className="w-full h-1 bg-neutral-800 rounded"><div className="w-1/4 h-full bg-blue-500 rounded"></div></div>
 
-                       <div className="flex justify-between items-center text-sm">
-                          <span className="text-neutral-300">Standard Bluetooth (SBC)</span>
-                          <span className="text-red-400 font-mono">~200 ms</span>
-                       </div>
-                       <div className="w-full h-1 bg-neutral-800 rounded"><div className="w-3/4 h-full bg-red-500 rounded"></div></div>
-                    </div>
-                 </div>
-              </div>
-
-              <hr className="my-12 border-white/10" />
-
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                 <Monitor className="text-green-500" /> TV Game Mode
-              </h2>
-              <p className="text-neutral-400 leading-relaxed mb-6">
-                 If you are experiencing heavy video lag (your mouse feels floaty or audio is way ahead), make sure your TV is set to <strong>Game Mode</strong>. This disables post-processing features and reduces input lag significantly, often fixing sync issues automatically.
-              </p>
-           </article>
-
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="border-t border-white/10 pt-12">
-              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">How to fix Lip Sync Delay?</h4>
-                    <p className="text-neutral-400 text-sm">If your TV or receiver has an audio-delay setting, adjust it in small steps and verify with the content you watch. The browser offset applies to this test.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Is Bluetooth lag normal?</h4>
-                    <p className="text-neutral-400 text-sm">Yes. Standard Bluetooth audio typically introduces 100-200ms of latency, which is noticeable in gaming and movies. Use AptX Low Latency codecs or wired connections for better sync.</p>
-                 </div>
-              </div>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tests/audio-sync" />
-        </div>
       </div>
     </>
   );

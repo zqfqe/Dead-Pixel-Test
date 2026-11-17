@@ -124,7 +124,7 @@ const InputLagTest: React.FC = () => {
           { name: 'Input Lag Test', path: '/tools/input-lag' }
         ]}
       />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col">
         <TestIntro
           title="Input Lag Test"
           description="Record both your physical input and the screen using a slow-motion camera. The on-screen clock starts at zero and does not itself measure input-to-photon latency."
@@ -149,50 +149,6 @@ const InputLagTest: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        <section className="max-w-4xl mx-auto px-6 py-12 space-y-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-white/10">
-                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Monitor className="text-blue-500" /> System Latency Chain
-                 </h3>
-                 <p className="text-neutral-400 text-sm leading-relaxed mb-4">
-                    Input lag is the sum of delays in the entire pipeline:
-                 </p>
-                 <ul className="space-y-2 text-sm text-neutral-300">
-                    <li className="flex justify-between border-b border-white/5 pb-1"><span>Mouse Click</span> <span className="text-neutral-500">1-10ms</span></li>
-                    <li className="flex justify-between border-b border-white/5 pb-1"><span>USB Polling</span> <span className="text-neutral-500">1-8ms</span></li>
-                    <li className="flex justify-between border-b border-white/5 pb-1"><span>CPU/Render Queue</span> <span className="text-neutral-500">5-20ms</span></li>
-                    <li className="flex justify-between border-b border-white/5 pb-1"><span>Monitor Refresh</span> <span className="text-neutral-500">4-16ms</span></li>
-                    <li className="flex justify-between border-b border-white/5 pb-1"><span>Monitor Processing</span> <span className="text-neutral-500">1-10ms</span></li>
-                 </ul>
-              </div>
-
-              <div className="bg-neutral-900/50 p-6 rounded-2xl border border-white/10">
-                 <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Clock className="text-green-500" /> Typical Values
-                 </h3>
-                 <div className="space-y-4">
-                    <div>
-                        <div className="flex justify-between text-sm font-bold text-white mb-1">E-Sports Pro Setup</div>
-                        <div className="w-full h-2 bg-neutral-800 rounded-full"><div className="w-[15%] h-full bg-blue-500 rounded-full"></div></div>
-                        <div className="text-xs text-neutral-500 mt-1">15ms - 25ms total</div>
-                    </div>
-                    <div>
-                        <div className="flex justify-between text-sm font-bold text-white mb-1">Standard Gaming PC</div>
-                        <div className="w-full h-2 bg-neutral-800 rounded-full"><div className="w-[35%] h-full bg-green-500 rounded-full"></div></div>
-                        <div className="text-xs text-neutral-500 mt-1">30ms - 50ms total</div>
-                    </div>
-                    <div>
-                        <div className="flex justify-between text-sm font-bold text-white mb-1">Console on TV</div>
-                        <div className="w-full h-2 bg-neutral-800 rounded-full"><div className="w-[70%] h-full bg-yellow-500 rounded-full"></div></div>
-                        <div className="text-xs text-neutral-500 mt-1">80ms - 150ms total</div>
-                    </div>
-                 </div>
-              </div>
-           </div>
-
-        </section>
       </div>
     </>
   );

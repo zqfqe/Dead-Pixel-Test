@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from './Button';
 import { ScanLine } from 'lucide-react';
 
+export const EmbeddedToolContext = React.createContext(false);
+
 interface TestIntroProps {
   title: string;
   description: string;
@@ -19,6 +21,20 @@ export const TestIntro: React.FC<TestIntroProps> = ({
   footerText = "Press F11 for Fullscreen",
   children
 }) => {
+  const embedded = React.useContext(EmbeddedToolContext);
+  if (embedded) {
+    return (
+      <div>
+        <Button onClick={onStart} className="ui-primary-button min-h-[44px] rounded-lg bg-[#DDF58A] px-5 py-3 font-bold text-[#172419] hover:bg-[#E9FAB1]">
+          {startButtonText === 'Start Calibration' ? 'Start test' : startButtonText}
+        </Button>
+        {children && <details className="mt-4">
+          <summary className="cursor-pointer py-2 text-sm font-semibold text-neutral-200">Pattern and control tips</summary>
+          <div className="mt-2 grid gap-3 md:grid-cols-2">{children}</div>
+        </details>}
+      </div>
+    );
+  }
   return (
     <div className="relative w-full overflow-hidden">
       {/* --- Dynamic Tech Background --- */}

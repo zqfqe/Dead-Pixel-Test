@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Camera, Mic, Video, VideoOff, MicOff, RefreshCw, Grid, Download, FlipHorizontal, Lock, Settings, Aperture, HelpCircle, ShieldCheck } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 const WebcamTest: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -272,7 +271,7 @@ const WebcamTest: React.FC = () => {
            <div className="inline-flex items-center justify-center p-4 bg-red-500/10 text-red-500 rounded-2xl mb-4">
               <Camera size={32} />
            </div>
-           <h1 className="text-4xl font-bold text-white mb-4">Webcam & Mic Test</h1>
+           <h2 className="text-4xl font-bold text-white mb-4">Webcam & Mic Test</h2>
            <p className="text-neutral-400 max-w-lg mx-auto">
               Check your video resolution, framing, and microphone levels before your next call.
               <br/><span className="text-xs opacity-60 flex items-center justify-center gap-1 mt-2 text-green-400"><Lock size={10} /> Secure: Runs locally. No server upload.</span>
@@ -413,84 +412,7 @@ const WebcamTest: React.FC = () => {
 
         </div>
 
-        {/* SEO Deep Content */}
-        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Settings className="text-blue-500" /> Troubleshooting: Black Screen?
-                 </h2>
-                 <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
-                    <li><strong>Permissions:</strong> Ensure your browser has permission to access the camera (check the lock icon in the address bar).</li>
-                    <li><strong>Another App:</strong> Close Zoom, Teams, or Skype. Cameras can usually only be used by one app at a time.</li>
-                    <li><strong>Privacy Cover:</strong> Check if your laptop has a physical slider covering the lens.</li>
-                 </ul>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <FlipHorizontal className="text-yellow-500" /> Why is my video mirrored?
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Webcams mirror the preview by default so it feels like looking in a mirror (moving right moves your image right). 
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>Note:</strong> Most meeting apps (Zoom/Teams) only mirror <em>your</em> preview. The other people on the call see you correctly (un-mirrored), so text on your shirt is readable to them.
-                 </p>
-              </div>
-           </div>
 
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Why is my webcam screen black?</h4>
-                    <p className="text-neutral-400 text-sm">Common reasons include: 1. Browser permission denied (check the lock icon in URL bar). 2. Another app (Zoom/Teams) is using the camera. 3. A physical privacy shutter covers the lens.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Is this webcam test secure?</h4>
-                    <p className="text-neutral-400 text-sm">Yes. This tool runs 100% in your browser using client-side technology. Your video and audio feed never leaves your computer and is never sent to any server.</p>
-                 </div>
-              </div>
-           </div>
-
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Aperture className="text-purple-500" /> Common Resolutions
-              </h3>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">720p (HD)</strong>
-                    <span className="text-neutral-500 font-mono">1280 x 720</span>
-                    <span className="block mt-1 text-neutral-600">Laptop Standard</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">1080p (FHD)</strong>
-                    <span className="text-neutral-500 font-mono">1920 x 1080</span>
-                    <span className="block mt-1 text-neutral-600">External Webcams</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">4K (UHD)</strong>
-                    <span className="text-neutral-500 font-mono">3840 x 2160</span>
-                    <span className="block mt-1 text-neutral-600">Premium / DSLR</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Aspect Ratio</strong>
-                    <span className="text-neutral-500 font-mono">16:9</span>
-                    <span className="block mt-1 text-neutral-600">Widescreen Standard</span>
-                 </div>
-              </div>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/webcam" />
-        </div>
 
       </div>
     </>

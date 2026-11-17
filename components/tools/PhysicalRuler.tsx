@@ -124,7 +124,7 @@ const PhysicalRuler: React.FC = () => {
           ]
         }}
       />
-      <div className="min-h-screen bg-black text-white flex flex-col font-sans">
+      <div className="bg-black text-white flex flex-col font-sans">
         
         {!isCalibrated ? (
           // --- CALIBRATION SCREEN ---
@@ -134,7 +134,7 @@ const PhysicalRuler: React.FC = () => {
                     <div className="inline-flex items-center justify-center p-4 bg-blue-500/10 text-blue-400 rounded-2xl mb-4">
                         <Ruler size={32} />
                     </div>
-                    <h1 className="text-4xl font-bold text-white mb-4">Physical Scale Calibration</h1>
+                    <h2 className="text-4xl font-bold text-white mb-4">Physical Scale Calibration</h2>
                     <p className="text-neutral-400 max-w-lg mx-auto">
                         To use your screen as a ruler, we first need to know your pixel density. 
                         Please grab a standard credit card (or ID card) and place it on the screen.
@@ -198,57 +198,10 @@ const PhysicalRuler: React.FC = () => {
                 </div>
             </div>
 
-            {/* Deep SEO Content (Only visible when not measuring) */}
-            <section className="max-w-4xl mx-auto px-6 py-16 space-y-16 animate-slide-up w-full" style={{ animationDelay: '0.2s' }}>
-               <article className="prose prose-invert max-w-none">
-                  <div className="grid md:grid-cols-2 gap-12">
-                     <div>
-                        <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                           <Monitor className="text-blue-500" /> Why Calibrate?
-                        </h2>
-                        <p className="text-neutral-400 leading-relaxed mb-4">
-                           Web browsers don't know the physical size of your screen. They only know "CSS Pixels", which are arbitrary units.
-                        </p>
-                        <p className="text-neutral-400 leading-relaxed">
-                           A "10cm" line in CSS might be 2cm on a phone and 15cm on a TV. To get <strong>1:1 actual size</strong>, we must calculate your specific PPI (Pixels Per Inch) by comparing a known physical object (like a credit card) against the screen pixels.
-                        </p>
-                     </div>
-                     
-                     <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
-                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                           <Maximize className="text-yellow-500" /> Accuracy Tips
-                        </h3>
-                        <ul className="text-sm text-neutral-400 space-y-2 list-disc pl-4">
-                           <li>Use a <strong>Standard ID-1 Card</strong> (Credit, Debit, Driver's License). They are universally 85.60mm wide.</li>
-                           <li>Close one eye to align the card edge perfectly with the blue box to avoid parallax error.</li>
-                           <li>Be gentle! Don't scratch your screen with the card.</li>
-                        </ul>
-                     </div>
-                  </div>
-
-                  <hr className="my-12 border-white/10" />
-
-                  <div className="border-t border-white/10 pt-12">
-                    <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                       <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-6">
-                       <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                          <h4 className="font-bold text-white text-base mb-2">Can I use this on my phone?</h4>
-                          <p className="text-neutral-400 text-sm">Yes. This tool is responsive. Place your card on the phone screen and use the slider. It's often handy for measuring ring sizes or small hardware parts.</p>
-                       </div>
-                       <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                          <h4 className="font-bold text-white text-base mb-2">Is the scale accurate?</h4>
-                          <p className="text-neutral-400 text-sm">The result depends on how accurately you match a physical reference, display scaling, and browser rendering. Verify against a physical ruler before relying on any measurement. This tool is not a substitute for a calibrated caliper in engineering tasks.</p>
-                       </div>
-                    </div>
-                 </div>
-               </article>
-            </section>
           </div>
         ) : (
           // --- ACTIVE RULER SCREEN ---
-          <div className="fixed inset-0 bg-white text-black flex flex-col overflow-hidden">
+          <div className="fixed inset-0 z-[100] bg-white text-black flex flex-col overflow-hidden">
               {/* Toolbar */}
               <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-20">
                   <button 
@@ -278,7 +231,7 @@ const PhysicalRuler: React.FC = () => {
                   {/* Center Helper */}
                   <div className="text-center opacity-50 pointer-events-none select-none">
                       <Ruler size={64} className="mx-auto mb-4 text-neutral-300" />
-                      <h1 className="text-4xl font-bold text-neutral-300">1:1 Physical Scale</h1>
+                      <h2 className="text-4xl font-bold text-neutral-300">1:1 Physical Scale</h2>
                       <p className="text-neutral-400 mt-2">Place objects on screen to measure.</p>
                   </div>
 

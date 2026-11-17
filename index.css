@@ -221,6 +221,7 @@ body[data-surface="light"] .prose a{color:var(--lab-deep-green)}
 .ui-landing-hero>p{color:#C0CDC3!important}
 .ui-landing-hero .ui-swatch-track{display:none}
 .ui-landing-hero .ui-inspection-shell{max-width:900px}
+.ui-landing-hero .ui-tool-workspace{max-width:none}
 .ui-help-card:not(.ui-home-guide){box-shadow:0 9px 23px rgba(13,39,20,.025)}
 .ui-step-number{display:grid;place-items:center;flex:none;width:2.3rem;height:2.3rem;background:#DCEFD0;border-radius:8px;color:#264B35;font-weight:850;font-variant-numeric:tabular-nums}
 .ui-info-card{background:#fff;border:1px solid var(--lab-border);border-radius:12px;transition:border-color .18s,box-shadow .18s}

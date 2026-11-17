@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Timer, RotateCcw, MousePointer2, Keyboard, Trophy, BarChart3, Info, Volume2, Eye, Zap, Brain, HelpCircle } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 // ... (Keep existing Type definitions and GameState logic exactly the same)
 type GameState = 'idle' | 'waiting' | 'ready' | 'finished' | 'early';
@@ -298,7 +297,7 @@ const ReactionTimeTest: React.FC = () => {
           )}
 
           <div className="mb-6 opacity-90 transform group-hover:scale-110 transition-transform duration-200">{current.icon}</div>
-          <h1 className="text-5xl md:text-8xl font-bold mb-4 tracking-tighter tabular-nums">{current.title}</h1>
+          <h2 className="text-5xl md:text-8xl font-bold mb-4 tracking-tighter tabular-nums">{current.title}</h2>
           <p className="text-xl md:text-2xl font-medium opacity-80">{current.sub}</p>
           
           {/* Reset button only visible in result screens */}
@@ -378,82 +377,7 @@ const ReactionTimeTest: React.FC = () => {
           </div>
         )}
 
-        {/* --- Deep Content Section for SEO --- */}
-        <section className="mt-24 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Brain className="text-blue-500" /> Human Benchmarks
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    The average human visual reaction time is approximately <strong>215 to 250 milliseconds (ms)</strong>. Professional e-sports athletes often achieve scores between 150-180ms.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>Auditory Reflex:</strong> Sound reaches the brain faster than visual processing. Expect your Audio Test score to be 30-50ms faster (around 170ms average).
-                 </p>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Zap className="text-yellow-500" /> Hardware Latency (Input Lag)
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Your score includes your biological reaction + computer latency. A standard 60Hz monitor adds ~16ms of delay. A wireless mouse can add 10-20ms.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>Tip:</strong> For the best score, use a wired mouse and a high refresh rate monitor (144Hz or higher).
-                 </p>
-              </div>
-           </div>
 
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">What is the average human reaction time?</h4>
-                    <p className="text-neutral-400 text-sm">The average visual reaction time is around 215-250ms. Auditory reaction time is typically faster, around 170ms.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Does age affect reaction time?</h4>
-                    <p className="text-neutral-400 text-sm">Yes. Reaction time peaks around age 24 and slowly declines by about 2-6ms per decade thereafter.</p>
-                 </div>
-              </div>
-           </div>
-
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
-              <h3 className="text-lg font-bold text-white mb-4">Age Factors</h3>
-              <p className="text-sm text-neutral-400 mb-6">
-                 Reaction time naturally declines with age. This decline typically starts around age 24.
-              </p>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age 18-24</strong>
-                    <span className="text-green-400 font-bold">~210ms</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age 25-35</strong>
-                    <span className="text-blue-400 font-bold">~220ms</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age 35-45</strong>
-                    <span className="text-yellow-400 font-bold">~240ms</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age 45+</strong>
-                    <span className="text-red-400 font-bold">~270ms+</span>
-                 </div>
-              </div>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/reaction-time" />
-        </div>
 
       </div>
     </>
