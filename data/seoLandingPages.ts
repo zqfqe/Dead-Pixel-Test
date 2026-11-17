@@ -1,4 +1,4 @@
-export type InspectionMode = 'pixels' | 'fixer' | 'lines' | 'retention' | 'resolution' | 'contrast' | 'guide';
+export type InspectionMode = 'pixels' | 'fixer' | 'lines' | 'retention' | 'resolution' | 'contrast' | 'refresh-rate' | 'guide';
 
 export interface SeoLandingPage {
   path: string;
@@ -159,6 +159,29 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     steps:['Ajuste o ambiente para reduzir reflexos.','Use preto e branco para observar áreas extremas.','Abra gradientes e observe se existem faixas abruptas.','Anote se HDR ou brilho automático estavam ativos.'],
     notes:['Não é uma medição colorimétrica profissional.','Não fornece percentual real de sRGB, DCI-P3 ou contraste físico.'],
     faq:[{question:'Posso testar cores do monitor online?',answer:'Sim. Os padrões permitem avaliação visual de cores e gradações.'},{question:'A página mede brilho em nits?',answer:'Não. Isso requer instrumentos de medição.'}]
+  },
+  {
+    path:'/tests/refresh-rate',lang:'en',indexable:true,
+    title:'Frame Skipping & Refresh Rate Test – Browser FPS',
+    description:'Check browser animation FPS and use a numbered 120-cell grid to investigate display frame skipping with a separate camera.',
+    h1:'Refresh Rate & Frame Skipping Test',
+    lead:'See how often your browser animates on this display. Use the numbered grid and its live shutter-speed hint to look for gaps in a photo.',
+    mode:'refresh-rate',intent:'frame skipping test',
+    steps:[
+      'Move this browser window to the display you want to check. Note its configured refresh rate in your operating system.',
+      'Start the test and let the browser FPS settle for a few seconds. Keep this tab visible and avoid moving the window between screens.',
+      'Use a separate camera with manual exposure. Choose the shutter speed shown in the test or a shorter exposure, then take several photos of the grid.',
+      'Read the lit cells in numerical order. A repeated blank cell between lit cells warrants a retest with a shorter exposure and fewer background apps.'
+    ],
+    notes:[
+      'Browser FPS measures animation callback cadence. Browser settings, power saving, variable refresh rate, and system load can all affect the estimate.',
+      'A photo with gaps does not establish a hardware fault. Exposure, rolling shutter and uneven browser timing can also affect the pattern.'
+    ],
+    faq:[
+      {question:'Why does the FPS reading differ from my monitor’s refresh rate?',answer:'Refresh rate is the display setting in Hz. The live FPS reading counts browser animation callbacks. Check the configured Hz in your operating system and keep this tab visible when comparing the two.'},
+      {question:'What shutter speed should I use?',answer:'Wait for the FPS reading and use the shutter speed displayed in the test, or a shorter exposure. A long exposure can allow the grid to loop and hide a gap.'},
+      {question:'Can I use a screenshot to check for skipped frames?',answer:'A screenshot captures one browser image. A separate camera with manual exposure can capture the sequence across several updates on the physical display.'}
+    ]
   }
 ];
 

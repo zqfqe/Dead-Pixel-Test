@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteInformation from '../components/SiteInformation.astro';
 import App from '../../App';
 import ScreenInspection from '../../components/tests/ScreenInspection';
+import RefreshRateTest from '../../components/tests/RefreshRateTest';
 import { BLOG_POSTS } from '../../data/blog';
 import { MENU_ITEMS } from '../../data/menu';
 import { SEO_LANDING_PAGES, LOCALE_PAIRS } from '../../data/seoLandingPages';
@@ -371,7 +372,6 @@ const staticSeoMeta: Record<string,{title:string;description:string}> = {
 };
 
 const title=newPage?.title || article?.title || staticSeoMeta[normalized]?.title || legacySeoGuides[normalized]?.seoTitle || (
- normalized==='/tests/refresh-rate'?'Frame Skipping Test – Monitor Browser FPS':
  normalized==='/tests/local-dimming'?'Local Dimming & Blooming Test':
  normalized==='/tests/color-gradient'?'Color Banding & Gradient Test':
  normalized==='/tests/audio-sync'?'Audio Video Sync Test':
@@ -379,7 +379,6 @@ const title=newPage?.title || article?.title || staticSeoMeta[normalized]?.title
  (MENU_ITEMS.find(m=>m.path===normalized)?.title || normalized.split('/').filter(Boolean).slice(-1)[0]?.replaceAll('-',' ') || 'Screen Test')+' | DeadPixelTest'
 );
 const description=newPage?.description || article?.excerpt || staticSeoMeta[normalized]?.description || legacySeoGuides[normalized]?.intro || (
- normalized==='/tests/refresh-rate'?'Check browser animation frame cadence, and use an external camera to investigate monitor frame skipping.':
  normalized==='/tests/local-dimming'?'Visually inspect monitor local dimming, halos and blooming using high contrast patterns.':
  normalized==='/tests/color-gradient'?'Check monitor color gradients and possible banding with browser-based test patterns.':
  normalized==='/tests/audio-sync'?'Check apparent audio and video synchronization with a browser-based interactive test.':
@@ -387,7 +386,8 @@ const description=newPage?.description || article?.excerpt || staticSeoMeta[norm
 );
 const isBR=newPage?.lang==='pt-BR';
 const locale = newPage?.lang ?? 'en';
-const inspectionMode=newPage?.mode==='guide'?'pixels':newPage?.mode==='resolution'?'pixels':newPage?.mode??'pixels';
+const isRefreshRate=newPage?.mode==='refresh-rate';
+const inspectionMode=newPage?.mode==='guide'||newPage?.mode==='resolution'||newPage?.mode==='refresh-rate'?'pixels':newPage?.mode??'pixels';
 const others=SEO_LANDING_PAGES.filter(p=>p.lang===locale && p.path!==newPage?.path)
  .sort((a,b)=>Number(b.mode===newPage?.mode)-Number(a.mode===newPage?.mode)).slice(0,7);
 const localePair=LOCALE_PAIRS.find(([en,pt])=>[en,pt].some(path=>(path.replace(/\/$/,'')||'/')===normalized));
@@ -407,7 +407,7 @@ const pixelDifferences=isBR?[
 ];
 const docType=newPage?.mode==='guide'?'WebPage':'WebApplication';
 // Record an actual review of today's explanations, not a fabricated launch date.
-const explanationReviewedOn='2026-11-09';
+const explanationReviewedOn=isRefreshRate?'2026-11-17':'2026-11-09';
 const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
 const publicSiteUrl=!isCloudflarePreview && import.meta.env.PUBLIC_SITE_URL ? new URL(import.meta.env.PUBLIC_SITE_URL).origin : undefined;
 // Match schema with visible content. Do not invent reviews, lab measurements,
@@ -471,21 +471,6 @@ const structuredData=newPage?{
 }:undefined;
 const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];limits:string[]}> = {
  ...legacySeoGuides,
- '/tests/refresh-rate':{
-  heading:'How to interpret a frame-skipping and browser FPS check',
-  intro:'This tool animates a repeating sequence of blocks using requestAnimationFrame. The on-screen FPS counter measures how frequently the browser callback fires; it does not directly read your monitor panel’s scan-out or verify its configured refresh rate.',
-  steps:[
-   'Open the test on the monitor you want to investigate. Check the refresh-rate setting in your operating system first.',
-   'Let the browser FPS estimate settle for several seconds, without assuming that the value proves physical display Hz.',
-   'Use a separate camera with manual shutter settings. Use the exposure shown after the FPS stabilizes, or choose a shorter exposure, then repeat photos of the grid.',
-   'If you see irregular spacing, repeat with browser extensions disabled and other applications closed. Compare a different cable or port if relevant.'
-  ],
-  limits:[
-   'Browser animation cadence may be limited by background tabs, battery saving, compositing, variable refresh rate and operating-system scheduling.',
-   'A photo with gaps is a reason to investigate, not a conclusive hardware failure or warranty diagnosis.',
-   'A browser cannot certify an overclocked panel’s actual refresh Hz.'
-  ]
- },
  '/tests/local-dimming':{
   heading:'How to inspect local dimming, halos and blooming',
   intro:'A display with local dimming may brighten or darken groups of backlight zones around a high-contrast object. The pattern tool makes these effects easier to observe on a dark background; it does not measure zone count or peak luminance.',
@@ -685,10 +670,15 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
     <nav aria-label="Breadcrumb" class="ui-breadcrumb mb-7"><a href={isBR?'/pt-br':'/'}>{isBR?'Início':'Home'}</a><span aria-hidden="true">/</span><span aria-current="page">{newPage.h1}</span></nav>
     <header class="ui-landing-hero ui-enter rounded-2xl border border-[#DCE3EA] bg-white shadow-sm p-6 md:p-10">
       <p class="ui-eyebrow uppercase tracking-widest text-xs text-[#125CC9] font-bold"><span class="ui-status-dot" aria-hidden="true"></span>{isBR?'Ferramenta online gratuita':'Free browser-based screen check'}</p>
-       <div class="ui-swatch-track ui-swatch-track-sm" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+       {!isRefreshRate && <div class="ui-swatch-track ui-swatch-track-sm" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>}
       <h1 class="text-3xl md:text-5xl font-bold mt-3 tracking-tight">{newPage.h1}</h1>
       <p class="text-[#344256] max-w-3xl text-lg leading-8 mt-5 mb-7">{newPage.lead}</p>
-      {newPage.mode==='resolution' ? (
+      {isRefreshRate ? (
+         <div class="ui-inspection-shell p-5 rounded-xl border border-[#20283C] bg-[#0A0B0E] text-white">
+           <RefreshRateTest client:only="react" embedded />
+           <noscript><p class="text-sm text-neutral-200">Enable JavaScript to start the frame skipping test.</p></noscript>
+         </div>
+       ) : newPage.mode==='resolution' ? (
          <div class="ui-screen-metrics-grid grid md:grid-cols-2 gap-4">
            <div class="ui-metrics-panel border border-[#DCE3EA] bg-white p-5 rounded-lg"><h2 class="font-semibold mb-2">CSS screen and viewport</h2><p class="text-[#344256]">The values below are reported by the browser, not by the display panel’s hardware specifications.</p></div>
            <div class="ui-metrics-panel border border-[#DCE3EA] bg-white p-5 rounded-lg">
@@ -735,7 +725,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
            </noscript>
          </div>
        )}
-       <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
+       <p class="mt-5 text-xs text-[#64748B]">{isBR?'Inspeção manual. Sem certificação.':isRefreshRate?'Browser FPS estimates animation cadence. Check system settings for the configured display Hz.':'Manual visual self-check. Not an automated hardware diagnosis or certificate.'}</p>
     </header>
     {geoAnswer && <section id="quick-answer" data-geo-answer class="mt-7 rounded-xl border border-[#DCE3EA] bg-white px-5 py-6 text-[#101827] md:px-8" aria-labelledby="quick-answer-heading">
       <p class="text-xs font-bold uppercase tracking-wider text-[#31583F]">{isBR?'RESPOSTA DIRETA':'IN BRIEF / DIRECT ANSWER'}</p>
@@ -750,7 +740,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         {isBR?'Explicação revisada por ':'Explanation reviewed by '}
         <a href="/about" rel="author" class="font-semibold text-[#125CC9] underline">DeadPixelTest</a>
         {isBR?' em ':' on '}
-        <time datetime={explanationReviewedOn}>{isBR?'9 de novembro de 2026':'November 9, 2026'}</time>.
+        <time datetime={explanationReviewedOn}>{isBR?'9 de novembro de 2026':isRefreshRate?'November 17, 2026':'November 9, 2026'}</time>.
         <a href="/about#reference-method-heading" class="ml-1 text-[#125CC9] underline">{isBR?'Metodologia e fontes (inglês)':'Testing and source methodology'}</a>.
       </p>
       {geoAnswer.sources.length>0 && <p class="mt-3 text-xs leading-6 text-[#475569]">
@@ -768,7 +758,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
       </div>
       <aside class="ui-guide-aside ui-help-card border border-[#DCE3EA] bg-white rounded-xl p-5">
         <h2 class="text-lg font-bold mb-3">{isBR?'Antes de começar':'Before you start'}</h2>
-        <p class="text-[#344256] leading-7">{isBR?'Limpe a tela, evite reflexos e confira filtros de luz azul ou HDR.':'Clean the screen, reduce reflections, and note HDR, zoom and adaptive brightness settings.'}</p>
+        <p class="text-[#344256] leading-7">{isBR?'Limpe a tela, evite reflexos e confira filtros de luz azul ou HDR.':isRefreshRate?'Keep the tab in the foreground. If the FPS estimate is unexpectedly low, check power-saving settings and close other busy tabs before retesting.':'Clean the screen, reduce reflections, and note HDR, zoom and adaptive brightness settings.'}</p>
       </aside>
     </section>
     {taskGuide && <section class="mt-12">

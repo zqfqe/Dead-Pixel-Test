@@ -74,17 +74,23 @@ await check('/laptop-screen-dead-pixel-test',expectedTitle('Laptop Dead Pixel Te
 await check('/pt-br/pixel-morto-notebook',expectedTitle('Pixel Morto'));
 await check('/tests/refresh-rate',async page=>{
  await expectedTitle('Frame Skipping')(page);
- await page.getByText(/Refresh Rate|Frame Skipping/i).first().waitFor({timeout:15000});
-});
+ await page.locator('.ui-landing-hero h1').filter({hasText:'Refresh Rate & Frame Skipping Test'}).waitFor();
+ await page.getByRole('heading',{name:'How do I check if my monitor is skipping frames?'}).waitFor();
+ if(await page.locator('h1').count()!==1)throw Error('Refresh-rate page needs one heading');
+ if(await page.locator('html').getAttribute('data-surface')!=='light')throw Error('Refresh-rate page still uses legacy layout');
+ if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2))throw Error('Refresh-rate layout overflows');
+},{mobile:true});
 await check('/tests/refresh-rate',async page=>{
   // The timing canvas must be disposed when the user leaves the test.
-  const start=page.getByRole('button',{name:'Start Calibration'});
+  const start=page.getByRole('button',{name:'Start frame skipping test'});
   await start.waitFor({timeout:12000});
   await start.click();
   await page.getByText('Browser FPS estimate',{exact:true}).waitFor({timeout:8000});
   await page.getByText(/Use 1\/\d+ s or faster/).waitFor({timeout:8000});
+  await page.getByRole('dialog',{name:'Frame skipping test'}).waitFor();
   await page.keyboard.press('Escape');
   await start.waitFor({timeout:8000});
+  await page.waitForFunction(()=>document.activeElement?.textContent?.includes('Start frame skipping test'));
 
   await start.click();
   await page.getByText('Browser FPS estimate',{exact:true}).waitFor({timeout:8000});
@@ -300,7 +306,7 @@ await check('/',async page=>{
  const seconds=duration.split(',').map(s=>parseFloat(s));
  if(seconds.some(s=>s>0.01))throw Error('Reduced-motion transition remains active: '+duration);
 });
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  const skip=page.getByRole('link',{name:/Skip to main content/i});
  await skip.waitFor({timeout:10000});
  await skip.focus();
@@ -308,7 +314,7 @@ await check('/tests/refresh-rate',async page=>{
  await page.waitForFunction(()=>location.hash==='#main-content');
  if(!await page.locator('main#main-content').count())throw Error('Legacy skip target missing');
 });
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  const toggle=page.locator('button[aria-controls="mobile-site-menu"]');
  await toggle.waitFor({timeout:10000});
  const menu=page.locator('#mobile-site-menu');
@@ -479,7 +485,7 @@ await check('/pt-br',async page=>{
  if(extent.body<extent.document-5)throw Error('Brazilian page body ends before content: '+JSON.stringify(extent));
  await page.screenshot({path:'smoke-screenshots/site-pt-br-mobile.png',fullPage:true});
 },{mobile:true});
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  const value=await page.evaluate(()=>document.body.dataset.surface);
  if(value!=='dark')throw Error('Legacy tool lost dark theme');
 });
@@ -654,7 +660,7 @@ await check('/pt-br',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
  if(theme!=='#0D1416')throw Error('Information-site browser chrome does not match graphite navigation: '+theme);
 });
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
  if(theme!=='#08090c')throw Error('Dark legacy tool theme color wrong: '+theme);
 });
@@ -806,7 +812,7 @@ await check('/screen-resolution-test',async page=>{
 }
 
 
-for(const path of ['/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
+for(const path of ['/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
  await check(path,async page=>{
   const response = await page.request.get(base + path);
   const rawHTML = await response.text();
@@ -840,7 +846,7 @@ for(const path of ['/tests/refresh-rate','/tests/local-dimming','/tests/color-gr
 }
 
 
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  const previous=await page.locator('link[rel="canonical"]').getAttribute('href');
  const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
  await page.getByRole('link',{name:'DeadPixelTest Home'}).click();
@@ -869,7 +875,7 @@ for(const path of ['/pt-br/pixel-morto-notebook','/pt-br/reparar-pixel-preso']){
    throw Error('Brazilian screen-check page links to non-localized manufacturer guidance: '+url);
  });
 }
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  // The command palette is a hydrated React island, not part of Astro's initial HTML.
  await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor({timeout:12000});
  await page.keyboard.press('Control+k');
@@ -891,7 +897,7 @@ await check('/tests/refresh-rate',async page=>{
   throw Error('Command palette navigation did not refresh Astro canonical: '+canonical);
 });
 
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor();
  await page.keyboard.press('Control+k');
  const input=page.getByRole('textbox',{name:'Search tools'});
@@ -928,7 +934,7 @@ await check('/',async page=>{
  if(html.includes('<script>do not run</script>'))throw Error('Report contains executable imported text');
  if(!html.includes('window.print()'))throw Error('Printable offline report has no explicit print action');
 });
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  // Keep focus regressions visible, but report which exact checkpoint broke.
  const focused=async(label,predicate)=>{
   try{
@@ -1045,7 +1051,7 @@ await check('/',async page=>{
  if(!await details.evaluate(el=>el.open))throw Error('Preflight checklist failed to expand');
 });
 
-await check('/tests/refresh-rate',async page=>{
+await check('/tests/local-dimming',async page=>{
  const header=page.locator('header').first();
  if(!(await header.getAttribute('class'))?.includes('bg-[#0D1416]'))
   throw Error('Legacy tools do not share the graphite site header');
