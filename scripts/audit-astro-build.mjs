@@ -12,7 +12,6 @@ const taskSpecificGuides=new Map([
  ['/pt-br/reparar-pixel-preso/','Pixel preso: qual próximo passo é seguro?']
 ]);
 const staticGuides=new Map([
- ['/tests/refresh-rate','How to interpret a frame-skipping and browser FPS check'],
  ['/tests/local-dimming','How to inspect local dimming, halos and blooming'],
  ['/tests/color-gradient','How to identify visible color banding'],
  ['/tests/audio-sync','How to check perceived audio and video timing'],
@@ -24,6 +23,10 @@ for(const path of [...priority,...planned]){
  if(!existsSync(file)){errors.push('Missing HTML '+path);continue;}
  const html=readFileSync(file,'utf8'),canon=[...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/gi)];
  const guideTitle=staticGuides.get(path);
+ if(path==='/tests/refresh-rate'&&(!html.includes('data-surface="light"')||
+   !html.includes('ui-landing-hero')||!html.includes('How do I check if my monitor is skipping frames?')||
+   (html.match(/<h1[\s>]/gi)||[]).length!==1||html.includes('id="legacy-static-intro"')))
+  errors.push('Refresh-rate page was not rendered with the shared Astro tool layout');
  if(path==='/image-retention-test/' && (!html.includes('Manufacturer OLED panel-care guides')||!html.includes('www.samsung.com/sg/support/displays/')||!html.includes('www.lg.com/us/support/help-library/'))){
   errors.push('Retention guide missing source-verified manufacturer references');
  }

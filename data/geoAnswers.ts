@@ -5,6 +5,17 @@
  */
 export type GeoAnswer={question:string;answer:string;distinctions:string[];limitation:string;sources:{name:string;url:string}[]};
 export const GEO_ANSWERS: Record<string,GeoAnswer> = {
+  "/tests/refresh-rate": {
+    question: "How do I check if my monitor is skipping frames?",
+    answer: "Run the numbered grid on the display you want to check. After the browser FPS stabilizes, photograph the grid with a separate camera at the recommended shutter speed or faster. Compare several photos for gaps between consecutive lit cells.",
+    distinctions: [
+      "Check the configured refresh rate in your operating system before comparing it with browser FPS.",
+      "An empty area outside the sequence of lit cells is normal. Look for a missing cell between consecutive lit cells.",
+      "Repeat the photo at a shorter exposure if you suspect the sequence wrapped around the grid."
+    ],
+    limitation: "The browser cannot read the panel’s actual scan-out rate or establish the cause of a missing cell from a photo.",
+    sources: []
+  },
   "/laptop-screen-dead-pixel-test": {
     "question": "How do I check a laptop screen for dead pixels?",
     "answer": "Open the color test on the laptop's built-in display and examine black, white, red, green and blue fields. A fixed dark point on white or a bright colored point on black is worth recording and comparing across colors; it is not an automatic diagnosis.",
