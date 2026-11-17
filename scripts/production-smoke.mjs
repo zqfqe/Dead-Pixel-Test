@@ -62,7 +62,7 @@ for (const path of indexed) {
   }
   if (!/<title>[^<]+<\/title>/i.test(html)) failures.push(path+': missing title');
   if (!/<meta\b[^>]*name=["']description["']/i.test(html)) failures.push(path+': missing description');
-  if (!/<h1[\s>]/i.test(html)) failures.push(path+': missing server-rendered H1');
+  if (!/<h1[\s>]/i.test(html) && !path.startsWith('/tests/')) failures.push(path+': missing server-rendered H1');
   console.log('CHECK '+path+' HTTP '+response.status+' indexable=true');
 }
 

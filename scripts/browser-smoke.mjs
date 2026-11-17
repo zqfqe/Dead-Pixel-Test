@@ -808,6 +808,10 @@ await check('/screen-resolution-test',async page=>{
 
 for(const path of ['/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
  await check(path,async page=>{
+  const response = await page.request.get(base + path);
+  const rawHTML = await response.text();
+  const headings = [...rawHTML.matchAll(/<h1[\s>]/gi)];
+  if (!response.ok() || headings.length !== 1) throw Error('Expected one server-rendered tool heading');
   const guide=page.locator('#legacy-static-guide');
   await guide.waitFor();
   const ratio=await guide.evaluate(el=>{
