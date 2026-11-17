@@ -132,7 +132,7 @@ const App: React.FC = () => {
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
                     {/* V1.2 search-intent pages: keep legacy /tests/* routes unchanged */}
-                    {SEO_LANDING_PAGES.filter(page => page.path !== '/' && page.mode !== 'refresh-rate').map(page => (
+                    {SEO_LANDING_PAGES.filter(page => page.path !== '/' && page.mode !== 'refresh-rate' && page.mode !== 'local-dimming').map(page => (
                       <Route key={page.path} path={page.path} element={<SeoLandingPage />} />
                     ))}
                     {/* Phase 1 Tests */}

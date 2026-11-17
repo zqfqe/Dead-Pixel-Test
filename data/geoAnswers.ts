@@ -5,6 +5,17 @@
  */
 export type GeoAnswer={question:string;answer:string;distinctions:string[];limitation:string;sources:{name:string;url:string}[]};
 export const GEO_ANSWERS: Record<string,GeoAnswer> = {
+  "/tests/local-dimming": {
+    question: "How can I check blooming on my display?",
+    answer: "Move a small white shape across a dark background and watch the area immediately around it. Compare the same pattern at the same viewing angle with different local dimming settings, if your display provides them.",
+    distinctions: [
+      "Turn off the star background to isolate the bright shape.",
+      "Check the center and edges. In Manual mode you can pause the shape in one area for a brief comparison.",
+      "Compare what you see directly. Camera exposure can make the same halo appear larger or brighter."
+    ],
+    limitation: "A halo alone does not establish a hardware defect, and the browser cannot measure the backlight’s zone count or luminance.",
+    sources: []
+  },
   "/tests/refresh-rate": {
     question: "How do I check if my monitor is skipping frames?",
     answer: "Run the numbered grid on the display you want to check. After the browser FPS stabilizes, photograph the grid with a separate camera at the recommended shutter speed or faster. Compare several photos for gaps between consecutive lit cells.",

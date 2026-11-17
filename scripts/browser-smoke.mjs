@@ -136,15 +136,17 @@ await check('/tools/mouse-polling',async page=>{
 });
 await check('/tests/local-dimming',async page=>{
  await expectedTitle('Local Dimming')(page);
- await page.getByText(/Local Dimming/i).first().waitFor({timeout:15000});
- const start = page.getByRole('button', {name:'Start Calibration'});
+ await page.getByRole('heading',{name:'How can I check blooming on my display?'}).waitFor();
+ await page.locator('.ui-landing-hero h1').filter({hasText:'Local Dimming & Blooming Test'}).waitFor();
+ if(await page.locator('html').getAttribute('data-surface')!=='light')throw Error('Local dimming page still uses legacy layout');
+ if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2))throw Error('Local dimming page overflows mobile');
+ const start = page.getByRole('button', {name:'Start local dimming test'});
  await start.waitFor({timeout:12000});
  if (await page.locator('h1').count() !== 1) throw Error('Expected one hydrated tool heading');
  await start.click();
- await page.getByRole('button', {name:'Exit Test', exact:true}).waitFor();
- await page.keyboard.press('Escape');
+ await page.getByRole('button', {name:'Exit Test', exact:true}).click();
  await start.waitFor();
-});
+},{mobile:true});
 await check('/tests/color-gradient',expectedTitle('Color Banding'));
 await check('/image-retention-test',async page=>{
  await expectedTitle('Image Retention')(page);
@@ -306,7 +308,7 @@ await check('/',async page=>{
  const seconds=duration.split(',').map(s=>parseFloat(s));
  if(seconds.some(s=>s>0.01))throw Error('Reduced-motion transition remains active: '+duration);
 });
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const skip=page.getByRole('link',{name:/Skip to main content/i});
  await skip.waitFor({timeout:10000});
  await skip.focus();
@@ -314,7 +316,7 @@ await check('/tests/local-dimming',async page=>{
  await page.waitForFunction(()=>location.hash==='#main-content');
  if(!await page.locator('main#main-content').count())throw Error('Legacy skip target missing');
 });
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const toggle=page.locator('button[aria-controls="mobile-site-menu"]');
  await toggle.waitFor({timeout:10000});
  const menu=page.locator('#mobile-site-menu');
@@ -485,7 +487,7 @@ await check('/pt-br',async page=>{
  if(extent.body<extent.document-5)throw Error('Brazilian page body ends before content: '+JSON.stringify(extent));
  await page.screenshot({path:'smoke-screenshots/site-pt-br-mobile.png',fullPage:true});
 },{mobile:true});
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const value=await page.evaluate(()=>document.body.dataset.surface);
  if(value!=='dark')throw Error('Legacy tool lost dark theme');
 });
@@ -660,7 +662,7 @@ await check('/pt-br',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
  if(theme!=='#0D1416')throw Error('Information-site browser chrome does not match graphite navigation: '+theme);
 });
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
  if(theme!=='#08090c')throw Error('Dark legacy tool theme color wrong: '+theme);
 });
@@ -812,7 +814,7 @@ await check('/screen-resolution-test',async page=>{
 }
 
 
-for(const path of ['/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
+for(const path of ['/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
  await check(path,async page=>{
   const response = await page.request.get(base + path);
   const rawHTML = await response.text();
@@ -846,7 +848,7 @@ for(const path of ['/tests/local-dimming','/tests/color-gradient','/tests/audio-
 }
 
 
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const previous=await page.locator('link[rel="canonical"]').getAttribute('href');
  const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
  await page.getByRole('link',{name:'DeadPixelTest Home'}).click();
@@ -859,7 +861,7 @@ await check('/tests/local-dimming',async page=>{
  if(canonical===previous||canonical!==canonicalOrigin+'/')
   throw Error('Static homepage canonical was not refreshed: '+canonical);
 });
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
  await page.locator('footer').getByRole('link',{name:'Color Gradient',exact:true}).click();
  await navigation;
@@ -875,7 +877,7 @@ for(const path of ['/pt-br/pixel-morto-notebook','/pt-br/reparar-pixel-preso']){
    throw Error('Brazilian screen-check page links to non-localized manufacturer guidance: '+url);
  });
 }
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  // The command palette is a hydrated React island, not part of Astro's initial HTML.
  await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor({timeout:12000});
  await page.keyboard.press('Control+k');
@@ -897,7 +899,7 @@ await check('/tests/local-dimming',async page=>{
   throw Error('Command palette navigation did not refresh Astro canonical: '+canonical);
 });
 
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor();
  await page.keyboard.press('Control+k');
  const input=page.getByRole('textbox',{name:'Search tools'});
@@ -934,7 +936,7 @@ await check('/',async page=>{
  if(html.includes('<script>do not run</script>'))throw Error('Report contains executable imported text');
  if(!html.includes('window.print()'))throw Error('Printable offline report has no explicit print action');
 });
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  // Keep focus regressions visible, but report which exact checkpoint broke.
  const focused=async(label,predicate)=>{
   try{
@@ -1051,7 +1053,7 @@ await check('/',async page=>{
  if(!await details.evaluate(el=>el.open))throw Error('Preflight checklist failed to expand');
 });
 
-await check('/tests/local-dimming',async page=>{
+await check('/tests/audio-sync',async page=>{
  const header=page.locator('header').first();
  if(!(await header.getAttribute('class'))?.includes('bg-[#0D1416]'))
   throw Error('Legacy tools do not share the graphite site header');
