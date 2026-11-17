@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useFullscreen } from '../../hooks/useFullscreen';
+import { useFullscreenTest } from '../../hooks/useFullscreenTest';
 import { useIdleCursor } from '../../hooks/useIdleCursor';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useSwipe } from '../../hooks/useSwipe';
@@ -27,8 +27,7 @@ const COLORS: { id: ColorType; label: string; hex: string }[] = [
 ];
 
 const UniformityTest: React.FC = () => {
-  const { enterFullscreen, exitFullscreen } = useFullscreen();
-  const [isActive, setIsActive] = useState(false);
+  const { isActive, startTest, stopTest } = useFullscreenTest();
   const isIdle = useIdleCursor(3000);
   const isMobile = useMobile();
   
@@ -42,16 +41,6 @@ const UniformityTest: React.FC = () => {
   const [showGrid, setShowGrid] = useState(false);
   const [showCrosshair, setShowCrosshair] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  const startTest = () => {
-    setIsActive(true);
-    enterFullscreen();
-  };
-
-  const stopTest = useCallback(() => {
-    setIsActive(false);
-    exitFullscreen();
-  }, [exitFullscreen]);
 
   const resetSettings = () => {
     setBrightness(50);
@@ -126,15 +115,12 @@ const UniformityTest: React.FC = () => {
         case 'C':
           setPatternType(prev => prev === 'solid' ? 'checkerboard' : 'solid');
           break;
-        case 'Escape':
-          stopTest();
-          break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, stopTest, setBrightness, setPatternType, nextColor, prevColor]);
+  }, [isActive, setBrightness, setPatternType, nextColor, prevColor]);
 
   if (isActive) {
     const mainColor = getFillColor();
@@ -168,10 +154,10 @@ const UniformityTest: React.FC = () => {
         {...swipeHandlers}
       >
         {/* --- 1. Top-Left Exit Button --- */}
-        <div className={`absolute top-6 left-6 z-[60] transition-opacity duration-500 ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <div className="test-exit-position absolute z-[70]">
           <button 
-            onClick={stopTest}
-            className="flex items-center gap-2 bg-neutral-900/90 backdrop-blur text-white px-4 py-2 rounded-full shadow-lg hover:bg-neutral-800 transition-colors border border-white/10 font-medium text-sm group"
+            data-fullscreen-test-exit onClick={stopTest}
+            className="flex items-center gap-2 bg-neutral-900/90 backdrop-blur text-white min-h-[44px] px-4 py-2 rounded-full shadow-lg hover:bg-neutral-800 transition-colors border border-white/10 font-medium text-sm group"
           >
             <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
             Exit
@@ -206,11 +192,11 @@ const UniformityTest: React.FC = () => {
         )}
 
         {/* --- 3. Right Sidebar Controls --- */}
-        <div className={`absolute top-6 right-6 bottom-6 z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}>
+        <div className={`test-settings-panel absolute z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}>
            {/* Sidebar Toggle */}
            {!isSidebarOpen && (
              <button 
-               onClick={() => { setIsSidebarOpen(true); }}
+               aria-label="Open test settings" onClick={() => { setIsSidebarOpen(true); }}
                className={`p-3 rounded-full shadow-xl transition-all duration-500 ${uiHidden ? 'opacity-0 translate-x-10' : 'opacity-100 translate-x-0'} bg-white text-black`}
              >
                <ChevronLeft size={24} />
@@ -226,7 +212,7 @@ const UniformityTest: React.FC = () => {
                      <Sun size={18} className="text-blue-600" />
                      <div className="font-bold text-sm tracking-wider text-neutral-800">UNIFORMITY</div>
                    </div>
-                   <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800 p-1 hover:bg-neutral-100 rounded">
+                   <button aria-label="Close test settings" onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800 p-1 hover:bg-neutral-100 rounded">
                      <ChevronUp size={20} className="rotate-90" />
                    </button>
                 </div>

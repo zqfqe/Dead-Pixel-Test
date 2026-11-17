@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useFullscreen } from '../../hooks/useFullscreen';
+import { useFullscreenTest } from '../../hooks/useFullscreenTest';
 import { ChevronLeft, RotateCcw, Hand, Fingerprint, Maximize2, Smartphone, Tablet, Zap, Layers, HelpCircle } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -27,8 +27,6 @@ const COLORS = [
 ];
 
 const TouchTest: React.FC = () => {
-  const { enterFullscreen, exitFullscreen } = useFullscreen();
-  const [isActive, setIsActive] = useState(false);
   const [touches, setTouches] = useState<TouchPoint[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
@@ -38,17 +36,11 @@ const TouchTest: React.FC = () => {
   const MAX_POINTS_PER_PATH = 400;
   const MAX_SAVED_PATHS = 30;
 
-  const startTest = () => {
-    setIsActive(true);
-    enterFullscreen();
-  };
-
-  const stopTest = () => {
-    setIsActive(false);
-    exitFullscreen();
+  const clearTouches = React.useCallback(() => {
     pathsRef.current.clear();
     setTouches([]);
-  };
+  }, []);
+  const { isActive, startTest, stopTest } = useFullscreenTest(clearTouches);
 
   const drawTrails = (canvas: HTMLCanvasElement,ctx:CanvasRenderingContext2D) => {
     const width=canvas.clientWidth,height=canvas.clientHeight;
@@ -167,9 +159,9 @@ const TouchTest: React.FC = () => {
         ))}
 
         {/* Controls */}
-        <div className="absolute top-6 left-6 z-[60]">
+        <div className="test-exit-position absolute z-[70]">
           <button 
-            onClick={stopTest}
+            data-fullscreen-test-exit onClick={stopTest}
             className="flex items-center gap-2 bg-neutral-900/90 backdrop-blur text-white px-4 py-2 rounded-full shadow-lg border border-neutral-700 font-medium text-sm"
           >
             <ChevronLeft size={16} /> Exit

@@ -69,6 +69,63 @@ try{
  for(const route of routes)
   await inspectRoute(route,{mobile:true});
 
+ const fullscreenSettingsRoutes = ["/tests/uniformity","/tests/text-clarity","/tests/color-gradient","/tests/color-distance","/tests/response-time","/tests/gamma","/tests/test-patterns","/tests/viewing-angle","/tests/brightness","/tests/contrast","/tests/matrix"];
+ for(const route of fullscreenSettingsRoutes) {
+  await inspectRoute(route, {
+   mobile:true,
+   beforeNavigate:page=>page.addInitScript(()=>{
+    Element.prototype.requestFullscreen = () => Promise.reject(new DOMException('Denied in test','NotAllowedError'));
+   }),
+   interact:async page=>{
+    await page.setViewportSize({width:320,height:700});
+    const start=page.getByRole('button',{name:/^(Start test|Enter The Matrix)$/});
+    const exit=page.locator('[data-fullscreen-test-exit]');
+    const closeSettings=page.getByRole('button',{name:'Close test settings'});
+    const openSettings=page.getByRole('button',{name:'Open test settings'});
+    const assertExitReachable=async()=>{
+     await exit.waitFor();
+     const result=await exit.evaluate(el=>{
+      const box=el.getBoundingClientRect();
+      const panel=document.querySelector('.test-settings-panel')?.getBoundingClientRect();
+      const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);
+      return Boolean(panel && panel.left>=0 && panel.right<=innerWidth+1 &&
+       panel.top>=box.bottom && hit && el.contains(hit));
+     });
+     if(!result)throw Error('Open settings overlap the exit control or overflow the viewport');
+    };
+    await start.click();
+    await closeSettings.waitFor();
+    await assertExitReachable();
+    await closeSettings.click();
+    await openSettings.click();
+    await assertExitReachable();
+    await exit.click();
+    await start.waitFor();
+    await start.click();
+    await exit.waitFor();
+    await page.keyboard.press('Escape');
+    await start.waitFor();
+    await page.waitForFunction(()=>document.body.style.overflow!=='hidden');
+   }
+  });
+ }
+ await inspectRoute('/tests/color-gradient', {
+  interact:async page=>{
+   const start=page.getByRole('button',{name:'Start test',exact:true});
+   await start.click();
+   await page.waitForFunction(()=>document.fullscreenElement===document.documentElement);
+   await page.evaluate(()=>document.exitFullscreen());
+   await start.waitFor();
+   await start.click();
+   await page.locator('[data-fullscreen-test-exit]').waitFor();
+   await page.evaluate(()=>{
+    Object.defineProperty(document,'hidden',{configurable:true,value:true});
+    document.dispatchEvent(new Event('visibilitychange'));
+   });
+   await start.waitFor();
+  }
+ });
+
  const scenarioChecks=[
   ['/tools/keyboard',async page=>{
    await page.getByRole('heading',{name:'Keyboard Tester'}).waitFor();
