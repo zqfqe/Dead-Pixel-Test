@@ -860,13 +860,12 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
   <SiteInformation route={normalized as '/about' | '/contact' | '/privacy-policy' | '/terms-of-service'} />
 ) : (
   <>
-    <App client:only="react">
-      <div slot="fallback" class="mx-auto max-w-5xl px-6 py-12">
-        <h1 class="text-3xl font-bold md:text-5xl">{title.replace(/ \| DeadPixelTest$/, '')}</h1>
-        <p class="mt-4 max-w-3xl text-neutral-300">{description}</p>
-        <p class="mt-6 text-sm text-neutral-300">The interactive controls require JavaScript. The instructions below are available immediately.</p>
-      </div>
-    </App>
+    <section id="legacy-static-intro" aria-labelledby="legacy-static-heading" class="mx-auto max-w-5xl px-6 py-12">
+      <h1 id="legacy-static-heading" class="text-3xl font-bold md:text-5xl">{title.replace(/ \| DeadPixelTest$/, '')}</h1>
+      <p class="mt-4 max-w-3xl text-neutral-300">{description}</p>
+      <p class="mt-6 text-sm text-neutral-300">The interactive controls require JavaScript. The instructions below are available immediately.</p>
+    </section>
+    <App client:only="react" />
     <section id="legacy-static-guide" class="mx-auto my-10 max-w-5xl rounded-2xl border border-[#DCE3EA] bg-white px-6 py-8 text-[#344256] leading-7 shadow-sm md:px-10 md:py-10" aria-label="Display test information">
       {legacyGuide ? (
         <>
