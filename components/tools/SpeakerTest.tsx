@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Volume2, Play, Pause, Headphones, Radio, Mic2, AlertTriangle, Speaker, Waves, Info, Music, Activity, HelpCircle } from 'lucide-react';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 type TestMode = 'stereo' | 'phase' | 'sweep';
 
@@ -242,14 +241,14 @@ const SpeakerTest: React.FC = () => {
           ]
         }}
       />
-      <div className="max-w-5xl mx-auto py-12 px-6 animate-fade-in">
+      <div className="max-w-5xl mx-auto py-4 sm:py-12 sm:px-6 animate-fade-in">
         {/* ... (Rest of component remains unchanged) ... */}
         {/* Header */}
         <div className="text-center mb-12">
            <div className="inline-flex items-center justify-center p-4 bg-purple-500/10 text-purple-400 rounded-2xl mb-4">
               <Volume2 size={32} />
            </div>
-           <h1 className="text-4xl font-bold text-white mb-4">Audio System Test</h1>
+           <h2 className="text-4xl font-bold text-white mb-4">Audio System Test</h2>
            <p className="text-neutral-400 max-w-lg mx-auto">
               Verify your left/right channels, check for wiring phase issues, and test the frequency response range of your speakers or headphones.
            </p>
@@ -259,7 +258,7 @@ const SpeakerTest: React.FC = () => {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-           <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex">
+           <div className="bg-neutral-900 p-1 rounded-xl border border-white/10 flex flex-wrap justify-center">
               {[
                   { id: 'stereo', label: 'Stereo Check', icon: Headphones },
                   { id: 'phase', label: 'Polarity / Phase', icon: Radio },
@@ -281,7 +280,7 @@ const SpeakerTest: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="bg-[#050505] border border-white/10 rounded-3xl p-8 md:p-12 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="bg-[#050505] border border-white/10 rounded-3xl p-4 sm:p-8 md:p-12 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
            
            {/* Background Visuals */}
            <div className="absolute inset-0 opacity-20 pointer-events-none" 
@@ -296,7 +295,7 @@ const SpeakerTest: React.FC = () => {
                           onClick={() => playStereoCheck('left')}
                           className="group flex flex-col items-center gap-4 transition-transform active:scale-95"
                        >
-                          <div className="w-32 h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
+                          <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
                               <Speaker size={48} className="text-neutral-600 group-hover:text-purple-400" />
                           </div>
                           <span className="text-xl font-bold text-neutral-500 group-hover:text-white">LEFT</span>
@@ -306,7 +305,7 @@ const SpeakerTest: React.FC = () => {
                           onClick={() => playStereoCheck('right')}
                           className="group flex flex-col items-center gap-4 transition-transform active:scale-95"
                        >
-                          <div className="w-32 h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
+                          <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-full border-4 border-neutral-800 group-hover:border-purple-500 flex items-center justify-center bg-neutral-900 shadow-2xl transition-colors">
                               <Speaker size={48} className="text-neutral-600 group-hover:text-purple-400" />
                           </div>
                           <span className="text-xl font-bold text-neutral-500 group-hover:text-white">RIGHT</span>
@@ -322,7 +321,7 @@ const SpeakerTest: React.FC = () => {
            {/* --- PHASE TEST --- */}
            {activeTest === 'phase' && (
                <div className="flex flex-col items-center w-full max-w-2xl relative z-10 animate-fade-in text-center">
-                   <div className="flex gap-4 mb-8">
+                   <div className="flex flex-wrap justify-center gap-4 mb-8">
                       <button 
                           onClick={() => playPhaseTest(true)}
                           className={`px-8 py-4 rounded-xl font-bold border-2 transition-all ${isPlaying && phaseDirection==='in' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-neutral-800 border-neutral-700 hover:border-neutral-500'}`}
@@ -394,84 +393,7 @@ const SpeakerTest: React.FC = () => {
 
         </div>
 
-        {/* SEO Deep Content */}
-        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Radio className="text-blue-500" /> Stereo Imaging & Phantom Center
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    In a properly set up stereo system, sounds played equally in both speakers should sound like they are coming from a "Phantom Center" directly in front of you, not from the two speakers independently.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    If the center image is vague or drifts to one side, check your speaker placement symmetry and room reflections.
-                 </p>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Music className="text-yellow-500" /> Audio Phase Explained
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Speakers are engines that push air. When wired "In Phase" (+ to +, - to -), both speakers push out at the same time.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    If wired "Out of Phase", one pushes while the other pulls. This causes sound waves to cancel each other out, especially in low frequencies (bass), resulting in a thin, hollow sound.
-                 </p>
-              </div>
-           </div>
 
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">How to test Left and Right speakers?</h4>
-                    <p className="text-neutral-400 text-sm">Click the "LEFT" and "RIGHT" buttons. You should hear sound coming distinctly from only one side. If sound comes from both or the wrong side, check your wiring or Windows sound settings.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Why can't I hear high frequencies in the Sweep Test?</h4>
-                    <p className="text-neutral-400 text-sm">Human hearing naturally degrades with age. While the theoretical limit is 20kHz, most adults cannot hear above 15-17kHz. If you hear nothing above 15kHz, it is likely your ears, not the speakers.</p>
-                 </div>
-              </div>
-           </div>
-
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Activity className="text-purple-500" /> Frequency Response Limits
-              </h3>
-              <p className="text-sm text-neutral-400 mb-6">
-                 Human hearing theoretically ranges from 20Hz to 20kHz, but this upper limit drops significantly with age.
-              </p>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age &lt; 20</strong>
-                    <span className="text-green-400 font-bold">~19 kHz</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age 30-40</strong>
-                    <span className="text-blue-400 font-bold">~15-16 kHz</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Age 50+</strong>
-                    <span className="text-yellow-400 font-bold">~12-14 kHz</span>
-                 </div>
-                 <div className="bg-black border border-white/10 p-4 rounded-lg">
-                    <strong className="text-white block mb-2">Subwoofer</strong>
-                    <span className="text-neutral-500">20 - 80 Hz</span>
-                 </div>
-              </div>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/speaker-test" />
-        </div>
 
       </div>
     </>

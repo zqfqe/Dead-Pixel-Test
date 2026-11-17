@@ -32,14 +32,21 @@ async function inspectRoute(path,options={}){
    // The gamepad tool intentionally displays a useful empty state without
    // a controller; unlike other tools it may not render any test controls.
    if(path==='/tools/controller'&&main.textContent.includes('No Controller Detected'))return true;
-   return !!main.querySelector('button,input,select,canvas,video,[role="button"]');
+   const workspace=main.querySelector('[data-tool-workspace]') ?? main;
+   return !!workspace.querySelector('button,input,select,canvas,video,[role="button"]:not(summary)');
   },path,{timeout:15000});
   if(canonicalOrigin){
    const href=await page.locator('link[rel="canonical"]').getAttribute('href');
    if(href!==canonicalOrigin+path)throw Error('Stale or missing Astro canonical: '+href);
   }
   const app=page.locator('main#main-content');
-  if(!await app.count())throw Error('Astro page did not hydrate a legacy tool');
+  if(!await app.count())throw Error('Astro page did not hydrate the tool');
+  if(await page.locator('html').getAttribute('data-surface')!=='light')throw Error('Tool still uses the old site layout');
+  if(await app.locator('h1').count()!==1)throw Error('Expected one page heading');
+  if(!['/tests/refresh-rate','/tests/local-dimming'].includes(path)){
+   if(await app.getAttribute('data-tool-page')!==path)throw Error('Tool route is missing the shared Astro workspace');
+   if(!await app.locator('#tool-guide h2').count())throw Error('Missing tool-specific static guide');
+  }
   if(options.mobile){
    const dimensions=await page.evaluate(()=>({viewport:window.innerWidth,page:document.documentElement.scrollWidth}));
    if(dimensions.page>dimensions.viewport+2)
@@ -59,7 +66,7 @@ async function inspectRoute(path,options={}){
 
 try{
  for(const route of routes)await inspectRoute(route);
- for(const route of ['/tests/uniformity','/tools/keyboard','/tools/double-click-test','/tools/ppi-calculator','/tools/touch'])
+ for(const route of routes)
   await inspectRoute(route,{mobile:true});
 
  const scenarioChecks=[
@@ -161,7 +168,7 @@ try{
      throw Error('Reset did not clear rapid repeat counter');
   }],
   ['/tools/speaker-test',async page=>{
-   await page.getByRole('heading',{level:1,name:'Audio System Test'}).waitFor();
+   await page.getByRole('heading',{level:2,name:'Audio System Test'}).waitFor();
    const left=page.getByRole('button',{name:'LEFT',exact:true});
    await left.click();
    await page.getByRole('button',{name:'Polarity / Phase'}).click();
@@ -194,7 +201,7 @@ try{
    await page.getByText('91.79',{exact:false}).first().waitFor();
   }],
   ['/tools/mouse-polling',async page=>{
-   await page.getByRole('heading',{level:1,name:'Mouse Polling Rate',exact:true}).waitFor();
+   await page.getByRole('heading',{level:2,name:'Mouse Polling Rate',exact:true}).waitFor();
    const avg=page.getByTestId('mouse-polling-average');
    await page.getByTestId('mouse-polling-surface').waitFor();
    await page.evaluate(()=>{
@@ -317,14 +324,14 @@ try{
    Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>window.__mockPads});
   }),
   interact:async page=>{
-   await page.getByRole('heading',{level:1,name:/QA Minimal Controller/}).waitFor();
+   await page.getByRole('heading',{level:2,name:/QA Minimal Controller/}).waitFor();
    if(await page.getByText(/NaN/).count())throw Error('Sparse controller generated NaN values');
    await page.evaluate(()=>{window.__mockPads=[null,null];});
    await page.getByRole('heading',{name:'No Controller Detected'}).waitFor();
    await page.evaluate(()=>{window.__mockPads=[{id:'QA Reconnected Pad',index:0,connected:true,mapping:'standard',buttons:[{pressed:false,value:0}],axes:[0,0],timestamp:0}];});
-   await page.getByRole('heading',{level:1,name:/QA Reconnected Pad/}).waitFor();
+   await page.getByRole('heading',{level:2,name:/QA Reconnected Pad/}).waitFor();
   }
  });
 }finally{await browser.close();}
 if(failures.length){console.error(failures.join('\n'));process.exit(1);}
-console.log('PASS legacy coverage: '+routes.length+' routes, '+5+' mobile audits and 12 interactive functional checks (hardware behaviors not certified).');
+console.log('PASS legacy coverage: '+routes.length+' routes, '+routes.length+' mobile audits and 12 interactive functional checks (hardware behaviors not certified).');

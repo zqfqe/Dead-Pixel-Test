@@ -163,9 +163,9 @@ const ColorBlindnessTest: React.FC = () => {
       
       {filters}
 
-      <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in min-h-screen flex flex-col">
+      <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in flex flex-col">
         <div className="text-center mb-12">
-           <h1 className="text-4xl font-bold text-white mb-4">Color Blindness Simulator</h1>
+           <h2 className="text-4xl font-bold text-white mb-4">Color Blindness Simulator</h2>
            <p className="text-neutral-400 max-w-2xl mx-auto">
              Compare approximate color-vision deficiency filters using your camera or a local image.
              This tool cannot diagnose a condition or certify accessibility.

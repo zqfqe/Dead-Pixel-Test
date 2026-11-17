@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SiteInformation from '../components/SiteInformation.astro';
-import App from '../../App';
+import App, { ToolWorkspace } from '../../App';
 import ScreenInspection from '../../components/tests/ScreenInspection';
 import RefreshRateTest from '../../components/tests/RefreshRateTest';
 import LocalDimmingTest from '../../components/tests/LocalDimmingTest';
@@ -647,10 +647,13 @@ const symptomDecisions:Record<string,{heading:string;intro:string;options:Sympto
 const symptomDecision=symptomDecisions[normalized];
 
 const taskGuide=specificGuidance[normalized];
-const legacyGuide=legacyGuides[normalized];
+const toolGuide=legacyGuides[normalized];
+const useToolWorkspace=Boolean(isLegacy && toolGuide && normalized!=='/tests/dead-pixel');
+const toolHeading=title.replace(/ \| DeadPixelTest$/, '');
+const toolDirectory=MENU_ITEMS.filter(item=>!item.isHeader && /^\/(tests|tools)\//.test(item.path));
 const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
 ---
-<BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy} noindex={Boolean((newPage && !newPage.indexable) || normalized==='/tests/dead-pixel')} schema={structuredData}>
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath} lang={locale} legacy={isLegacy && !useToolWorkspace} noindex={Boolean((newPage && !newPage.indexable) || normalized==='/tests/dead-pixel')} schema={structuredData}>
 {newPage ? (
   <main id="main-content" tabindex="-1" class="ui-site-main max-w-6xl mx-auto px-4 pt-7 md:px-8 md:pt-10">
     <nav aria-label="Breadcrumb" class="ui-breadcrumb mb-7"><a href={isBR?'/pt-br':'/'}>{isBR?'Início':'Home'}</a><span aria-hidden="true">/</span><span aria-current="page">{newPage.h1}</span></nav>
@@ -834,47 +837,46 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
   </main>
 ) : infoPage ? (
   <SiteInformation route={normalized as '/about' | '/contact' | '/privacy-policy' | '/terms-of-service'} />
-) : (
-  <>
-    <section id="legacy-static-intro" aria-labelledby="legacy-static-heading" class="mx-auto max-w-5xl px-6 py-12">
-      <h1 id="legacy-static-heading" class="text-3xl font-bold md:text-5xl">{title.replace(/ \| DeadPixelTest$/, '')}</h1>
-      <p class="mt-4 max-w-3xl text-neutral-300">{description}</p>
-      <p class="mt-6 text-sm text-neutral-300">The interactive controls require JavaScript. The instructions below are available immediately.</p>
+) : useToolWorkspace && toolGuide ? (
+  <main id="main-content" tabindex="-1" data-tool-page={normalized} class="ui-site-main max-w-6xl mx-auto px-4 pt-7 md:px-8 md:pt-10">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <nav aria-label="Breadcrumb" class="ui-breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{toolHeading}</span></nav>
+      <a class="text-sm font-semibold underline underline-offset-4 text-[#31583F]" href="#tool-directory">Browse all tools</a>
+    </div>
+    <header class="ui-landing-hero rounded-2xl border border-[#DCE3EA] p-5 md:p-9">
+      <h1 class="text-3xl md:text-5xl font-bold tracking-tight">{toolHeading}</h1>
+      <p class="mt-4 mb-6 max-w-3xl text-[#344256] text-base md:text-lg leading-7">{description}</p>
+      <div class="ui-inspection-shell ui-tool-workspace min-w-0 text-white">
+        <ToolWorkspace client:only="react" path={normalized} />
+        <noscript><p class="text-sm text-neutral-200">Enable JavaScript to use the test controls. You can read the instructions below.</p></noscript>
+      </div>
+    </header>
+    <section id="tool-guide" aria-labelledby="tool-guide-heading" class="ui-content-section mt-8 rounded-2xl border border-[#DCE3EA] bg-white p-5 md:p-8">
+      <h2 id="tool-guide-heading" class="text-2xl font-bold">{toolGuide.heading}</h2>
+      <p class="mt-3 max-w-3xl text-[#344256] leading-7">{toolGuide.intro}</p>
+      <div class="mt-7 grid gap-7 md:grid-cols-2">
+        <div>
+          <h3 class="mb-3 font-semibold">Practical inspection steps</h3>
+          <ol class="list-decimal space-y-3 pl-5 text-[#344256] leading-7">{toolGuide.steps.map(step=><li>{step}</li>)}</ol>
+        </div>
+        <div>
+          <h3 class="mb-3 font-semibold">What the result cannot prove</h3>
+          <ul class="list-disc space-y-3 pl-5 text-[#344256] leading-7">{toolGuide.limits.map(limit=><li>{limit}</li>)}</ul>
+        </div>
+      </div>
+      {normalized==='/tests/contrast' && <p class="mt-6"><a class="font-semibold underline text-[#31583F]" href="/screen-contrast-test">Screen Contrast &amp; Grayscale Test</a></p>}
     </section>
-    <App client:only="react" />
-    <section id="legacy-static-guide" class="mx-auto my-10 max-w-5xl rounded-2xl border border-[#DCE3EA] bg-white px-6 py-8 text-[#344256] leading-7 shadow-sm md:px-10 md:py-10" aria-label="Display test information">
-      {legacyGuide ? (
-        <>
-          <h2 class="text-2xl font-semibold text-[#101827] mb-4">{legacyGuide.heading}</h2>
-          <p class="max-w-3xl">{legacyGuide.intro}</p>
-          <div class="mt-8 grid gap-8 md:grid-cols-2">
-            <div>
-              <h3 class="text-lg font-semibold text-[#101827] mb-3">Practical inspection steps</h3>
-              <ol class="list-decimal pl-5 space-y-3">{legacyGuide.steps.map(step=><li>{step}</li>)}</ol>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-[#101827] mb-3">What the result cannot prove</h3>
-              <ul class="list-disc pl-5 space-y-3">{legacyGuide.limits.map(limit=><li>{limit}</li>)}</ul>
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <h2 class="text-xl font-semibold text-[#101827] mb-3">About {title}</h2>
-          <p>{description}</p>
-          <p class="mt-3">The interactive tool loads in your browser. This is a user-operated visual check, not a hardware certification. Browser and display settings affect results.</p>
-        </>
-      )}
-      <nav aria-label="Related display tests" class="mt-8 flex flex-wrap gap-3">
-        <a class="text-[#125CC9] hover:underline" href="/">Dead Pixel Test</a>
-        <a class="text-[#125CC9] hover:underline" href="/tests/local-dimming">Local Dimming</a>
-        <a class="text-[#125CC9] hover:underline" href="/tests/color-gradient">Color Gradient</a>
-        {normalized === '/tests/contrast' && <a class="text-[#125CC9] hover:underline" href="/screen-contrast-test">Screen Contrast &amp; Grayscale Test</a>}
-        <a class="text-[#125CC9] hover:underline" href="/tests/refresh-rate">Browser FPS</a>
+    <details id="tool-directory" class="mt-8 scroll-mt-28 rounded-2xl border border-[#DCE3EA] bg-white p-5">
+      <summary class="cursor-pointer py-2 font-semibold">Browse all tools</summary>
+      <nav aria-label="Tool directory" class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {toolDirectory.map(item=><a href={item.path} aria-current={item.path===normalized?'page':undefined} class="ui-related-link min-h-11">{item.title}</a>)}
       </nav>
-    </section>
-  </>
+    </details>
+  </main>
+) : (
+  <App client:only="react" />
 )}
+
 {newPage?.mode==='resolution' && <script is:inline>
   (function() {
     const el=document.getElementById('screen-metrics');

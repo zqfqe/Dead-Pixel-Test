@@ -3,7 +3,6 @@ import { useFullscreen } from '../../hooks/useFullscreen';
 import { ChevronLeft, ChevronUp, RotateCcw, Type, MoveVertical, MoveHorizontal, Palette, Grid, Monitor, Eye, Tv } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 type FontType = 'sans' | 'serif' | 'mono';
 type ColorMode = 'standard' | 'chroma' | 'inverted';
@@ -338,7 +337,7 @@ const TextClarityTest: React.FC = () => {
           ]
         }}
       />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col">
         <TestIntro
           title="Text Clarity Test"
           description="Check for chroma subsampling artifacts (fuzzy colored text), over-sharpening halos, and readability. Essential for setting up TVs as PC monitors."
@@ -356,52 +355,7 @@ const TextClarityTest: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        {/* Deep SEO Content */}
-        <section className="max-w-4xl mx-auto px-6 py-16 space-y-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Tv className="text-blue-500" /> TV as Monitor Issues
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Many 4K TVs default to <strong>Chroma Subsampling (4:2:0)</strong> to save HDMI bandwidth. This compresses color information, making fine text look blurry or jagged, while video still looks fine.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>The Fix:</strong> Go to your TV input settings and enable "PC Mode", "Game Mode", or "Enhanced HDMI". Then check your GPU settings to ensure Output is set to "RGB Full" or "YCbCr 4:4:4".
-                 </p>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Eye className="text-yellow-500" /> Over-Sharpening
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Monitors often have "Super Resolution" or "Vivid Pixel" features turned on by default. These add artificial white outlines (halos) around black text, making it harder to read.
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    Use this test to dial down your Sharpness slider until the white halos disappear but the text remains distinct.
-                 </p>
-              </div>
-           </div>
 
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Monitor className="text-purple-500" /> ClearType & Subpixel Layout
-              </h3>
-              <p className="text-sm text-neutral-400 mb-2">
-                 Windows assumes your monitor uses an <strong>RGB</strong> subpixel layout.
-              </p>
-              <ul className="text-sm text-neutral-400 list-disc pl-4 space-y-2">
-                 <li><strong>BGR Layout:</strong> Some large 43" monitors and TVs use BGR. If text looks blurry, run the "ClearType Tuner" in Windows and select the text samples that look best.</li>
-                 <li><strong>OLED / WBGR:</strong> OLEDs use non-standard layouts (like WRGB). Standard font smoothing can look fringy. You may need specialized software (like MacType) for perfect text on OLED.</li>
-              </ul>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tests/text-clarity" />
-        </div>
       </div>
     </>
   );

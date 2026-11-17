@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Volume2, VolumeX, RotateCcw, Keyboard as KeyboardIcon, Activity, PaintBucket, Terminal, Settings, LayoutTemplate, Ghost, Zap, Cpu, HelpCircle, AlertTriangle } from 'lucide-react';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 
 // ... (Keep existing Imports and KeyDefs remain unchanged)
 // Assume they are here exactly as they were in the previous file.
@@ -289,7 +288,7 @@ const KeyboardTest: React.FC = () => {
               <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20 text-white">
                   <KeyboardIcon size={24} />
               </div>
-              <h1 className="text-3xl font-bold text-white">Keyboard Tester</h1>
+              <h2 className="text-3xl font-bold text-white">Keyboard Tester</h2>
             </div>
             <p className="text-neutral-400 max-w-lg text-sm">
               Check for ghosting, key chatter, and dead switches. Supports N-Key Rollover testing.
@@ -451,90 +450,7 @@ const KeyboardTest: React.FC = () => {
 
         </div>
 
-        {/* SEO Content Section */}
-        <section className="mt-20 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <article className="prose prose-invert max-w-none">
-              <div className="grid md:grid-cols-2 gap-12">
-                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                       <Ghost className="text-blue-500" /> What is Keyboard Ghosting?
-                    </h2>
-                    <p className="text-neutral-400 leading-relaxed mb-4">
-                       <strong>Ghosting</strong> occurs when a keyboard fails to register a keypress because too many other keys are being held down simultaneously. This is common in cheap membrane keyboards which share wiring circuits (matrix).
-                    </p>
-                    <p className="text-neutral-400 leading-relaxed">
-                       <strong>NKRO (N-Key Rollover)</strong> means the keyboard can register an unlimited number of simultaneous presses. Most mechanical keyboards support 6KRO (6 keys) or NKRO (infinite).
-                    </p>
-                 </div>
-                 
-                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                       <Zap className="text-yellow-500" /> Key Chatter (Double Typing)
-                    </h3>
-                    <p className="text-sm text-neutral-400 mb-4">
-                       Does your keyboard type "tthhe" instead of "the"? This is called Key Chatter.
-                    </p>
-                    <div className="flex gap-4 p-4 bg-black/40 rounded-lg border border-white/5">
-                        <Cpu className="text-neutral-500 shrink-0" />
-                        <div className="text-xs text-neutral-400">
-                           <strong>The Fix:</strong> Chatter is usually caused by dust inside the mechanical switch. Try removing the keycap and cleaning the switch with compressed air or a drop of isopropyl alcohol.
-                        </div>
-                    </div>
-                 </div>
-              </div>
 
-              <hr className="my-12 border-white/10" />
-
-              <h2 className="text-2xl font-bold text-white mb-6">Switch Types Explained</h2>
-              <div className="grid md:grid-cols-3 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-red-500/20">
-                    <h4 className="font-bold text-red-400 mb-2">Linear (Red)</h4>
-                    <p className="text-sm text-neutral-400">
-                       Smooth, consistent keystroke with no bump. Preferred by gamers for rapid double-tapping. Quiet.
-                    </p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-blue-500/20">
-                    <h4 className="font-bold text-blue-400 mb-2">Clicky (Blue)</h4>
-                    <p className="text-sm text-neutral-400">
-                       Tactile bump + audible "click" sound. Great for typing accuracy, but loud for office environments.
-                    </p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-lg border border-yellow-700/20">
-                    <h4 className="font-bold text-amber-600 mb-2">Tactile (Brown)</h4>
-                    <p className="text-sm text-neutral-400">
-                       A subtle bump to feel the actuation point, but without the loud click. The middle ground for mixed use.
-                    </p>
-                 </div>
-              </div>
-           </article>
-
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">What is Keyboard Ghosting (NKRO)?</h4>
-                    <p className="text-neutral-400 text-sm">Ghosting occurs when a keyboard cannot register multiple keys pressed simultaneously. N-Key Rollover (NKRO) means the keyboard can register all keys at once.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">How to fix Key Chatter?</h4>
-                    <p className="text-neutral-400 text-sm">Key Chatter (double typing) is often caused by dust in the switch. Try cleaning the switch with compressed air or isopropyl alcohol.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Why is my key not working?</h4>
-                    <p className="text-neutral-400 text-sm">If a key stays grey when pressed, the switch might be dead, the PCB trace broken, or dirt is blocking the contact. Try pressing hard or wiggling it.</p>
-                 </div>
-              </div>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/keyboard" />
-        </div>
 
       </div>
     </>

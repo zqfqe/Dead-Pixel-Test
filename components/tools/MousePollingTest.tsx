@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { MousePointer2, Activity, Zap, Info, RotateCcw, Monitor, Gamepad2, Smartphone, HelpCircle } from 'lucide-react';
 import { Button } from '../common/Button';
 import { SEO } from '../common/SEO';
-import { RelatedTools } from '../common/RelatedTools';
 import { useMobile } from '../../hooks/useMobile';
 
 // Configuration
@@ -235,7 +234,7 @@ const MousePollingTest: React.FC = () => {
            <div className="inline-flex items-center justify-center p-4 bg-green-500/10 text-green-500 rounded-2xl mb-4">
               <Activity size={32} />
            </div>
-           <h1 className="text-4xl font-bold text-white mb-4">Mouse Polling Rate</h1>
+           <h2 className="text-4xl font-bold text-white mb-4">Mouse Polling Rate</h2>
            <p className="text-neutral-400 max-w-lg mx-auto">
               Move the mouse inside the test rectangle to estimate browser-observed pointer event cadence, not certified USB hardware polling frequency.
            </p>
@@ -322,72 +321,7 @@ const MousePollingTest: React.FC = () => {
           </>
         )}
 
-        {/* SEO Content Section */}
-        <section className="mt-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Zap className="text-yellow-500" /> 125Hz vs 500Hz vs 1000Hz
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Polling rate measures how often your mouse reports its position to your computer.
-                 </p>
-                 <ul className="text-neutral-400 text-sm space-y-2 list-disc pl-4">
-                    <li><strong>125Hz:</strong> Standard office mice. Reports every 8ms. Can feel "floaty" in games.</li>
-                    <li><strong>500Hz:</strong> Gaming standard. Reports every 2ms. Smooth and stable.</li>
-                    <li><strong>1000Hz:</strong> Pro gaming standard. Reports every 1ms.</li>
-                 </ul>
-              </div>
-              <div>
-                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Monitor className="text-blue-500" /> Why 4000Hz/8000Hz?
-                 </h2>
-                 <p className="text-neutral-400 leading-relaxed text-sm mb-4">
-                    Newer mice (Razer HyperPolling, Logitech Superlight 2) support up to 8000Hz (0.125ms delay). 
-                 </p>
-                 <p className="text-neutral-400 leading-relaxed text-sm">
-                    <strong>Is it worth it?</strong> Only if you have a 240Hz+ monitor. On 60Hz screens, the visual difference is negligible, and high polling rates can actually cause CPU stutter in some older games.
-                 </p>
-              </div>
-           </div>
 
-           {/* FAQ Section Visual - Matches Schema */}
-           <div className="border-t border-white/10 pt-12">
-              <h3 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Is 1000Hz better than 500Hz for gaming?</h4>
-                    <p className="text-neutral-400 text-sm">Technically yes, as 1000Hz reports position every 1ms compared to 2ms for 500Hz. However, the difference is very subtle. Pro players prefer 1000Hz for maximum responsiveness, but 500Hz is smoother on some systems.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Does high polling rate affect FPS?</h4>
-                    <p className="text-neutral-400 text-sm">Yes. extremely high rates (4000Hz/8000Hz) can consume significant CPU resources, causing FPS drops or stuttering in older games that aren't optimized for high-frequency input.</p>
-                 </div>
-              </div>
-           </div>
-
-           <div className="bg-neutral-900/50 border border-white/10 rounded-2xl p-8 mt-8">
-              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                 <Gamepad2 className="text-purple-500" /> Troubleshooting Stutter
-              </h3>
-              <p className="text-sm text-neutral-400 mb-2">
-                 If your game stutters or drops FPS when you move your mouse:
-              </p>
-              <ol className="text-sm text-neutral-400 list-decimal pl-4 space-y-2">
-                 <li>Lower your polling rate from 1000Hz to 500Hz in your mouse software.</li>
-                 <li>Some older game engines cannot handle 1000 updates per second.</li>
-                 <li>Ensure your CPU is not maxing out at 100% usage.</li>
-              </ol>
-           </div>
-
-        </section>
-
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/mouse-polling" />
-        </div>
 
       </div>
     </>

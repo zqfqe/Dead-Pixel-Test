@@ -8,6 +8,7 @@ import { MENU_ITEMS } from './data/menu';
 import { BLOG_POSTS } from './data/blog';
 import Footer from './components/layout/Footer';
 import CommandPalette from './components/common/CommandPalette';
+import { EmbeddedToolContext } from './components/common/TestIntro';
 import { Loader2 } from 'lucide-react';
 
 // The Astro homepage has its own React island. Avoid eagerly loading this legacy test on every tool route.
@@ -61,6 +62,34 @@ const NotFound = lazy(() => import('./components/pages/NotFound'));
 const SeoLandingPage = lazy(() => import('./components/pages/SeoLandingPage'));
 
 
+const documentTools = {
+  '/tests/uniformity': UniformityTest,
+  '/tests/text-clarity': TextClarityTest,
+  '/tests/color-gradient': ColorGradientTest,
+  '/tests/color-distance': ColorDistanceTest,
+  '/tests/response-time': GhostingTest,
+  '/tests/gamma': GammaTest,
+  '/tests/test-patterns': TestPatterns,
+  '/tests/viewing-angle': ViewingAngleTest,
+  '/tests/brightness': BrightnessTest,
+  '/tests/contrast': ContrastTest,
+  '/tests/matrix': MatrixTest,
+  '/tests/audio-sync': AudioSyncTest,
+  '/tools/keyboard': KeyboardTest,
+  '/tools/controller': ControllerTest,
+  '/tools/reaction-time': ReactionTimeTest,
+  '/tools/ppi-calculator': PPICalculator,
+  '/tools/mouse-polling': MousePollingTest,
+  '/tools/double-click-test': DoubleClickTest,
+  '/tools/touch': TouchTest,
+  '/tools/speaker-test': SpeakerTest,
+  '/tools/ruler': PhysicalRuler,
+  '/tools/webcam': WebcamTest,
+  '/tools/burn-in-wiper': BurnInWiper,
+  '/tools/color-blindness': ColorBlindnessTest,
+  '/tools/input-lag': InputLagTest,
+};
+
 const PageLoader = () => (
   <div className="h-full w-full flex items-center justify-center min-h-[50vh]">
     <div className="flex flex-col items-center gap-3 text-neutral-500">
@@ -92,7 +121,6 @@ const AstroDocumentNavigation:React.FC=()=>{
  },[route.pathname]);
  React.useEffect(()=>{
   if(!document.documentElement.hasAttribute('data-astro-site'))return;
-  document.getElementById('legacy-static-intro')?.remove();
   const onClick=(event:MouseEvent)=>{
    if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
    const target=event.target;
@@ -116,6 +144,26 @@ const AstroDocumentNavigation:React.FC=()=>{
  return null;
 };
 
+export const ToolWorkspace: React.FC<{path: string}> = ({path}) => {
+  const Tool = documentTools[path as keyof typeof documentTools];
+  if (!Tool) return null;
+  return (
+    <TestReportProvider>
+      <Router>
+        <AstroDocumentNavigation />
+        <CommandPalette showTrigger />
+        <EmbeddedToolContext.Provider value={true}>
+          <div data-tool-workspace={path}>
+            <Suspense fallback={<p role="status" className="text-sm text-neutral-200">Loading test controls…</p>}>
+              <Tool />
+            </Suspense>
+          </div>
+        </EmbeddedToolContext.Provider>
+      </Router>
+    </TestReportProvider>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <HelmetProvider>
@@ -131,47 +179,19 @@ const App: React.FC = () => {
               <div className="max-w-7xl mx-auto p-6 lg:p-12">
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    {/* V1.2 search-intent pages: keep legacy /tests/* routes unchanged */}
+                    {/* Standalone router fallback. Published tool pages mount ToolWorkspace. */}
                     {SEO_LANDING_PAGES.filter(page => page.path !== '/' && page.mode !== 'refresh-rate' && page.mode !== 'local-dimming').map(page => (
                       <Route key={page.path} path={page.path} element={<SeoLandingPage />} />
                     ))}
-                    {/* Phase 1 Tests */}
+                    {Object.entries(documentTools).map(([path, Tool]) => <Route key={path} path={path} element={<Tool />} />)}
+                    {/* Pixel test fallback for the retired URL. */}
                     <Route path="/" element={<DeadPixelTest />} />
                     <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
                     
-                    <Route path="/tests/uniformity" element={<UniformityTest />} />
-                    <Route path="/tests/text-clarity" element={<TextClarityTest />} />
-                    <Route path="/tests/color-gradient" element={<ColorGradientTest />} />
-                    <Route path="/tests/color-distance" element={<ColorDistanceTest />} />
-                    <Route path="/tests/response-time" element={<GhostingTest />} />
-                    <Route path="/tests/gamma" element={<GammaTest />} />
-                    <Route path="/tests/test-patterns" element={<TestPatterns />} />
-                    <Route path="/tests/viewing-angle" element={<ViewingAngleTest />} />
-                    <Route path="/tests/brightness" element={<BrightnessTest />} />
-                    <Route path="/tests/contrast" element={<ContrastTest />} />
-                    <Route path="/tests/matrix" element={<MatrixTest />} />
-                    
-                    {/* Phase 2 Tests */}
                     <Route path="/tests/local-dimming" element={<LocalDimmingTest />} />
-                    <Route path="/tests/audio-sync" element={<AudioSyncTest />} />
                     <Route path="/tests/refresh-rate" element={<RefreshRateTest />} />
                     
-                    {/* Tools */}
-                    <Route path="/tools/keyboard" element={<KeyboardTest />} />
-                    <Route path="/tools/controller" element={<ControllerTest />} />
-                    <Route path="/tools/reaction-time" element={<ReactionTimeTest />} />
-                    <Route path="/tools/ppi-calculator" element={<PPICalculator />} />
-                    <Route path="/tools/mouse-polling" element={<MousePollingTest />} />
-                    <Route path="/tools/double-click-test" element={<DoubleClickTest />} />
-                    <Route path="/tools/touch" element={<TouchTest />} />
-                    <Route path="/tools/speaker-test" element={<SpeakerTest />} />
-                    <Route path="/tools/ruler" element={<PhysicalRuler />} />
-                    <Route path="/tools/webcam" element={<WebcamTest />} />
                     
-                    {/* New Tools */}
-                    <Route path="/tools/burn-in-wiper" element={<BurnInWiper />} />
-                    <Route path="/tools/color-blindness" element={<ColorBlindnessTest />} />
-                    <Route path="/tools/input-lag" element={<InputLagTest />} />
 
                     {/* Blog & Resources */}
                     <Route path="/blog" element={<BlogIndex />} />

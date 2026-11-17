@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MousePointer2, AlertTriangle, RotateCcw, Settings, Activity, Clock, Mouse } from 'lucide-react';
 import { SEO } from '../common/SEO';
 import { TestIntro, InfoCard } from '../common/TestIntro';
-import { RelatedTools } from '../common/RelatedTools';
 
 interface ClickLog {
   id: number;
@@ -113,7 +112,7 @@ const DoubleClickTest: React.FC = () => {
         ]}
       />
       
-      <div className="max-w-6xl mx-auto py-12 px-6 animate-fade-in min-h-screen">
+      <div className="max-w-6xl mx-auto py-4 sm:py-12 sm:px-6 animate-fade-in">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-12">
@@ -122,7 +121,7 @@ const DoubleClickTest: React.FC = () => {
                     <div className="p-3 bg-orange-500/10 text-orange-500 rounded-xl">
                         <MousePointer2 size={28} />
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-white">Double Click Test</h1>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white">Double Click Test</h2>
                 </div>
                 <p className="text-neutral-400 max-w-lg">
                     Click once per deliberate press. Rapid repeats of the same button may indicate switch bounce, but do not prove a hardware fault.
@@ -130,7 +129,7 @@ const DoubleClickTest: React.FC = () => {
             </div>
 
             {/* Stats Panel */}
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
                 <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl text-center min-w-[100px]">
                     <div className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Clicks</div>
                     <div data-testid="click-count" className="text-3xl font-mono font-bold text-white">{clickCount}</div>
@@ -147,7 +146,7 @@ const DoubleClickTest: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* --- Left: Click Area --- */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="min-w-0 lg:col-span-2 space-y-6">
                 
                 {/* The Click Pad */}
                 <div 
@@ -195,12 +194,12 @@ const DoubleClickTest: React.FC = () => {
 
                 {/* Settings Bar */}
                 <div className="bg-neutral-900/50 border border-neutral-800 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 flex-1">
+                    <div className="flex min-w-0 flex-wrap items-center gap-4 flex-1">
                         <div className="flex items-center gap-2 text-neutral-400">
                             <Settings size={18} />
                             <span className="text-sm font-bold">Rapid Interval Threshold</span>
                         </div>
-                        <div className="flex items-center gap-3 flex-1 max-w-xs">
+                        <div className="flex min-w-0 items-center gap-3 flex-1 max-w-xs">
                             <input 
                                 type="range" 
                                 min="10" 
@@ -208,7 +207,7 @@ const DoubleClickTest: React.FC = () => {
                                 step="10"
                                 value={threshold}
                                 onChange={(e) => setThreshold(Number(e.target.value))}
-                                className="flex-1 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                className="min-w-0 flex-1 h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
                             />
                             <span className="font-mono text-white text-sm w-12">{threshold}ms</span>
                         </div>
@@ -276,43 +275,7 @@ const DoubleClickTest: React.FC = () => {
 
         </div>
 
-        {/* --- SEO Content --- */}
-        <section className="mt-20 border-t border-white/10 pt-16">
-            <h2 className="text-2xl font-bold text-white mb-8">About Mouse Double Clicking</h2>
-            
-            <div className="grid md:grid-cols-2 gap-12">
-                <div className="space-y-6">
-                    <InfoCard title="What is Switch Bouncing?">
-                        <p>Mechanical switches inside mice use a metal spring contact. When you click, this metal creates a circuit. As it wears out (oxidation or metal fatigue), the contact may "bounce" microscopically, creating multiple electrical signals from a single press.</p>
-                    </InfoCard>
-                    <InfoCard title="The 'Double Click' Issue">
-                        <p>This is notorious in popular gaming mice (like older Logitech G Pro or Razer models). It manifests as dragging items accidentally dropping, or single-clicking a file and having it open instantly.</p>
-                    </InfoCard>
-                </div>
-                
-                <div className="bg-neutral-900/50 p-8 rounded-2xl border border-white/10">
-                    <h3 className="text-lg font-bold text-white mb-4">How to Fix It?</h3>
-                    <ul className="space-y-4 text-sm text-neutral-400">
-                        <li className="flex gap-3">
-                            <span className="text-white font-bold min-w-[20px]">1.</span>
-                            <span><strong>Firmware Update:</strong> Manufacturers sometimes release updates that increase the "debounce time" (the software delay that ignores signals too close together).</span>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="text-white font-bold min-w-[20px]">2.</span>
-                            <span><strong>Compressed Air:</strong> Sometimes static or dust causes the issue. Try blowing air under the buttons (while the mouse is off).</span>
-                        </li>
-                        <li className="flex gap-3">
-                            <span className="text-white font-bold min-w-[20px]">3.</span>
-                            <span><strong>Replace Switches:</strong> If you are handy with soldering, replacing the Omron switches with Kailh GM 8.0 or Japanese Omrons is a permanent fix.</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
 
-        <div className="max-w-7xl mx-auto px-6 w-full">
-           <RelatedTools currentPath="/tools/double-click-test" />
-        </div>
 
       </div>
     </>

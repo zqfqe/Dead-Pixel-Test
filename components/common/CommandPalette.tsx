@@ -7,7 +7,7 @@ const matchingTools=(query:string)=>MENU_ITEMS.filter(item=>
  !item.isHeader&&item.title.toLocaleLowerCase().includes(query.toLocaleLowerCase())
 );
 
-const CommandPalette:React.FC=()=>{
+const CommandPalette:React.FC<{showTrigger?: boolean}>=({showTrigger=false})=>{
  const [isOpen,setIsOpen]=useState(false);
  const [query,setQuery]=useState('');
  const [selectedIndex,setSelectedIndex]=useState(0);
@@ -96,9 +96,14 @@ const CommandPalette:React.FC=()=>{
   else if(!dialogRef.current?.contains(document.activeElement)){event.preventDefault();first.focus();}
  };
 
- if(!isOpen)return null;
  return (
-  <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
+  <>
+   {showTrigger && <button type="button" aria-haspopup="dialog" aria-expanded={isOpen}
+    className="mb-4 inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-white/20 px-3 text-sm font-medium text-white hover:bg-white/10"
+    onClick={event=>{openerRef.current=event.currentTarget;setIsOpen(true);}}>
+    <Search size={16} aria-hidden="true" /> Search tools
+   </button>}
+   {isOpen && <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} aria-hidden="true" />
    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Search tools" onKeyDown={trapTab}
     className="relative w-full max-w-lg rounded-xl border border-white/15 bg-[#111B1A] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -135,7 +140,8 @@ const CommandPalette:React.FC=()=>{
      <div className="flex items-center gap-1"><Command size={10} aria-hidden="true" /> / Ctrl + K</div>
     </div>
    </div>
-  </div>
+  </div>}
+  </>
  );
 };
 export default CommandPalette;

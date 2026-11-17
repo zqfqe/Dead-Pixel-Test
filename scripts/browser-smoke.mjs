@@ -123,6 +123,7 @@ await check('/tools/mouse-polling',async page=>{
   // sampler and produce a nonzero browser-observed estimate.
   const area=page.getByTestId('mouse-polling-surface');
   await area.waitFor({timeout:12000});
+  await area.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest'}));
   const box=await area.boundingBox();
   if(!box)throw Error('Mouse sampling area has no visible bounds');
   await page.mouse.move(box.x+35,box.y+55);
@@ -317,16 +318,13 @@ await check('/tests/audio-sync',async page=>{
  if(!await page.locator('main#main-content').count())throw Error('Legacy skip target missing');
 });
 await check('/tests/audio-sync',async page=>{
- const toggle=page.locator('button[aria-controls="mobile-site-menu"]');
- await toggle.waitFor({timeout:10000});
- const menu=page.locator('#mobile-site-menu');
- if(await toggle.getAttribute('aria-expanded')!=='false')throw Error('Mobile menu open by default');
- await toggle.click();
- if(await toggle.getAttribute('aria-expanded')!=='true')throw Error('Mobile menu toggle state mismatch');
- await menu.getByRole('link',{name:'Refresh Rate / Skipping'}).waitFor();
- await page.keyboard.press('Escape');
- if(await toggle.getAttribute('aria-expanded')!=='false')throw Error('Mobile menu did not close with Escape');
- if(await menu.getAttribute('aria-hidden')!=='true')throw Error('Closed mobile menu remains exposed to accessibility tree');
+ const directory=page.locator('#tool-directory');
+ const summary=directory.locator('summary');
+ if(await directory.evaluate(el=>el.open))throw Error('Tool directory is open by default');
+ await summary.click();
+ await directory.getByRole('link',{name:'Refresh Rate / Skipping'}).waitFor();
+ await summary.click();
+ if(await directory.evaluate(el=>el.open))throw Error('Tool directory did not close');
 },{mobile:true});
 await check('/phone-screen-dead-pixel-test',async page=>{
  await page.getByRole('button',{name:/Start full-screen inspection/i}).tap();
@@ -489,7 +487,7 @@ await check('/pt-br',async page=>{
 },{mobile:true});
 await check('/tests/audio-sync',async page=>{
  const value=await page.evaluate(()=>document.body.dataset.surface);
- if(value!=='dark')throw Error('Legacy tool lost dark theme');
+ if(value!=='light')throw Error('Tool still uses the dark legacy page shell');
 });
 await check('/',async page=>{
  const sizes=await page.evaluate(()=>({screen:innerWidth,root:document.documentElement.scrollWidth}));
@@ -664,7 +662,7 @@ await check('/pt-br',async page=>{
 });
 await check('/tests/audio-sync',async page=>{
  const theme=await page.locator('meta[name="theme-color"]').getAttribute('content');
- if(theme!=='#08090c')throw Error('Dark legacy tool theme color wrong: '+theme);
+ if(theme!=='#0D1416')throw Error('Wrong shared site theme color: '+theme);
 });
 await check('/',async page=>{
  await page.getByRole('button',{name:'Start full-screen inspection'}).click();
@@ -820,7 +818,7 @@ for(const path of ['/tests/color-gradient','/tests/audio-sync','/tests/test-patt
   const rawHTML = await response.text();
   const headings = [...rawHTML.matchAll(/<h1[\s>]/gi)];
   if (!response.ok() || headings.length !== 1) throw Error('Expected one server-rendered tool heading');
-  const guide=page.locator('#legacy-static-guide');
+  const guide=page.locator('#tool-guide');
   await guide.waitFor();
   const ratio=await guide.evaluate(el=>{
    const luminance=(color)=>{
@@ -863,7 +861,8 @@ await check('/tests/audio-sync',async page=>{
 });
 await check('/tests/audio-sync',async page=>{
  const navigation=page.waitForNavigation({waitUntil:'domcontentloaded',timeout:12000});
- await page.locator('footer').getByRole('link',{name:'Color Gradient',exact:true}).click();
+ await page.locator('#tool-directory summary').click();
+ await page.locator('#tool-directory').getByRole('link',{name:'Color Gradient',exact:true}).click();
  await navigation;
  await page.getByRole('heading',{name:'How to identify visible color banding'}).waitFor();
  const canonical=await page.locator('link[rel="canonical"]').getAttribute('href');
@@ -879,6 +878,7 @@ for(const path of ['/pt-br/pixel-morto-notebook','/pt-br/reparar-pixel-preso']){
 }
 await check('/tests/audio-sync',async page=>{
  // The command palette is a hydrated React island, not part of Astro's initial HTML.
+ await page.locator('[data-tool-workspace] button').first().waitFor({timeout:12000});
  await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor({timeout:12000});
  await page.keyboard.press('Control+k');
  const field=page.getByRole('textbox',{name:'Search tools'});
@@ -900,8 +900,7 @@ await check('/tests/audio-sync',async page=>{
 });
 
 await check('/tests/audio-sync',async page=>{
- await page.getByRole('link',{name:'DeadPixelTest Home'}).waitFor();
- await page.keyboard.press('Control+k');
+ await page.getByRole('button',{name:'Search tools',exact:true}).click();
  const input=page.getByRole('textbox',{name:'Search tools'});
  await input.waitFor();
  await input.fill('Color Gradient');
@@ -951,6 +950,7 @@ await check('/tests/audio-sync',async page=>{
    throw Error('Command palette focus at '+label+' failed: '+JSON.stringify(snapshot)+'; '+String(error));
   }
  };
+ await page.locator('[data-tool-workspace] button').first().waitFor({timeout:12000});
  const opener=page.getByRole('link',{name:'DeadPixelTest Home'});
  await opener.focus();
  await page.keyboard.press('Control+k');
@@ -1054,15 +1054,11 @@ await check('/',async page=>{
 });
 
 await check('/tests/audio-sync',async page=>{
- const header=page.locator('header').first();
- if(!(await header.getAttribute('class'))?.includes('bg-[#0D1416]'))
-  throw Error('Legacy tools do not share the graphite site header');
+ const header=page.locator('header.ui-topbar');
+ await header.getByRole('navigation',{name:'Tools'}).waitFor();
  await page.setViewportSize({width:390,height:844});
- await page.getByRole('button',{name:'Open Menu'}).click();
- const mobile=page.getByRole('navigation',{name:'Mobile navigation'});
- await mobile.getByRole('link',{name:'Uniformity',exact:true}).waitFor();
- await page.getByRole('button',{name:'Close Menu'}).click();
- await page.waitForFunction(()=>document.querySelector('#mobile-site-menu')?.getAttribute('aria-hidden')==='true',null,{timeout:5000});
+ const sizes=await page.evaluate(()=>({screen:innerWidth,root:document.documentElement.scrollWidth}));
+ if(sizes.root>sizes.screen+2)throw Error('Tool page overflows on mobile '+JSON.stringify(sizes));
 });
 
 await check('/pt-br/pixel-morto-notebook',async page=>{

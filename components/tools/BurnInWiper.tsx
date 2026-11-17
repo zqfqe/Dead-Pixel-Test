@@ -192,7 +192,7 @@ const BurnInWiper: React.FC = () => {
           { name: 'Burn-in Wiper', path: '/tools/burn-in-wiper' }
         ]}
       />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col">
         <TestIntro
           title="OLED Display Pattern Demo"
           description="An optional browser-based display-pattern demo. It does not condition the panel, repair stuck pixels or reverse OLED burn-in."

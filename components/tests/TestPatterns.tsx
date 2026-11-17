@@ -168,7 +168,7 @@ const TestPatterns: React.FC = () => {
                     </div>
                     
                     <div className="h-24 border-t border-black bg-neutral-100 p-4 text-center">
-                       <h1 className="text-3xl font-serif">The Quick Brown Fox Jumps Over The Lazy Dog.</h1>
+                       <h2 className="text-3xl font-serif">The Quick Brown Fox Jumps Over The Lazy Dog.</h2>
                        <p className="text-xs text-neutral-500 mt-2">Check for halos around text (Over-sharpening)</p>
                     </div>
                 </div>
@@ -230,7 +230,6 @@ const TestPatterns: React.FC = () => {
            {isSidebarOpen && (
              <div className="flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20">
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
-                   {/* SEO OPTIMIZATION: H3 -> DIV */}
                    <div className="font-bold text-sm tracking-wider text-neutral-800">PATTERN SELECT</div>
                    <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
@@ -369,7 +368,7 @@ const TestPatterns: React.FC = () => {
           ]
         }}
       />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col">
         <TestIntro
           title="Test Patterns"
           description="Reference patterns for setting up display color, brightness, contrast, and geometry. Includes industry-standard SMPTE bars and Multiburst charts."
@@ -387,67 +386,6 @@ const TestPatterns: React.FC = () => {
           </InfoCard>
         </TestIntro>
 
-        <section className="max-w-5xl mx-auto px-6 py-16 space-y-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-           
-           <article className="prose prose-invert max-w-none">
-              <div className="grid md:grid-cols-2 gap-12">
-                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                       <Layers className="text-blue-500" /> Standard Patterns
-                    </h2>
-                    <p className="text-neutral-400 leading-relaxed mb-4">
-                       Professional calibrators use standardized images to ensure a display is outputting the signal correctly without distortion.
-                    </p>
-                    <p className="text-neutral-400 leading-relaxed">
-                       <strong>SMPTE Bars:</strong> Originally for NTSC TV, they help check Color and Tint (Hue). The bottom "PLUGE" section is essential for setting black levels.
-                    </p>
-                 </div>
-                 
-                 <div className="bg-neutral-900/50 p-6 rounded-xl border border-white/10">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                       <Activity className="text-yellow-500" /> Sharpness & Artifacts
-                    </h3>
-                    <p className="text-sm text-neutral-400 mb-4">
-                       Many TVs add artificial sharpening. This creates white "halos" around high-contrast edges (like text).
-                    </p>
-                    <div className="flex gap-4 p-4 bg-black/40 rounded-lg border border-white/5">
-                        <Zap className="text-neutral-500 shrink-0" />
-                        <div className="text-xs text-neutral-400">
-                           <strong>The Fix:</strong> Use the "Sharpness" pattern. Lower your monitor's sharpness slider until the halos disappear and the thin lines look natural, not jagged.
-                        </div>
-                    </div>
-                 </div>
-              </div>
-
-              <hr className="my-12 border-white/10" />
-
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                 <Grid className="text-purple-500" /> Geometry & Overscan
-              </h2>
-              <p className="text-neutral-400 leading-relaxed mb-6">
-                 Overscan is a relic from the CRT era where TVs zoomed in 5% to hide static on the edges. On digital screens, this hurts picture quality by scaling the image. Use the <strong>Geometry Grid</strong> to ensure you can see the full outer white border. If it's cut off, find the "Just Scan", "Screen Fit", or "1:1 Pixel" setting on your TV remote.
-              </p>
-           </article>
-
-           {/* FAQ Section */}
-           <div className="border-t border-white/10 pt-12">
-              {/* SEO OPTIMIZATION: H3 -> H2 for main FAQ section */}
-              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
-                 <HelpCircle className="text-blue-400" /> Frequently Asked Questions
-              </h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">What is PLUGE?</h4>
-                    <p className="text-neutral-400 text-sm">Picture Line-Up Generation Equipment. It's a test signal with bars slightly darker and lighter than reference black. It helps you set the Brightness control so real black is black, but shadow detail isn't lost.</p>
-                 </div>
-                 <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
-                    <h4 className="font-bold text-white text-base mb-2">Why does the Grid pattern look fuzzy?</h4>
-                    <p className="text-neutral-400 text-sm">If the 1-pixel lines in the grid look fuzzy or have colored fringing, your monitor might be applying scaling (non-native resolution) or Chroma Subsampling (4:2:0).</p>
-                 </div>
-              </div>
-           </div>
-
-        </section>
       </div>
     </>
   );
