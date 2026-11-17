@@ -138,12 +138,12 @@ const legacySeoGuides: Record<string,{seoTitle:string;heading:string;intro:strin
     ]
   },
   "/tests/contrast": {
-    "seoTitle": "Screen Contrast Test – Black & White Detail | DeadPixelTest",
-    "heading": "How to check visible contrast and clipping",
-    "intro": "Compare black-to-white steps to find shadow crush or highlight clipping. These reference patterns do not measure your panel's physical contrast ratio.",
+    "seoTitle": "White Level & Highlight Clipping Test | DeadPixelTest",
+    "heading": "How to check near-white levels and highlight clipping",
+    "intro": "Compare near-white steps and pastel colors for possible highlight clipping. These patterns show visible separation between bright shades.",
     "steps": [
       "Use your normal viewing brightness and picture preset.",
-      "Look for separation among dark-gray and bright-gray patches.",
+      "Look for separation between near-white patches and the white background.",
       "Check whether HDR, video-range or auto-contrast processing changes the result.",
       "Change one setting at a time and record what you observe."
     ],
@@ -477,7 +477,7 @@ const legacyGuides: Record<string,{heading:string;intro:string;steps:string[];li
   steps:[
    'Open the test on the monitor you want to investigate. Check the refresh-rate setting in your operating system first.',
    'Let the browser FPS estimate settle for several seconds, without assuming that the value proves physical display Hz.',
-   'For a frame-skipping investigation, use a separate camera with manual shutter settings and repeat photographs of the moving block.',
+   'Use a separate camera with manual shutter settings. Use the exposure shown after the FPS stabilizes, or choose a shorter exposure, then repeat photos of the grid.',
    'If you see irregular spacing, repeat with browser extensions disabled and other applications closed. Compare a different cable or port if relevant.'
   ],
   limits:[
@@ -860,7 +860,13 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
   <SiteInformation route={normalized as '/about' | '/contact' | '/privacy-policy' | '/terms-of-service'} />
 ) : (
   <>
-    <App client:only="react" />
+    <App client:only="react">
+      <div slot="fallback" class="mx-auto max-w-5xl px-6 py-12">
+        <h1 class="text-3xl font-bold md:text-5xl">{title.replace(/ \| DeadPixelTest$/, '')}</h1>
+        <p class="mt-4 max-w-3xl text-neutral-300">{description}</p>
+        <p class="mt-6 text-sm text-neutral-300">The interactive controls require JavaScript. The instructions below are available immediately.</p>
+      </div>
+    </App>
     <section id="legacy-static-guide" class="mx-auto my-10 max-w-5xl rounded-2xl border border-[#DCE3EA] bg-white px-6 py-8 text-[#344256] leading-7 shadow-sm md:px-10 md:py-10" aria-label="Display test information">
       {legacyGuide ? (
         <>
@@ -888,6 +894,7 @@ const canonicalPath=normalized==='/tests/dead-pixel'?'/':newPage?.path||route;
         <a class="text-[#125CC9] hover:underline" href="/">Dead Pixel Test</a>
         <a class="text-[#125CC9] hover:underline" href="/tests/local-dimming">Local Dimming</a>
         <a class="text-[#125CC9] hover:underline" href="/tests/color-gradient">Color Gradient</a>
+        {normalized === '/tests/contrast' && <a class="text-[#125CC9] hover:underline" href="/screen-contrast-test">Screen Contrast &amp; Grayscale Test</a>}
         <a class="text-[#125CC9] hover:underline" href="/tests/refresh-rate">Browser FPS</a>
       </nav>
     </section>

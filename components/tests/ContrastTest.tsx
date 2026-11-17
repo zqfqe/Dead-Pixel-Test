@@ -153,7 +153,7 @@ const ContrastTest: React.FC = () => {
                    
                    <p className="text-sm text-neutral-500 max-w-lg text-center leading-relaxed">
                      The gradient should fade <strong>smoothly</strong> into pure white at the very right edge. 
-                     If you see a hard vertical line ("clipping") before the edge, your Contrast is too high.
+                     A hard boundary near the bright end can indicate clipping. Compare the white-step pattern and check your picture mode and signal range.
                    </p>
                    
                    {/* CSS for scan line */}
@@ -281,7 +281,7 @@ const ContrastTest: React.FC = () => {
                          <span className="text-[10px] font-mono opacity-70">{isPulsing ? 'ON' : 'OFF'}</span>
                       </button>
                       <p className="text-[10px] text-neutral-500 leading-tight">
-                         If you can't see the boxes, turn on Pulse. If you still can't see them flashing, your Contrast is definitely too high (Clipping).
+                         If you cannot distinguish the near-white boxes, compare the static and Pulse views. Check HDR, signal range and picture mode before attributing the result to contrast.
                       </p>
                    </div>
 
@@ -306,8 +306,8 @@ const ContrastTest: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Contrast Calibration Test - White Level Clipping" 
-        description="Calibrate your monitor's contrast (white level). Ensure bright whites don't clip detail. Check for color bleaching in pastels."
+        title="White Level & Highlight Clipping Test" 
+        description="Compare near-white steps and pastel colors for possible highlight clipping."
         canonical="/tests/contrast"
         keywords={['contrast test', 'white level test', 'monitor calibration', 'white clipping test', 'color bleaching test']}
         breadcrumbs={[
@@ -319,9 +319,9 @@ const ContrastTest: React.FC = () => {
           "@graph": [
             {
               "@type": "WebApplication",
-              "name": "Monitor White Level (Contrast) Tester",
+              "name": "White Level & Highlight Clipping Test",
               "url": "https://deadpixeltest.cc/tests/contrast",
-              "description": "Test and calibrate monitor contrast to prevent white saturation (clipping). Ensures bright details like clouds remain visible.",
+              "description": "Compare near-white steps and pastel colors for possible highlight clipping.",
               "applicationCategory": "UtilitiesApplication",
               "operatingSystem": "Web Browser",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -337,10 +337,10 @@ const ContrastTest: React.FC = () => {
                 }
               }, {
                 "@type": "Question",
-                "name": "How to fix White Clipping?",
+                "name": "What can make near-white steps look identical?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Lower the Contrast setting until you can distinguish the difference between pure white (255) and the almost-white steps (253, 254)."
+                  "text": "HDR processing, picture mode, signal range and contrast settings can affect near-white separation. Compare one setting at a time."
                 }
               }]
             },
@@ -349,8 +349,8 @@ const ContrastTest: React.FC = () => {
               "name": "How to Calibrate White Levels",
               "step": [
                 { "@type": "HowToStep", "text": "Start the Contrast Test to view the numbered white level squares (234-255)." },
-                { "@type": "HowToStep", "text": "Initially, raise your monitor's Contrast setting until the brightest squares (253-254) merge into the pure white background (Clipping)." },
-                { "@type": "HowToStep", "text": "Slowly lower the Contrast until you can just barely see the difference between square 254 and the white background (255)." },
+                { "@type": "HowToStep", "text": "Observe the near-white steps at your usual settings. Note which steps merge with white." },
+                { "@type": "HowToStep", "text": "If the steps merge, compare HDR, picture mode and signal range before adjusting contrast." },
                 { "@type": "HowToStep", "text": "If square 254 is invisible, you are losing highlight detail in photos and games." }
               ]
             }
@@ -358,13 +358,13 @@ const ContrastTest: React.FC = () => {
         }}
       />
       <TestIntro
-        title="Contrast Calibration"
-        description="Calibrate your monitor's white saturation (Contrast). If set too high, bright details like clouds or snow will lose texture and become pure white blobs."
+        title="White Level & Highlight Clipping Test"
+        description="Compare near-white steps and pastel tints to check whether highlight detail is visible."
         onStart={startTest}
       >
         <InfoCard title="The '254' Rule">
           <p>
-            You should be able to distinguish level <strong>254</strong> (faint gray) from level <strong>255</strong> (pure white). If they look identical, lower your Contrast setting.
+            Compare the labeled near-white squares against <strong>255</strong> (pure white). If adjacent steps merge, check HDR, signal range and picture mode before changing contrast.
           </p>
         </InfoCard>
         <InfoCard title="Color Bleaching">

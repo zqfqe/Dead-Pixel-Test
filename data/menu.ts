@@ -14,7 +14,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Test Patterns", path: "/tests/test-patterns" },
   { title: "Viewing Angle", path: "/tests/viewing-angle" },
   { title: "Brightness", path: "/tests/brightness" },
-  { title: "Contrast", path: "/tests/contrast" },
+  { title: "White Level & Highlight Clipping", path: "/tests/contrast" },
   { title: "Matrix Rain", path: "/tests/matrix" },
   { title: "OLED Pattern Demo (No Repair)", path: "/tools/burn-in-wiper" },
   
@@ -42,7 +42,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { title: "Screen Line Test", path: "/dead-pixel-line-test/" },
   { title: "Image Retention Test", path: "/image-retention-test/" },
   { title: "Screen Resolution Checker", path: "/screen-resolution-test/" },
-  { title: "Contrast Test Guide", path: "/screen-contrast-test/" },
+  { title: "Screen Contrast & Grayscale", path: "/screen-contrast-test/" },
   { title: "What Is a Dead Pixel?", path: "/what-is-a-dead-pixel/" },
   { title: "Teste de Pixel Morto (Brasil)", path: "/pt-br/" },
   { title: "BLOG", path: "", isHeader: true },

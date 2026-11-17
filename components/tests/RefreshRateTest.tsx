@@ -5,6 +5,11 @@ import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
 import { RelatedTools } from '../common/RelatedTools';
 
+const GRID_COLUMNS = 12;
+const GRID_ROWS = 10;
+const GRID_SLOTS = GRID_COLUMNS * GRID_ROWS;
+const SHUTTER_DENOMINATORS = [5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100, 125, 160, 200, 250];
+
 const RefreshRateTest: React.FC = () => {
   const { enterFullscreen, exitFullscreen } = useFullscreen();
   const [isActive, setIsActive] = useState(false);
@@ -69,15 +74,11 @@ const RefreshRateTest: React.FC = () => {
     const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
 
-    // We want to divide the screen width into N columns where N is roughly the refresh rate
-    let slots = 60; 
     let currentSlot = 0;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      // Recalculate slots based on width to keep squares roughly 40px
-      slots = Math.max(1, Math.floor(canvas.width / 40));
     };
     window.addEventListener('resize', resize);
     resize();
@@ -97,29 +98,38 @@ const RefreshRateTest: React.FC = () => {
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Grid
-        const slotWidth = canvas.width / slots;
-        const startY = canvas.height / 2 - 50;
-        
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 1;
-        for(let i=0; i<slots; i++) {
-            ctx.strokeRect(i * slotWidth, startY, slotWidth, 100);
-        }
+        const gridWidth = Math.min(canvas.width * 0.9, 840);
+        const gridHeight = Math.min(canvas.height * 0.48, 420);
+        const cellWidth = gridWidth / GRID_COLUMNS;
+        const cellHeight = gridHeight / GRID_ROWS;
+        const left = (canvas.width - gridWidth) / 2;
+        const top = (canvas.height - gridHeight) / 2;
+        const x = left + (currentSlot % GRID_COLUMNS) * cellWidth;
+        const y = top + Math.floor(currentSlot / GRID_COLUMNS) * cellHeight;
 
-        // Active Block
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(currentSlot * slotWidth + 2, startY + 2, slotWidth - 4, 96);
-        
-        // Block Number
+        ctx.strokeStyle = '#333';
+        ctx.beginPath();
+        for (let column = 0; column <= GRID_COLUMNS; column++) {
+          const lineX = left + column * cellWidth;
+          ctx.moveTo(lineX, top);
+          ctx.lineTo(lineX, top + gridHeight);
+        }
+        for (let row = 0; row <= GRID_ROWS; row++) {
+          const lineY = top + row * cellHeight;
+          ctx.moveTo(left, lineY);
+          ctx.lineTo(left + gridWidth, lineY);
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x + 1, y + 1, cellWidth - 2, cellHeight - 2);
         ctx.fillStyle = '#000';
         ctx.font = 'bold 12px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText((currentSlot+1).toString(), currentSlot * slotWidth + slotWidth/2, startY + 50);
+        ctx.fillText(String(currentSlot + 1), x + cellWidth / 2, y + cellHeight / 2);
 
-        // Advance
-        currentSlot = (currentSlot + 1) % slots;
+        currentSlot = (currentSlot + 1) % GRID_SLOTS;
 
         requestRef.current = requestAnimationFrame(render);
     };
@@ -133,6 +143,8 @@ const RefreshRateTest: React.FC = () => {
   }, [isActive]);
 
   if (isActive) {
+    // Keep the exposure within half a sequence, leaving room for cadence changes.
+    const shutter = SHUTTER_DENOMINATORS.find(value => fps / value <= GRID_SLOTS / 2);
     return (
       <div className="fixed inset-0 z-50 bg-black cursor-none select-none">
         <canvas ref={canvasRef} className="block w-full h-full" />
@@ -156,7 +168,9 @@ const RefreshRateTest: React.FC = () => {
 
         <div className="absolute bottom-12 left-0 w-full text-center pointer-events-none">
             <p className="text-white/50 font-mono text-sm bg-black/50 inline-block px-4 py-2 rounded">
-                Optional: take a manual-exposure photo and compare repeated results; gaps alone are not conclusive.
+                {fps === 0 ? 'Wait for the browser FPS reading before taking a photo.'
+                  : shutter ? `Use 1/${shutter} s or faster. Compare repeated photos of the numbered grid.`
+                  : 'Use an exposure shorter than half a grid cycle.'}
             </p>
         </div>
       </div>
@@ -193,7 +207,7 @@ const RefreshRateTest: React.FC = () => {
                   "name": "How to check for Frame Skipping?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. Gaps can suggest irregular frame presentation, but browser timing and camera exposure can also cause them. Repeat under controlled conditions; this photo alone cannot diagnose hardware frame skipping."
+                    "text": "Let the browser FPS stabilize and use the exposure recommendation displayed in the test. Gaps can suggest irregular frame presentation, but browser timing and camera exposure can also cause them. Repeat under controlled conditions; this photo alone cannot diagnose hardware frame skipping."
                   }
                 }, 
                 {
@@ -221,7 +235,7 @@ const RefreshRateTest: React.FC = () => {
                 { "@type": "HowToStep", "text": "Close all other browser tabs and applications to ensure maximum performance." },
                 { "@type": "HowToStep", "text": "Start the test. A white block will move across the grid slots." },
                 { "@type": "HowToStep", "text": "Read the 'Browser FPS' estimate. Compare it with your operating-system display setting, but do not treat it as a direct measurement of physical refresh Hz." },
-                { "@type": "HowToStep", "text": "To check for frame skipping (on overclocked monitors), take a photo of the screen with a smartphone camera set to 1/10s shutter speed." }
+                { "@type": "HowToStep", "text": "To check for frame skipping (on overclocked monitors), take a photo with a separate camera set to the recommended exposure or faster." }
               ]
             }
           ]
@@ -237,7 +251,7 @@ const RefreshRateTest: React.FC = () => {
             <ol className="list-decimal pl-4 space-y-2 text-sm text-neutral-400 mt-2">
                 <li>Start the test. A white block will move across the grid.</li>
                 <li>Open your phone camera in <strong>Pro/Manual Mode</strong>.</li>
-                <li>Set Shutter Speed to roughly <strong>1/5s</strong> or <strong>1/10s</strong>.</li>
+                <li>Use the shutter speed shown after the FPS estimate stabilizes, or set a shorter exposure.</li>
                 <li>Take a photo of the moving block.</li>
                 <li><strong>Result:</strong> A regular trail can be consistent with stable presentation, but gaps may also come from browser timing or camera exposure. Repeat the test and verify with your display's settings or a dedicated hardware method.</li>
             </ol>
@@ -309,7 +323,7 @@ const RefreshRateTest: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to check for Frame Skipping?</h4>
-                    <p className="text-neutral-400 text-sm">Start the test and take a photo of the screen with a shutter speed of 1/5th or 1/10th of a second. Gaps can suggest irregular frame presentation, but browser timing and camera exposure can also cause them. Repeat under controlled conditions; this photo alone cannot diagnose hardware frame skipping.</p>
+                    <p className="text-neutral-400 text-sm">Let the browser FPS stabilize and use the exposure recommendation displayed in the test. Gaps can suggest irregular frame presentation, but browser timing and camera exposure can also cause them. Repeat under controlled conditions; this photo alone cannot diagnose hardware frame skipping.</p>
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">Why is my 144Hz monitor showing 60Hz?</h4>

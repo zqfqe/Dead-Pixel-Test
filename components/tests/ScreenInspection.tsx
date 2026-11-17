@@ -163,15 +163,9 @@ const modeHint=mode==='lines'
  const currentMark=marks.find(m=>m.id===selected);
  const currentObservation=currentMark?.colors.includes(current.name)?'visible':currentMark?.notVisibleOn.includes(current.name)?'absent':'unknown';
  const payload=()=>({kind:'user_observed_screen_inspection',certified:false,testMode:mode,disclaimer:t.disclaimer,createdAt:started||new Date().toISOString(),exportedAt:new Date().toISOString(),viewportChangedSinceMark:layoutChanged,deviceType:device,browserScreen:{cssWidth:screen.width,cssHeight:screen.height},viewport:view(),observedPatterns:viewed,observedCount:viewed.length,totalPatterns:patterns.length,marks:marks.map(m=>({xRatio:m.x,yRatio:m.y,observedOn:m.colors,notObservedOn:m.notVisibleOn,category:m.category,notes:m.notes,viewportAtMark:m.viewport}))});
- const importJson=async(e:React.ChangeEvent<HTMLInputElement>)=>{
-  const file=e.currentTarget.files?.[0];
-  e.currentTarget.value='';
-  if(!file)return;
-  try{
-    if(file.size<2||file.size>128*1024)throw Error('invalid file size');
-    const raw:unknown=JSON.parse(await file.text());
-    if(!raw||typeof raw!=='object')throw Error('invalid JSON');
-    const report=raw as Record<string,unknown>;
+ const applyReport = (raw: unknown) => {
+    if (!raw || typeof raw !== 'object') throw Error('invalid JSON');
+    const report = raw as Record<string, unknown>;
     if(report.kind!=='user_observed_screen_inspection'||report.certified!==false||!Array.isArray(report.marks)||report.marks.length>50||(report.testMode!==undefined&&report.testMode!==mode))throw Error('incorrect report type or mode');
     const allowedCategories=new Set<Category>(['unclassified','dark','bright','stuck-color','dust-or-surface','line-or-other','uncertain']);
     const allowedPatterns=new Set<string>(patterns.map(p=>p.name));
@@ -211,12 +205,45 @@ const modeHint=mode==='lines'
     setDevice(deviceType as Device);
     setStarted(validDate?report.createdAt as string:new Date().toISOString());
     setRan(true);
-    setImportStatus(t.importOk);
-  }catch{
-    setImportStatus(t.importInvalid);
-  }
-};
-const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;charset=utf-8','screen-self-check.json');
+ };
+ useEffect(() => {
+   try {
+     const stored = window.localStorage.getItem(draftKey);
+     if (stored) applyReport(JSON.parse(stored));
+   } catch {
+     // A blocked store or a corrupt draft must not prevent a new inspection.
+   }
+   setRestoredDraftKey(draftKey);
+ }, [draftKey]);
+
+ useEffect(() => {
+   if (restoredDraftKey !== draftKey) return;
+   try {
+     if (ran) {
+       window.localStorage.setItem(draftKey, JSON.stringify(payload()));
+       setDraftStatus('saved');
+     } else {
+       window.localStorage.removeItem(draftKey);
+       setDraftStatus('idle');
+     }
+   } catch {
+     setDraftStatus('unavailable');
+   }
+ }, [restoredDraftKey, draftKey, ran, marks, viewed, started, device]);
+
+ const importJson = async (event: React.ChangeEvent<HTMLInputElement>) => {
+   const file = event.currentTarget.files?.[0];
+   event.currentTarget.value = '';
+   if (!file) return;
+   try {
+     if (file.size < 2 || file.size > 128 * 1024) throw Error('invalid file size');
+     applyReport(JSON.parse(await file.text()));
+     setImportStatus(t.importOk);
+   } catch {
+     setImportStatus(t.importInvalid);
+   }
+ };
+ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;charset=utf-8','screen-self-check.json');
  const printReport=()=>{
   const report=payload();
   const isBR=lang==='pt-BR';
@@ -286,7 +313,12 @@ const exportJson=()=>save(JSON.stringify(payload(),null,2),'application/json;cha
        className="mt-2 block max-w-full rounded-lg border border-white/25 bg-neutral-900 p-2 text-xs text-white file:mr-3 file:rounded file:border-0 file:bg-[#325541] file:px-3 file:py-2 file:text-white" />
    </label>
  </details>
- {importStatus&&<p role="status" className="mt-2 text-xs text-neutral-200">{importStatus}</p>}
+ {ran && draftStatus !== 'idle' && <p className="mt-2 text-xs text-neutral-300">
+    {draftStatus === 'saved'
+      ? (lang === 'pt-BR' ? 'Rascunho salvo neste navegador.' : 'Draft saved in this browser.')
+      : (lang === 'pt-BR' ? 'Não foi possível salvar o rascunho. Exporte o JSON para guardar o teste.' : 'The draft could not be saved. Export JSON to keep your inspection.')}
+  </p>}
+  {importStatus&&<p role="status" className="mt-2 text-xs text-neutral-200">{importStatus}</p>}
  {ran&&<div className="mt-3 flex flex-wrap gap-2"><button type="button" onClick={exportJson} className="rounded border border-white/20 px-3 py-2 text-sm">{t.export}</button><button type="button" onClick={printReport} className="rounded border border-white/20 px-3 py-2 text-sm">{t.print}</button>{marks.length>0&&<button type="button" onClick={()=>{setMarks([]);setSelected('');}} className="rounded border border-white/20 px-3 py-2 text-sm">{t.clear}</button>}
  <button type="button" onClick={beginNewSession} className="rounded border border-white/20 px-3 py-2 text-sm">{t.newSession}</button></div>}
  {layoutChanged && <p role="status" className="mt-3 rounded-lg border border-amber-500/50 bg-amber-900/30 p-3 text-sm text-amber-100">{t.layoutWarning}</p>}

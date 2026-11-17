@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { 
   ChevronLeft, 
@@ -49,15 +49,42 @@ const LocalDimmingTest: React.FC = () => {
     enterFullscreen();
   };
 
-  const stopTest = () => {
+  const stopTest = useCallback(() => {
     setIsActive(false);
-    exitFullscreen();
-  };
+    void exitFullscreen();
+  }, [exitFullscreen]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (controlMode === 'manual') {
-      mousePos.current = { x: e.clientX, y: e.clientY };
-    }
+  useEffect(() => {
+    if (!isActive) return;
+    const onHidden = () => {
+      if (document.hidden) stopTest();
+    };
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) stopTest();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        stopTest();
+      }
+    };
+    document.addEventListener('visibilitychange', onHidden);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('visibilitychange', onHidden);
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isActive, stopTest]);
+
+  const moveTestObject = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (controlMode !== 'manual') return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    mousePos.current = {
+      x: Math.max(0, Math.min(bounds.width, event.clientX - bounds.left)),
+      y: Math.max(0, Math.min(bounds.height, event.clientY - bounds.top))
+    };
   };
 
   useEffect(() => {
@@ -187,13 +214,17 @@ const LocalDimmingTest: React.FC = () => {
     return (
       <div 
         className={`fixed inset-0 z-50 bg-black ${controlMode === 'manual' && uiHidden ? 'cursor-none' : ''}`}
-        onMouseMove={handleMouseMove}
       >
-        <canvas ref={canvasRef} className="block w-full h-full" />
+        <canvas ref={canvasRef} className="block w-full h-full"
+          style={{ touchAction: controlMode === 'manual' ? 'none' : undefined }}
+          onPointerDown={event => {
+            if (controlMode === 'manual') event.currentTarget.setPointerCapture(event.pointerId);
+            moveTestObject(event);
+          }}
+          onPointerMove={moveTestObject} />
 
         {/* Top-Left Exit */}
-        {/* Changed from hover-only to state-based opacity so it works on mobile tap-to-wake */}
-        <div className={`absolute top-0 left-0 p-6 transition-opacity duration-300 z-[70] ${uiHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <div className="absolute top-3 left-3 z-[70] sm:top-6 sm:left-6">
           <button 
             onClick={stopTest}
             className="flex items-center gap-2 bg-neutral-900 text-white px-4 py-2 rounded-lg shadow-lg border border-neutral-700 font-medium text-sm cursor-auto"
@@ -204,11 +235,12 @@ const LocalDimmingTest: React.FC = () => {
         </div>
 
         {/* Right Sidebar */}
-        <div className={`absolute top-6 right-6 bottom-6 z-[60] flex flex-col transition-all duration-300 cursor-auto ${isSidebarOpen ? 'w-80' : 'w-auto'}`}>
+        <div className={`absolute top-20 right-3 bottom-3 sm:top-6 sm:right-6 sm:bottom-6 z-[60] flex flex-col transition-all duration-300 cursor-auto ${isSidebarOpen ? 'w-80 max-w-[calc(100vw-1.5rem)]' : 'w-auto'}`}>
            {!isSidebarOpen && (
              <button 
                onClick={() => setIsSidebarOpen(true)}
-               className={`bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-all duration-300 ${uiHidden ? 'opacity-0 pointer-events-none translate-x-10' : 'opacity-100 translate-x-0'}`}
+               className="bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100"
+               aria-label="Open dimming controls"
              >
                <ChevronLeft size={24} />
              </button>
@@ -394,12 +426,12 @@ const LocalDimmingTest: React.FC = () => {
       <div className="flex flex-col min-h-screen">
         <TestIntro
           title="Local Dimming / Blooming"
-          description="Evaluate your Mini-LED or FALD monitor's zone transitions. Use the mouse to drag the test object into corners to check for edge blooming."
+          description="Evaluate your Mini-LED or FALD monitor's zone transitions. Move or drag the test object into corners to check for edge blooming."
           onStart={startTest}
         >
           <InfoCard title="Manual Testing">
             <p>
-              Switch to <strong>Manual Mode</strong> to drag the white box into the black bars of a movie aspect ratio (top/bottom) to see if the backlight bleeds into the black bars.
+              Switch to <strong>Manual Mode</strong> to move or drag the white box into the black bars of a movie aspect ratio (top/bottom) to see if the backlight bleeds into the black bars.
             </p>
           </InfoCard>
           <InfoCard title="Zone Counting">
