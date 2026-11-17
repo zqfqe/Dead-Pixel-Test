@@ -74,6 +74,9 @@ const modeHint=mode==='lines'
  : mode==='retention'
  ? (lang==='pt-BR'?'Observe um fundo cinza neutro em busca de contornos residuais. Alterne cores por pouco tempo; este teste não distingue nem repara burn-in permanente.':'Look for a ghost outline on neutral gray. Change patterns briefly; this test cannot distinguish or repair permanent burn-in.')
  : mode==='contrast' ? (lang==='pt-BR'?'Compare níveis de preto e branco, gradientes suaves e barras de cor. Isto não mede nits, contraste físico ou cobertura de gama.':'Compare black and white levels, smooth color ramps and color bars. This is not a calibrated measurement of nits, physical contrast or gamut.') : t.hint;
+ const draftKey = 'deadpixeltest:inspection:v1:' + mode + ':' + defaultDevice;
+ const [restoredDraftKey, setRestoredDraftKey] = useState('');
+ const [draftStatus, setDraftStatus] = useState<'idle' | 'saved' | 'unavailable'>('idle');
  const [,setViewportRevision]=useState(0);
  const [importStatus,setImportStatus]=useState(''),[active,setActive]=useState(false),[index,setIndex]=useState(0),[viewed,setViewed]=useState<Name[]>([]),[hideControls,setHideControls]=useState(false),[compactCorner,setCompactCorner]=useState(0),[markMode,setMarkMode]=useState(false),[showMarks,setShowMarks]=useState(false),[marks,setMarks]=useState<Mark[]>([]),[selected,setSelected]=useState(''),[device,setDevice]=useState<Device>(defaultDevice),[started,setStarted]=useState(''),[ran,setRan]=useState(false),[warning,setWarning]=useState(false),[patchColor,setPatchColor]=useState('#f00'),[patchSize,setPatchSize]=useState(140),[patchPos,setPatchPos]=useState({x:50,y:50});
  const root=useRef<HTMLDivElement>(null),dialog=useRef<HTMLDivElement>(null),startButton=useRef<HTMLButtonElement>(null),native=useRef(false);
