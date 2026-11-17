@@ -179,7 +179,7 @@ const App: React.FC = () => {
               <div className="max-w-7xl mx-auto p-6 lg:p-12">
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
-                    {/* V1.2 search-intent pages: keep legacy /tests/* routes unchanged */}
+                    {/* Standalone router fallback. Published tool pages mount ToolWorkspace. */}
                     {SEO_LANDING_PAGES.filter(page => page.path !== '/' && page.mode !== 'refresh-rate' && page.mode !== 'local-dimming').map(page => (
                       <Route key={page.path} path={page.path} element={<SeoLandingPage />} />
                     ))}
@@ -188,13 +188,10 @@ const App: React.FC = () => {
                     <Route path="/" element={<DeadPixelTest />} />
                     <Route path="/tests/dead-pixel" element={<DeadPixelTest />} />
                     
-                    {/* Phase 2 Tests */}
                     <Route path="/tests/local-dimming" element={<LocalDimmingTest />} />
                     <Route path="/tests/refresh-rate" element={<RefreshRateTest />} />
                     
-                    {/* Tools */}
                     
-                    {/* New Tools */}
 
                     {/* Blog & Resources */}
                     <Route path="/blog" element={<BlogIndex />} />
