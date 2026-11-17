@@ -92,6 +92,7 @@ const AstroDocumentNavigation:React.FC=()=>{
  },[route.pathname]);
  React.useEffect(()=>{
   if(!document.documentElement.hasAttribute('data-astro-site'))return;
+  document.getElementById('legacy-static-intro')?.remove();
   const onClick=(event:MouseEvent)=>{
    if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
    const target=event.target;

@@ -82,6 +82,7 @@ await check('/tests/refresh-rate',async page=>{
   await start.waitFor({timeout:12000});
   await start.click();
   await page.getByText('Browser FPS estimate',{exact:true}).waitFor({timeout:8000});
+  await page.getByText(/Use 1\/\d+ s or faster/).waitFor({timeout:8000});
   await page.keyboard.press('Escape');
   await start.waitFor({timeout:8000});
 
@@ -130,6 +131,13 @@ await check('/tools/mouse-polling',async page=>{
 await check('/tests/local-dimming',async page=>{
  await expectedTitle('Local Dimming')(page);
  await page.getByText(/Local Dimming/i).first().waitFor({timeout:15000});
+ const start = page.getByRole('button', {name:'Start Calibration'});
+ await start.waitFor({timeout:12000});
+ if (await page.locator('h1').count() !== 1) throw Error('Expected one hydrated tool heading');
+ await start.click();
+ await page.getByRole('button', {name:'Exit Test', exact:true}).waitFor();
+ await page.keyboard.press('Escape');
+ await start.waitFor();
 });
 await check('/tests/color-gradient',expectedTitle('Color Banding'));
 await check('/image-retention-test',async page=>{
@@ -399,7 +407,13 @@ await check('/',async page=>{
  const json=JSON.parse(readFileSync(await d.path(),'utf8'));
  if(json.observedCount!==2||json.totalPatterns!==8||json.marks[0]?.category!=='dust-or-surface')
   throw Error('Visit progress or dust category export inaccurate');
+ await page.getByText('Draft saved in this browser.',{exact:true}).waitFor();
+ await page.reload();
+ await page.getByText(/Suspect spots: 1/).waitFor();
  await page.getByRole('button',{name:'New empty session'}).click();
+ await page.waitForFunction(() => !localStorage.getItem('deadpixeltest:inspection:v1:pixels:monitor'));
+ await page.reload();
+ await page.getByRole('button',{name:'Start full-screen inspection'}).waitFor();
  if(await page.getByText(/Suspect spots: 1/).count())throw Error('New session did not clear marks');
  if(await page.getByRole('button',{name:/Export self-check JSON/i}).count())throw Error('New session retained previous export');
 });
@@ -794,6 +808,10 @@ await check('/screen-resolution-test',async page=>{
 
 for(const path of ['/tests/refresh-rate','/tests/local-dimming','/tests/color-gradient','/tests/audio-sync','/tests/test-patterns']){
  await check(path,async page=>{
+  const response = await page.request.get(base + path);
+  const rawHTML = await response.text();
+  const headings = [...rawHTML.matchAll(/<h1[\s>]/gi)];
+  if (!response.ok() || headings.length !== 1) throw Error('Expected one server-rendered tool heading');
   const guide=page.locator('#legacy-static-guide');
   await guide.waitFor();
   const ratio=await guide.evaluate(el=>{

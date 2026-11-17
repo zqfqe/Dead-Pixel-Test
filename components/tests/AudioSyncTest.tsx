@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useFullscreen } from '../../hooks/useFullscreen';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Radar, Zap, MoveVertical, Sliders, Mic, Bluetooth, Monitor, HelpCircle, Film } from 'lucide-react';
@@ -25,29 +25,61 @@ const AudioSyncTest: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const nextNoteTimeRef = useRef<number>(0);
+  const [audioError, setAudioError] = useState('');
 
-  const startTest = () => {
-    setIsActive(true);
-    enterFullscreen();
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    // Reset timer
-    if (audioContextRef.current) {
-      nextNoteTimeRef.current = audioContextRef.current.currentTime + 0.5;
-    }
-  };
-
-  const stopTest = () => {
+  const stopTest = useCallback(() => {
     setIsActive(false);
-    exitFullscreen();
-    if (audioContextRef.current) {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
+    const audio = audioContextRef.current;
+    audioContextRef.current = null;
+    if (audio) void audio.close().catch(() => {});
+    void exitFullscreen();
+  }, [exitFullscreen]);
+
+  const startTest = async () => {
+    if (audioContextRef.current) return;
+    setAudioError('');
+    let audio: AudioContext | undefined;
+    try {
+      const Audio = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Audio) throw new Error('Web Audio unavailable');
+      audio = new Audio();
+      audioContextRef.current = audio;
+      const resume = audio.resume();
+      void enterFullscreen();
+      await resume;
+      if (audioContextRef.current === audio) setIsActive(true);
+    } catch {
+      if (audio && audioContextRef.current !== audio) return;
+      stopTest();
+      setAudioError('Audio could not start. Check browser sound permissions and try again.');
     }
-    if (requestRef.current) cancelAnimationFrame(requestRef.current);
   };
+
+  useEffect(() => {
+    const onHidden = () => {
+      if (document.hidden && audioContextRef.current) stopTest();
+    };
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement && audioContextRef.current) stopTest();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && audioContextRef.current) stopTest();
+    };
+    document.addEventListener('visibilitychange', onHidden);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('visibilitychange', onHidden);
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+      window.removeEventListener('keydown', onKey);
+      const audio = audioContextRef.current;
+      audioContextRef.current = null;
+      if (audio) {
+        void audio.close().catch(() => {});
+        void exitFullscreen();
+      }
+    };
+  }, [stopTest, exitFullscreen]);
 
   const resetSettings = () => {
     setBpm(60);
@@ -55,34 +87,49 @@ const AudioSyncTest: React.FC = () => {
     setPattern('bar');
   };
 
-  // Improved Click Sound (Short high-pitch transient)
-  const playClick = (time: number) => {
-    if (!audioContextRef.current) return;
-    const osc = audioContextRef.current.createOscillator();
-    const gain = audioContextRef.current.createGain();
-    
-    osc.connect(gain);
-    gain.connect(audioContextRef.current.destination);
-    
-    // Sharp click
-    osc.frequency.setValueAtTime(1200, time);
-    osc.frequency.exponentialRampToValueAtTime(100, time + 0.03);
-    
-    gain.gain.setValueAtTime(0.5, time);
-    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.03);
-    
-    osc.start(time);
-    osc.stop(time + 0.05);
-  };
-
   useEffect(() => {
-    if (!isActive || !canvasRef.current || !audioContextRef.current) return;
-
-    const ctx = canvasRef.current.getContext('2d', { alpha: false });
     const canvas = canvasRef.current;
-    
-    const intervalSeconds = 60.0 / bpm;
-    
+    const audio = audioContextRef.current;
+    if (!isActive || !canvas || !audio) return;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
+
+    const intervalSeconds = 60 / bpm;
+    const offset = typeof offsetMs === 'number' && Number.isFinite(offsetMs)
+      ? Math.max(-500, Math.min(500, offsetMs)) / 1000
+      : 0;
+    const lookahead = 0.1;
+    const firstBeat = audio.currentTime + lookahead + Math.max(0, -offset);
+    let nextSound = firstBeat + offset;
+    const output = audio.createGain();
+    output.connect(audio.destination);
+
+    const scheduleAudio = () => {
+      const now = audio.currentTime;
+      // Skip missed beats instead of replaying a burst after a main-thread stall.
+      if (nextSound < now) {
+        nextSound += Math.ceil((now - nextSound) / intervalSeconds) * intervalSeconds;
+      }
+      while (nextSound < now + lookahead) {
+        const osc = audio.createOscillator();
+        const gain = audio.createGain();
+        osc.connect(gain);
+        gain.connect(output);
+        osc.frequency.setValueAtTime(1200, nextSound);
+        osc.frequency.exponentialRampToValueAtTime(100, nextSound + 0.03);
+        gain.gain.setValueAtTime(0.5, nextSound);
+        gain.gain.exponentialRampToValueAtTime(0.01, nextSound + 0.03);
+        osc.onended = () => {
+          osc.disconnect();
+          gain.disconnect();
+        };
+        osc.start(nextSound);
+        osc.stop(nextSound + 0.05);
+        nextSound += intervalSeconds;
+      }
+    };
+    const scheduler = window.setInterval(scheduleAudio, 25);
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -90,31 +137,14 @@ const AudioSyncTest: React.FC = () => {
     window.addEventListener('resize', resize);
     resize();
 
+    let lastFrameBeat = -1;
     const draw = () => {
-      if (!ctx || !audioContextRef.current) return;
-
-      const currentTime = audioContextRef.current.currentTime;
-
-      // 1. Audio Scheduling (Lookahead)
-      while (nextNoteTimeRef.current < currentTime + 0.1) {
-          // Play sound at exact scheduled time + user offset
-          // Note: offsetMs effectively delays the SOUND relative to the visual loop logic
-          // However, for calibration, it's often easier to think:
-          // Visual hits @ T. Audio hits @ T + offset.
-          playClick(nextNoteTimeRef.current + (offsetMs / 1000));
-          nextNoteTimeRef.current += intervalSeconds;
-      }
-
-      // 2. Visual Logic
-      // Calculate phase (0.0 to 1.0) relative to the BEAT (nextNoteTime)
-      // Visuals are strictly tied to the metronome clock, Audio is shifted by offsetMs
-      const timeToNextBeat = nextNoteTimeRef.current - currentTime;
-      // Phase 0.0 = Beat just happened. Phase 1.0 = Next beat happening.
-      // We want the "Hit" to happen when timeToNextBeat = intervalSeconds (start of cycle)
-      // or simply:
-      const totalCycle = intervalSeconds;
-      const progress = 1 - (timeToNextBeat / totalCycle); 
-      // progress goes from 0 -> 1 linearly
+      const timeSinceFirstBeat = audio.currentTime - firstBeat;
+      const cycles = timeSinceFirstBeat / intervalSeconds;
+      const frameBeat = Math.floor(cycles);
+      const progress = cycles - frameBeat;
+      const crossedBeat = frameBeat > lastFrameBeat;
+      lastFrameBeat = frameBeat;
 
       // Clear Screen
       ctx.fillStyle = '#000';
@@ -126,14 +156,7 @@ const AudioSyncTest: React.FC = () => {
       // --- RENDER PATTERNS ---
 
       if (pattern === 'flash') {
-        // Simple Flash Frame
-        // Flash exactly when progress wraps (around 0/1)
-        // Since we are in rAF, we check closeness to 0
-        // We use the adjusted audio time for visual feedback if we want "What you see is result"
-        // But for calibration tool, we usually keep visual steady and move audio.
-        // Let's flash at progress close to 0
-        
-        if (progress < 0.05) { // Flash for first 5% of beat
+         if (frameBeat >= 0 && (crossedBeat || progress < 0.05)) {
            ctx.fillStyle = '#ffffff';
            ctx.fillRect(0, 0, canvas.width, canvas.height);
         } else {
@@ -197,7 +220,7 @@ const AudioSyncTest: React.FC = () => {
       } 
       else {
          // STANDARD BAR
-         const trackH = 600;
+         const trackH = Math.min(600, canvas.height * 0.72);
          const trackW = 60;
          
          // Draw Track
@@ -230,18 +253,9 @@ const AudioSyncTest: React.FC = () => {
          drawTick(100, '+100ms');
 
          // Moving Puck
-         const speed = trackH / intervalSeconds;
-         // Time relative to closest beat:
-         let dt = (audioContextRef.current.currentTime - nextNoteTimeRef.current); 
-         // dt is negative (approaching) then positive (passed).
-         // Range -0.5*interval to +0.5*interval
-         
-         // Wrap dt to stay within current window
-         while (dt > intervalSeconds/2) dt -= intervalSeconds;
-         while (dt < -intervalSeconds/2) dt += intervalSeconds;
-         
-         let puckY = cy + (dt * speed);
-         
+         const centeredPhase = progress > 0.5 ? progress - 1 : progress;
+         const puckY = cy + centeredPhase * trackH;
+
          ctx.fillStyle = '#fff';
          ctx.beginPath();
          ctx.arc(cx, puckY, 20, 0, Math.PI*2);
@@ -262,6 +276,8 @@ const AudioSyncTest: React.FC = () => {
     draw();
 
     return () => {
+      clearInterval(scheduler);
+      output.disconnect();
       window.removeEventListener('resize', resize);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
@@ -283,7 +299,7 @@ const AudioSyncTest: React.FC = () => {
 
         {/* Right Sidebar Controls */}
         <div 
-          className={`absolute top-6 right-6 bottom-6 z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}
+          className={`absolute top-20 right-3 bottom-3 sm:top-6 sm:right-6 sm:bottom-6 z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80 max-w-[calc(100vw-1.5rem)]' : 'w-auto'}`}
         >
            {!isSidebarOpen && (
              <button 
@@ -330,7 +346,7 @@ const AudioSyncTest: React.FC = () => {
                       
                       <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
                          <p className="text-[11px] text-blue-800 leading-relaxed mb-3">
-                           If the sound is <strong>late</strong>, drag right. If <strong>early</strong>, drag left. Adjust until the click happens exactly when the visual hits the mark. The result is your system latency.
+                           If the sound seems <strong>late</strong>, move left to schedule it earlier. If it seems <strong>early</strong>, move right. The setting records the compensation you choose for this setup.
                          </p>
                          
                          <div className="flex justify-between items-end mb-2">
@@ -383,7 +399,7 @@ const AudioSyncTest: React.FC = () => {
                 {/* Footer Report Actions */}
                 <div className="p-5 border-t border-neutral-100 bg-neutral-50 space-y-4">
                   
-                  <TestResultControls testId="audiosync" testName="Audio / Video Sync Latency" />
+                  <TestResultControls testId="audiosync" testName="Audio / Video Sync" />
 
                   <button 
                     onClick={resetSettings}
@@ -404,7 +420,7 @@ const AudioSyncTest: React.FC = () => {
     <>
       <SEO 
         title="Audio Video Sync Test - Lip Sync Latency" 
-        description="Fix audio delay issues. Measure the exact latency (ms) between your screen and speakers to correct lip-sync problems in movies and games."
+        description="Compare a visual cue with a click and adjust the scheduled audio offset to check apparent lip sync."
         canonical="/tests/audio-sync"
         keywords={['audio sync test', 'lip sync test', 'audio latency test', 'audio video delay', 'av sync calibration']}
         breadcrumbs={[
@@ -418,7 +434,7 @@ const AudioSyncTest: React.FC = () => {
               "@type": "WebApplication",
               "name": "Audio/Video Sync Tester",
               "url": "https://deadpixeltest.cc/tests/audio-sync",
-              "description": "Measure and fix audio delay/latency (lip sync) issues between your display and speakers.",
+              "description": "Compare a visual cue with a click and adjust the scheduled audio offset to check apparent lip sync.",
               "applicationCategory": "UtilitiesApplication",
               "operatingSystem": "Web Browser",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -430,7 +446,7 @@ const AudioSyncTest: React.FC = () => {
                 "name": "How to fix Lip Sync Delay?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Most modern TVs and AV Receivers have an 'Audio Delay' or 'Lip Sync' setting. Use this tool to find the exact millisecond offset (e.g., +100ms) and enter that value in your device settings."
+                  "text": "If your TV or receiver has an audio-delay setting, adjust it in small steps and verify with the content you watch. The browser offset applies to this test."
                 }
               }, {
                 "@type": "Question",
@@ -448,25 +464,26 @@ const AudioSyncTest: React.FC = () => {
                 { "@type": "HowToStep", "text": "Turn up your volume and watch the moving bar." },
                 { "@type": "HowToStep", "text": "Listen for the 'Click' sound as the bar hits the center mark." },
                 { "@type": "HowToStep", "text": "If the sound is early or late, use the 'Manual Compensation' slider to adjust it until it feels perfectly synced." },
-                { "@type": "HowToStep", "text": "The resulting offset (e.g., +50ms) is your system latency. Enter this value into your TV or AV Receiver's 'Audio Delay' setting." }
+                { "@type": "HowToStep", "text": "Record the offset that seems aligned for this browser, screen and audio setup." }
               ]
             }
           ]
         }}
       />
       <div className="flex flex-col min-h-screen">
+        {audioError && <p role="alert" className="mx-auto max-w-xl p-4 text-red-300">{audioError}</p>}
         <TestIntro
           title="Audio/Video Sync Test"
-          description="Measure and calibrate the delay between your display and speakers. Essential for home theater lip-sync and competitive gaming."
+          description="Compare a visual cue and a click, then adjust when the browser schedules the sound."
           onStart={startTest}
         >
-          <InfoCard title="How to Calibrate">
+          <InfoCard title="How to compare sound and picture">
             <p>
               1. Listen to the click and watch the visual marker.
               <br/>
               2. Use the <strong>Manual Compensation</strong> slider in the menu.
               <br/>
-              3. Adjust until they feel perfectly synced. The final number (e.g., +100ms) is the delay you should enter in your TV or AV Receiver settings.
+              3. Move the slider left if the click sounds late, or right if it sounds early. The reading shows the compensation that sounds aligned in this setup.
             </p>
           </InfoCard>
           <InfoCard title="Patterns">
@@ -541,7 +558,7 @@ const AudioSyncTest: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to fix Lip Sync Delay?</h4>
-                    <p className="text-neutral-400 text-sm">Most modern TVs and AV Receivers have an "Audio Delay" or "Lip Sync" setting. Use this tool to find the exact millisecond offset (e.g., +100ms) and enter that value in your device settings.</p>
+                    <p className="text-neutral-400 text-sm">If your TV or receiver has an audio-delay setting, adjust it in small steps and verify with the content you watch. The browser offset applies to this test.</p>
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">Is Bluetooth lag normal?</h4>
