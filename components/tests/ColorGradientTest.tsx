@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useFullscreen } from '../../hooks/useFullscreen';
+import { useFullscreenTest } from '../../hooks/useFullscreenTest';
 import { ChevronLeft, ChevronUp, RotateCcw, MoveHorizontal, MoveVertical, Circle, Palette, Play, Pause, Layers, Monitor, Binary, Zap } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
 import { SEO } from '../common/SEO';
@@ -20,8 +20,7 @@ const COLOR_MAP: Record<ColorPreset, { start: string; end: string; label: string
 };
 
 const ColorGradientTest: React.FC = () => {
-  const { enterFullscreen, exitFullscreen } = useFullscreen();
-  const [isActive, setIsActive] = useState(false);
+  const { isActive, startTest, stopTest } = useFullscreenTest();
   
   // State
   const [steps, setSteps] = useState<number>(256); // 256 = 8-bit
@@ -32,16 +31,6 @@ const ColorGradientTest: React.FC = () => {
   const [animate, setAnimate] = useState(false);
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  const startTest = () => {
-    setIsActive(true);
-    enterFullscreen();
-  };
-
-  const stopTest = () => {
-    setIsActive(false);
-    exitFullscreen();
-  };
 
   const resetSettings = () => {
     setSteps(256);
@@ -112,8 +101,8 @@ const ColorGradientTest: React.FC = () => {
       <div className="fixed inset-0 z-50 flex bg-black overflow-hidden">
         {/* Top-Left Exit */}
         <button 
-          onClick={stopTest}
-          className="absolute top-6 left-6 z-[60] flex items-center gap-2 bg-neutral-900/50 backdrop-blur text-white px-4 py-2 rounded-lg shadow-lg hover:bg-neutral-800 transition-colors border border-neutral-700 font-medium text-sm group"
+          data-fullscreen-test-exit onClick={stopTest}
+          className="test-exit-position absolute z-[70] flex items-center gap-2 bg-neutral-900/50 backdrop-blur text-white min-h-[44px] px-4 py-2 rounded-lg shadow-lg hover:bg-neutral-800 transition-colors border border-neutral-700 font-medium text-sm group"
         >
           <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           Exit
@@ -143,11 +132,11 @@ const ColorGradientTest: React.FC = () => {
 
         {/* Right Sidebar */}
         <div 
-          className={`absolute top-6 right-6 bottom-6 z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}
+          className={`test-settings-panel absolute z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}
         >
            {!isSidebarOpen && (
              <button 
-               onClick={() => setIsSidebarOpen(true)}
+               aria-label="Open test settings" onClick={() => setIsSidebarOpen(true)}
                className="bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-colors"
              >
                <ChevronLeft size={24} />
@@ -158,7 +147,7 @@ const ColorGradientTest: React.FC = () => {
              <div className="flex-1 bg-white/95 backdrop-blur-xl text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200 border border-white/20">
                 <div className="p-5 border-b border-neutral-200/50 flex justify-between items-center sticky top-0 bg-white/50 backdrop-blur z-20">
                    <h3 className="font-bold text-sm tracking-wider text-neutral-800">GRADIENT</h3>
-                   <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
+                   <button aria-label="Close test settings" onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
                    </button>
                 </div>

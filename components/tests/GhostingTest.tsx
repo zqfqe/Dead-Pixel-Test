@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useFullscreen } from '../../hooks/useFullscreen';
+import { useFullscreenTest } from '../../hooks/useFullscreenTest';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { ChevronLeft, ChevronUp, RotateCcw, Activity, Layers, ArrowRight, ArrowDown, Type, Rocket, FastForward, Eye, Settings, Zap, Camera, HelpCircle, Monitor } from 'lucide-react';
 import { TestIntro, InfoCard } from '../common/TestIntro';
@@ -13,8 +13,7 @@ type Preset = 'default' | 'black-smear' | 'overshoot';
 
 const GhostingTest: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { enterFullscreen, exitFullscreen } = useFullscreen();
-  const [isActive, setIsActive] = useState(false);
+  const { isActive, startTest, stopTest } = useFullscreenTest();
   
   // Persistent State
   const [speed, setSpeed] = useLocalStorage('ghosting-speed', 960);
@@ -24,16 +23,6 @@ const GhostingTest: React.FC = () => {
   
   const [fps, setFps] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  const startTest = () => {
-    setIsActive(true);
-    enterFullscreen();
-  };
-
-  const stopTest = () => {
-    setIsActive(false);
-    exitFullscreen();
-  };
 
   const resetSettings = () => {
     setSpeed(960);
@@ -216,8 +205,8 @@ const GhostingTest: React.FC = () => {
         
         {/* Top-Left Exit */}
         <button 
-          onClick={stopTest}
-          className="absolute top-6 left-6 z-[60] flex items-center gap-2 bg-neutral-900/80 backdrop-blur text-white px-4 py-2 rounded-lg shadow-lg hover:bg-neutral-800 transition-colors border border-neutral-700 font-medium text-sm group"
+          data-fullscreen-test-exit onClick={stopTest}
+          className="test-exit-position absolute z-[70] flex items-center gap-2 bg-neutral-900/80 backdrop-blur text-white min-h-[44px] px-4 py-2 rounded-lg shadow-lg hover:bg-neutral-800 transition-colors border border-neutral-700 font-medium text-sm group"
         >
           <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           Exit
@@ -231,11 +220,11 @@ const GhostingTest: React.FC = () => {
 
         {/* Right Sidebar */}
         <div 
-          className={`absolute top-6 right-6 bottom-6 z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}
+          className={`test-settings-panel absolute z-[60] flex flex-col transition-all duration-300 ${isSidebarOpen ? 'w-80' : 'w-auto'}`}
         >
            {!isSidebarOpen && (
              <button 
-               onClick={() => setIsSidebarOpen(true)}
+               aria-label="Open test settings" onClick={() => setIsSidebarOpen(true)}
                className="bg-white text-black p-3 rounded-full shadow-xl hover:bg-neutral-100 transition-colors"
              >
                <ChevronLeft size={24} />
@@ -246,7 +235,7 @@ const GhostingTest: React.FC = () => {
              <div className="flex-1 bg-white text-neutral-900 rounded-xl shadow-2xl overflow-y-auto flex flex-col animate-in slide-in-from-right-10 duration-200">
                 <div className="p-5 border-b border-neutral-100 flex justify-between items-center sticky top-0 bg-white z-20">
                    <div className="font-bold text-sm tracking-wider text-neutral-800">MOTION TEST</div>
-                   <button onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
+                   <button aria-label="Close test settings" onClick={() => setIsSidebarOpen(false)} className="text-neutral-400 hover:text-neutral-800">
                      <ChevronUp size={20} className="rotate-90" />
                    </button>
                 </div>

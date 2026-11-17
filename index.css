@@ -328,3 +328,19 @@ body[data-surface="light"] :is(.ui-landing-hero,.ui-home-stage,.ui-inspection-sh
 .ui-metrics-panel #screen-metrics dt{font-size:.83rem;color:#52665A;overflow-wrap:anywhere}
 .ui-metrics-panel #screen-metrics dd{font-size:.84rem;color:#18291D;text-align:right;font-weight:800;margin:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 @media(max-width:390px){.ui-metrics-panel #screen-metrics{grid-template-columns:minmax(0,1fr) minmax(60px,auto);gap:8px 10px}.ui-metrics-panel #screen-metrics dt,.ui-metrics-panel #screen-metrics dd{font-size:.82rem}}
+
+/* Keep the test exit above and separate from the settings panel on narrow screens. */
+.test-exit-position {
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+}
+.test-settings-panel {
+  top: max(72px, calc(env(safe-area-inset-top) + 60px));
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  max-width: calc(100% - max(12px, env(safe-area-inset-left)) - max(12px, env(safe-area-inset-right)));
+}
+@media (min-width: 640px) {
+  .test-exit-position { top: 24px; left: 24px; }
+  .test-settings-panel { top: 24px; right: 24px; bottom: 24px; }
+}
