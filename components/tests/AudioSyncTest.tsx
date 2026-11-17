@@ -137,9 +137,14 @@ const AudioSyncTest: React.FC = () => {
     window.addEventListener('resize', resize);
     resize();
 
+    let lastFrameBeat = -1;
     const draw = () => {
       const timeSinceFirstBeat = audio.currentTime - firstBeat;
-      const progress = ((timeSinceFirstBeat % intervalSeconds + intervalSeconds) % intervalSeconds) / intervalSeconds;
+      const cycles = timeSinceFirstBeat / intervalSeconds;
+      const frameBeat = Math.floor(cycles);
+      const progress = cycles - frameBeat;
+      const crossedBeat = frameBeat > lastFrameBeat;
+      lastFrameBeat = frameBeat;
 
       // Clear Screen
       ctx.fillStyle = '#000';
@@ -151,7 +156,7 @@ const AudioSyncTest: React.FC = () => {
       // --- RENDER PATTERNS ---
 
       if (pattern === 'flash') {
-         if (timeSinceFirstBeat >= 0 && progress < 0.05) {
+         if (frameBeat >= 0 && (crossedBeat || progress < 0.05)) {
            ctx.fillStyle = '#ffffff';
            ctx.fillRect(0, 0, canvas.width, canvas.height);
         } else {
@@ -394,7 +399,7 @@ const AudioSyncTest: React.FC = () => {
                 {/* Footer Report Actions */}
                 <div className="p-5 border-t border-neutral-100 bg-neutral-50 space-y-4">
                   
-                  <TestResultControls testId="audiosync" testName="Audio / Video Sync Latency" />
+                  <TestResultControls testId="audiosync" testName="Audio / Video Sync" />
 
                   <button 
                     onClick={resetSettings}
@@ -415,7 +420,7 @@ const AudioSyncTest: React.FC = () => {
     <>
       <SEO 
         title="Audio Video Sync Test - Lip Sync Latency" 
-        description="Fix audio delay issues. Measure the exact latency (ms) between your screen and speakers to correct lip-sync problems in movies and games."
+        description="Compare a visual cue with a click and adjust the scheduled audio offset to check apparent lip sync."
         canonical="/tests/audio-sync"
         keywords={['audio sync test', 'lip sync test', 'audio latency test', 'audio video delay', 'av sync calibration']}
         breadcrumbs={[
@@ -429,7 +434,7 @@ const AudioSyncTest: React.FC = () => {
               "@type": "WebApplication",
               "name": "Audio/Video Sync Tester",
               "url": "https://deadpixeltest.cc/tests/audio-sync",
-              "description": "Measure and fix audio delay/latency (lip sync) issues between your display and speakers.",
+              "description": "Compare a visual cue with a click and adjust the scheduled audio offset to check apparent lip sync.",
               "applicationCategory": "UtilitiesApplication",
               "operatingSystem": "Web Browser",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -441,7 +446,7 @@ const AudioSyncTest: React.FC = () => {
                 "name": "How to fix Lip Sync Delay?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Most modern TVs and AV Receivers have an 'Audio Delay' or 'Lip Sync' setting. Use this tool to find the exact millisecond offset (e.g., +100ms) and enter that value in your device settings."
+                  "text": "If your TV or receiver has an audio-delay setting, adjust it in small steps and verify with the content you watch. The browser offset applies to this test."
                 }
               }, {
                 "@type": "Question",
@@ -459,7 +464,7 @@ const AudioSyncTest: React.FC = () => {
                 { "@type": "HowToStep", "text": "Turn up your volume and watch the moving bar." },
                 { "@type": "HowToStep", "text": "Listen for the 'Click' sound as the bar hits the center mark." },
                 { "@type": "HowToStep", "text": "If the sound is early or late, use the 'Manual Compensation' slider to adjust it until it feels perfectly synced." },
-                { "@type": "HowToStep", "text": "The resulting offset (e.g., +50ms) is your system latency. Enter this value into your TV or AV Receiver's 'Audio Delay' setting." }
+                { "@type": "HowToStep", "text": "Record the offset that seems aligned for this browser, screen and audio setup." }
               ]
             }
           ]
@@ -469,16 +474,16 @@ const AudioSyncTest: React.FC = () => {
         {audioError && <p role="alert" className="mx-auto max-w-xl p-4 text-red-300">{audioError}</p>}
         <TestIntro
           title="Audio/Video Sync Test"
-          description="Measure and calibrate the delay between your display and speakers. Essential for home theater lip-sync and competitive gaming."
+          description="Compare a visual cue and a click, then adjust when the browser schedules the sound."
           onStart={startTest}
         >
-          <InfoCard title="How to Calibrate">
+          <InfoCard title="How to compare sound and picture">
             <p>
               1. Listen to the click and watch the visual marker.
               <br/>
               2. Use the <strong>Manual Compensation</strong> slider in the menu.
               <br/>
-              3. Adjust until they feel perfectly synced. The final number (e.g., +100ms) is the delay you should enter in your TV or AV Receiver settings.
+              3. Move the slider left if the click sounds late, or right if it sounds early. The reading shows the compensation that sounds aligned in this setup.
             </p>
           </InfoCard>
           <InfoCard title="Patterns">
@@ -553,7 +558,7 @@ const AudioSyncTest: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-6">
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">How to fix Lip Sync Delay?</h4>
-                    <p className="text-neutral-400 text-sm">Most modern TVs and AV Receivers have an "Audio Delay" or "Lip Sync" setting. Use this tool to find the exact millisecond offset (e.g., +100ms) and enter that value in your device settings.</p>
+                    <p className="text-neutral-400 text-sm">If your TV or receiver has an audio-delay setting, adjust it in small steps and verify with the content you watch. The browser offset applies to this test.</p>
                  </div>
                  <div className="bg-neutral-900/30 p-6 rounded-xl border border-white/5">
                     <h4 className="font-bold text-white text-base mb-2">Is Bluetooth lag normal?</h4>
