@@ -1,4 +1,4 @@
-export type InspectionMode = 'pixels' | 'fixer' | 'lines' | 'retention' | 'resolution' | 'contrast' | 'refresh-rate' | 'guide';
+export type InspectionMode = 'pixels' | 'fixer' | 'lines' | 'retention' | 'resolution' | 'contrast' | 'refresh-rate' | 'local-dimming' | 'guide';
 
 export interface SeoLandingPage {
   path: string;
@@ -181,6 +181,29 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
       {question:'Why does the FPS reading differ from my monitor’s refresh rate?',answer:'Refresh rate is the display setting in Hz. The live FPS reading counts browser animation callbacks. Check the configured Hz in your operating system and keep this tab visible when comparing the two.'},
       {question:'What shutter speed should I use?',answer:'Wait for the FPS reading and use the shutter speed displayed in the test, or a shorter exposure. A long exposure can allow the grid to loop and hide a gap.'},
       {question:'Can I use a screenshot to check for skipped frames?',answer:'A screenshot captures one browser image. A separate camera with manual exposure can capture the sequence across several updates on the physical display.'}
+    ]
+  },
+  {
+    path:'/tests/local-dimming',lang:'en',indexable:true,
+    title:'Local Dimming & Blooming Test for Mini-LED and LCD',
+    description:'Move a bright shape across a dark background to compare blooming, zone transitions, and different local dimming settings on your display.',
+    h1:'Local Dimming & Blooming Test',
+    lead:'Move a bright shape across a black background to see how the area around it changes. Compare halos and brightness transitions at the same viewing angle.',
+    mode:'local-dimming',intent:'local dimming test',
+    steps:[
+      'Set a comfortable brightness and reduce room reflections. Note your picture mode and local dimming setting.',
+      'Start the test. Turn off the star background for a plain black field, then choose a small white box or circle.',
+      'Use Auto for continuous movement or Manual to move the shape with a mouse or touch. Compare the center, edges and corners.',
+      'Repeat with a different local dimming setting if your display offers one. Keep shape, size, viewing position and room lighting the same.'
+    ],
+    notes:[
+      'A bright object can illuminate an area around it on a display with a zone-based backlight. The apparent halo can also change with viewing angle.',
+      'Use a short session at comfortable brightness. A visual comparison does not provide a calibrated zone count, peak brightness or contrast measurement.'
+    ],
+    faq:[
+      {question:'What does blooming look like?',answer:'Look for a glow around a bright shape on an otherwise dark screen. Move the shape slowly to see whether the glow follows it or changes near the edges.'},
+      {question:'Why can the halo look different off-center?',answer:'Viewing angle, screen reflections and picture settings can change the appearance of a halo. Keep your position fixed while comparing settings.'},
+      {question:'Can this test count my monitor’s dimming zones?',answer:'The browser draws the pattern. Compare visible behavior across settings, and use the display specifications for its advertised hardware zone count.'}
     ]
   }
 ];
