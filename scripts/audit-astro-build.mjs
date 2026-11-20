@@ -1,4 +1,4 @@
-import {existsSync,readFileSync} from 'node:fs';
+import {existsSync,readdirSync,readFileSync} from 'node:fs';
 import {join} from 'node:path';
 const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
 const raw=isCloudflarePreview?'':process.env.PUBLIC_SITE_URL?.trim(),origin=raw?new URL(raw).origin:'';
@@ -396,5 +396,24 @@ else{
  if(!headers.includes('https://:project.pages.dev/*')||!headers.includes('https://:version.:project.pages.dev/*'))errors.push('Missing pages.dev host-specific noindex headers');
  if((headers.match(/X-Robots-Tag: noindex/g)||[]).length<2)errors.push('Missing noindex directive for both Pages host shapes');
 }
+const expectSocialBar = process.env.CF_PAGES === '1' && process.env.CF_PAGES_BRANCH === 'main';
+const socialBarUrl = 'https://bauval.org/14/37ece4aac9a582803fcf37b742590dca';
+for (const file of readdirSync('dist', { recursive: true })) {
+ if (!file.endsWith('.html')) continue;
+ const html = readFileSync(join('dist', file), 'utf8');
+ if (!html.includes('data-astro-site="true"')) continue;
+ const tags = [...html.matchAll(/<script\b[^>]*><\/script>/g)]
+  .filter(match => match[0].includes(`src="${socialBarUrl}"`));
+ if (expectSocialBar) {
+  const [tag] = tags;
+  if (tags.length !== 1 || !tag[0].includes('data-cfasync="false"')
+   || !/^\s*<\/body>/i.test(html.slice(tag.index + tag[0].length))) {
+   errors.push('Expected one Adsterra Social Bar tag just before </body>: ' + file);
+  }
+ } else if (tags.length) {
+  errors.push('Unexpected Adsterra Social Bar tag outside production: ' + file);
+ }
+}
+
 if(errors.length){console.error(errors.join('\n'));process.exit(1);}
 console.log('PASS: legacy routes and 14 newly index-admitted landing pages audited (noindex only on preview/domainless).');

@@ -7,6 +7,7 @@ interface Props {
   image?: string; schema?: Record<string, unknown>;
 }
 const {title,description,canonicalPath,lang='en',legacy=false,noindex=false,image='/logo.svg',schema}=Astro.props;
+const showSocialBar = process.env.CF_PAGES === '1' && process.env.CF_PAGES_BRANCH === 'main';
 const isCloudflarePreview = process.env.CF_PAGES === '1' && !!process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main';
 const configuredSiteUrl = isCloudflarePreview ? '' : import.meta.env.PUBLIC_SITE_URL?.trim();
 const origin = configuredSiteUrl ? new URL(configuredSiteUrl).origin : '';
@@ -78,5 +79,6 @@ const languageFallback=!matchedLocalePair;
         <nav aria-label={lang==="pt-BR"?"Informações legais e guias":"Site information and guides"} class="flex flex-wrap gap-5"><a href="/blog">{lang==="pt-BR"?"Guias de teste (EN)":"Screen testing guides"}</a><a href="/about">{lang==="pt-BR"?"Sobre":"About"}</a><a href="/contact">{lang==="pt-BR"?"Contato":"Contact"}</a><a href="/privacy-policy">{lang==="pt-BR"?"Privacidade":"Privacy"}</a><a href="/terms-of-service">{lang==="pt-BR"?"Termos":"Terms"}</a></nav>
       </div>
     </footer>}
+    {showSocialBar && <script is:inline data-cfasync="false" src="https://bauval.org/14/37ece4aac9a582803fcf37b742590dca"></script>}
   </body>
 </html>

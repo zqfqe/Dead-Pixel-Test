@@ -67,12 +67,12 @@ GitHub Actions validates TypeScript, Astro static builds, domainless/preview iso
 
 ## Privacy and safety
 
-- No analytics, advertising tags or third-party tracking pixels are included in the current application bundle.
-- The browser smoke suite flags third-party HTTP(S) requests, non-GET/HEAD requests and third-party scripts/frames on the tested routes.
+- Adsterra Social Bar is loaded at the end of the shared layout in Cloudflare Pages production builds. The build audit verifies the tag and its placement. Local and branch preview builds omit the tag.
+- The browser smoke suite checks for unexpected network activity and third-party scripts/frames in its local build.
 - Camera and microphone access is user-initiated; the webcam snapshot is generated as a local download.
 - Color-vision image previews use local object URLs. Screen markers and test reports are not uploaded by the application.
 - Existing preferences and report entries may be stored in browser localStorage; users can clear site data to remove them.
-- The privacy policy describes hosting-provider request metadata separately from browser-side test data.
+- The privacy policy describes both hosting and third-party advertising separately from browser-side test data.
 - A verified private support/privacy contact address remains a pre-launch requirement.
 - Do not enable analytics or advertising until the privacy notice and any required consent controls are reviewed and updated.
 
